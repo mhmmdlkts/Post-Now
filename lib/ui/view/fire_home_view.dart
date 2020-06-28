@@ -20,15 +20,25 @@ class _FireHomeViewState extends State<FireHomeView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
-      body: userFutureBuilder,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            RaisedButton(
+              onPressed: () {
+                FirebaseService().signOut();
+              },
+              child: const Text('Sign Out', style: TextStyle(fontSize: 20)),
+            ),
+          ]
+        )
+      ),
     );
   }
 
   Widget get userFutureBuilder => FutureBuilder<List<User>>(
     future: service.getUsers(),
     builder: (context, snapshot) {
-      if(snapshot == null)
-        print("hm");
       switch (snapshot.connectionState) {
         case ConnectionState.done:
           if (snapshot.hasData) return _listUser(snapshot.data);

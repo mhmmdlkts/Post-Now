@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:postnow/core/service/firebase_service.dart';
 import 'package:postnow/ui/view/fire_home_view.dart';
 
 void main() {
@@ -16,7 +18,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.grey,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: MyHomePage(title: 'Post Now'),
+      home: FirebaseService().handleAuth(),
     );
   }
 }
@@ -32,21 +34,42 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  String phoneNo, verificationId, smsCode;
 
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
+  bool codeSent = false;
 
+  Future<void> _nextClick(phoneNo) async {
 
-  }
-
-  void _nextClick() {
-    Navigator.push(
+    final PhoneVerificationCompleted verified = (AuthCredential authResult) {
+      FirebaseService().signIn(authResult);
+      /*Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => SmsVerifyPage(title: "SMS Verification")),
-    );
+      );*/
+    };
+
+    final PhoneVerificationFailed verificationFailed = (AuthException authException) {
+      print('${authException.message}');
+    };
+
+    final PhoneCodeSent smsSent = (String verId, [int forceResend]) {
+      this.verificationId = verId;
+      setState(() {
+        this.codeSent = true;
+      });
+    };
+
+    final PhoneCodeAutoRetrievalTimeout autoTimeout = (String verId) {
+      this.verificationId = verId;
+    };
+
+    await FirebaseAuth.instance.verifyPhoneNumber(
+        phoneNumber: phoneNo,
+        timeout: const Duration(seconds: 5),
+        verificationCompleted: verified,
+        verificationFailed: verificationFailed,
+        codeSent: smsSent,
+        codeAutoRetrievalTimeout: autoTimeout);
   }
 
   @override
@@ -64,19 +87,34 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             TextFormField(
               keyboardType: TextInputType.phone,
-              inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
               decoration: InputDecoration(
                 icon: Icon(Icons.smartphone),
                 hintText: "Exp. 00436601234567",
               ),
+              onChanged: (val) {
+                setState(() {
+                  phoneNo = val;
+                });
+              },
             ),
+            codeSent? TextFormField(
+              maxLength: 6,
+              decoration: InputDecoration(
+                icon: Icon(Icons.verified_user),
+                hintText: "Exp. 123456",
+              ),
+              onChanged: (val) {
+                setState(() {
+                  smsCode = val;
+                });
+              },
+            ) : Container(),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-
-          _nextClick();
+          codeSent ? FirebaseService().signInWithOTP(smsCode, verificationId) : _nextClick(phoneNo);
         },
         tooltip: 'Next',
         child: Icon(Icons.arrow_forward),
