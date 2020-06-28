@@ -49,3 +49,5 @@ GoogleService-Info.plist
 
 # Android Sign
 key.properties
+*.apk
+*.abb
