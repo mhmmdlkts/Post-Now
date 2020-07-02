@@ -1,11 +1,42 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:postnow/core/service/firebase_service.dart';
 import 'package:postnow/ui/view/fire_home_view.dart';
 
-void main() {
+void main() async {
+  await init();
   runApp(MyApp());
+}
+
+FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+
+Future<void> init() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await _firebaseMessaging.requestNotificationPermissions();
+  final token = _firebaseMessaging.getToken();
+  print(token);
+  _firebaseMessaging.configure(onLaunch: (message) {
+    print("onLaunch");
+    return Future.value(true);
+  },
+  onResume: (message) {
+    print("onResume");
+    return Future.value(true);
+  },
+  onMessage: (message) {
+    print("onMessage");
+    /*showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        child: Text(message["natification"]["title"]),
+      )
+    );*/
+    return Future.value(true);
+  },
+);
+
 }
 
 class MyApp extends StatelessWidget {
@@ -39,7 +70,6 @@ class _MyHomePageState extends State<MyHomePage> {
   bool codeSent = false;
 
   Future<void> _nextClick(phoneNo) async {
-
     final PhoneVerificationCompleted verified = (AuthCredential authResult) {
       FirebaseService().signIn(authResult);
       /*Navigator.push(
@@ -119,6 +149,8 @@ class _MyHomePageState extends State<MyHomePage> {
         tooltip: 'Next',
         child: Icon(Icons.arrow_forward),
       ), // This trailing comma makes auto-formatting nicer for build methods.
+
+
     );
   }
 }
