@@ -54,3 +54,4 @@ GoogleService-Info.plist
 key.properties
 *.apk
 *.abb
+**/android/app/debug
