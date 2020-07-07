@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:postnow/core/service/model/user.dart';
+import 'package:postnow/maps/google_maps_view.dart';
 import 'package:postnow/ui/view/fire_home_view.dart';
 
 import '../../main.dart';
@@ -32,7 +33,7 @@ class FirebaseService {
       stream: FirebaseAuth.instance.onAuthStateChanged,
       builder: (BuildContext context, snapshot) {
         if (snapshot.hasData) {
-          return FireHomeView();
+          return GoogleMapsView();
         } else {
           return MyHomePage(title: 'Post Now');
         }
