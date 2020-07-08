@@ -38,6 +38,7 @@ dependencies:
   # For example, to use Firebase Authentication and Cloud Firestore
   firebase_auth: ^0.16.1
   firebase_messaging: ^6.0.16
+  firebase_database: ^3.1.6
   #cloud_firestore: ^0.13.7
 
   google_maps_flutter: ^0.5.28+1
