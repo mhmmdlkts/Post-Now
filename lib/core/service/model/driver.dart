@@ -41,5 +41,4 @@ class Driver {
         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRose)
     );
   }
-
 }

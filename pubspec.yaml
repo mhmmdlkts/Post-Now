@@ -41,7 +41,11 @@ dependencies:
   firebase_database: ^3.1.6
   #cloud_firestore: ^0.13.7
 
+  google_maps_webservice: ^0.0.17
   google_maps_flutter: ^0.5.28+1
+  google_map_polyline: ^0.2.0+1
+  permission_handler: ^5.0.1+1
+  geolocator: ^5.3.2+2
 
 dev_dependencies:
   flutter_test:
