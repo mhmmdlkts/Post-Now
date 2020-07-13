@@ -6,14 +6,15 @@ import 'package:google_map_polyline/google_map_polyline.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_webservice/directions.dart' as direction;
 import 'package:postnow/core/service/model/driver.dart';
+import 'package:postnow/ui/view/payments.dart';
 
 const double EURO_PER_KM = 0.96;
 const double EURO_START  = 5.00;
+const bool TEST  = false;
 
 enum MenuTyp {
   FROM_OR_TO,
-  CONFIRM,
-  PAY
+  CONFIRM
 }
 
 class GoogleMapsView extends StatefulWidget {
@@ -56,7 +57,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
             visible: true,
             points: routeCoords,
             width: 2,
-            color: Colors.deepOrange,
+            color: Colors.deepPurpleAccent,
             startCap: Cap.roundCap,
             endCap: Cap.buttCap
         ));
@@ -130,9 +131,21 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
   void onMapCreated(GoogleMapController controller) {
     setState(() {
       _controller = controller;
-
     });
   }
+
+  _navigateToPaymentsAndGetResult(BuildContext context) async {
+    final bool result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => Payments())
+    );
+    if (result == null || !result) {
+      // TODO cant payed
+    } else {
+      // TODO is payed
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -155,6 +168,12 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                 markers: _createMarker(),
                 onTap: (t) {
                   setState(() {
+                    if (TEST) {
+
+                      _navigateToPaymentsAndGetResult(context);
+                      return;
+                    }
+                    polylines = {};
                     menuTyp = MenuTyp.FROM_OR_TO;
                     choosedMarker = Marker(
                         markerId: MarkerId("choosed"),
@@ -165,10 +184,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                 },
               ),
             ),
-            Positioned(
-                bottom: 0,
-                child: getBottomMenu()
-            )
+            getBottomMenu(),
           ]
       ),
     );
@@ -190,107 +206,87 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
         return fromOrToMenu();
       case MenuTyp.CONFIRM:
         return confirmMenu();
-      case MenuTyp.PAY:
-        return payMenu();
     }
-    return Column();
+    return Container();
   }
 
-  Widget fromOrToMenu() => SizedBox(
+  Widget fromOrToMenu() => Positioned(
+          bottom: 0,
+          child: SizedBox(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height/4,
+            child: Column(
+                children: <Widget>[
+                  RaisedButton(
+                    onPressed: () {
+                      setState(() {
+                        LatLng choosed = LatLng(choosedMarker.position.latitude, choosedMarker.position.longitude);
+                        getRoute(choosed, false);
+                        setState(() {
+                          menuTyp = MenuTyp.CONFIRM;
+                        });
+                      });
+                    },
+                    child: const Text('Getir', style: TextStyle(fontSize: 20)),
+                  ),
+                  RaisedButton(
+                    onPressed: () {
+                      LatLng choosed = LatLng(choosedMarker.position.latitude, choosedMarker.position.longitude);
+                      getRoute(choosed, true);
+                      setState(() {
+                        menuTyp = MenuTyp.CONFIRM;
+                      });
+                    },
+                    child: const Text('Götür', style: TextStyle(fontSize: 20)),
+                  ),
+                ]
+            )
+        )
+      );
+
+  Widget confirmMenu() => Positioned(
+      bottom: 0,
+      child: SizedBox (
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height/4,
         child: Column(
             children: <Widget>[
-              RaisedButton(
-                onPressed: () {
-                  setState(() {
-                    LatLng choosed = LatLng(choosedMarker.position.latitude, choosedMarker.position.longitude);
-                    getRoute(choosed, false);
-                    setState(() {
-                      menuTyp = MenuTyp.CONFIRM;
-                    });
-                  });
-                },
-                child: const Text('Getir', style: TextStyle(fontSize: 20)),
-              ),
-              RaisedButton(
-                onPressed: () {
-                  LatLng choosed = LatLng(choosedMarker.position.latitude, choosedMarker.position.longitude);
-                  getRoute(choosed, true);
-                  setState(() {
-                    menuTyp = MenuTyp.CONFIRM;
-                  });
-                },
-                child: const Text('Götür', style: TextStyle(fontSize: 20)),
+              Card(
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  children: <Widget>[
+                    ListTile(
+                      leading: Icon(Icons.payment),
+                      title: Text('Tutar $price €'),
+                      subtitle: Text('From: $originAddress\nTo: $destinationAddress'),
+                    ),
+                    ButtonBar(
+                      children: <Widget>[
+                        FlatButton(
+                          child: const Text('Iptal et'),
+                          onPressed: () {
+                            setState(() {
+                              polylines = {};
+                              menuTyp = MenuTyp.FROM_OR_TO;
+                            });
+                          },
+                        ),
+                        FlatButton(
+                          child: const Text('Onayla'),
+                          onPressed: () {
+                            setState(() {
+                              //menuTyp = MenuTyp.PAY;
+                              _navigateToPaymentsAndGetResult(context);
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ]
         )
-    );
-
-  Widget confirmMenu() => SizedBox(
-      width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height/4,
-      child: Column(
-          children: <Widget>[
-            Card(
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                children: <Widget>[
-                  ListTile(
-                    leading: Icon(Icons.payment),
-                    title: Text('Tutar $price €'),
-                    subtitle: Text('From: $originAddress\nTo: $destinationAddress'),
-                  ),
-                  ButtonBar(
-                    children: <Widget>[
-                      FlatButton(
-                        child: const Text('Iptal et'),
-                        onPressed: () {
-                          setState(() {
-                            polylines = {};
-                            menuTyp = MenuTyp.FROM_OR_TO;
-                          });
-                        },
-                      ),
-                      FlatButton(
-                        child: const Text('Onayla'),
-                        onPressed: () {
-                          setState(() {
-                            menuTyp = MenuTyp.PAY;
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ]
-      )
+    )
   );
-
-  Widget payMenu() => SizedBox(
-      width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height/4,
-      child: Column(
-          children: <Widget>[
-            RaisedButton(
-              onPressed: () {
-
-              },
-              child: const Text('PayPal', style: TextStyle(fontSize: 20)),
-            ),
-            RaisedButton(
-              onPressed: () {
-                setState(() {
-                  menuTyp = MenuTyp.FROM_OR_TO;
-                  polylines = {};
-                });
-              },
-              child: const Text('Iptal Et', style: TextStyle(fontSize: 20)),
-            ),
-          ]
-      )
-  );
-
 }
