@@ -1,5 +1,6 @@
 import 'dart:math' show cos, sqrt, asin;
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_map_polyline/google_map_polyline.dart';
@@ -357,6 +358,8 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
           )
       )
   );
+
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
   void addJobToPool() async {
     if (job != null)
