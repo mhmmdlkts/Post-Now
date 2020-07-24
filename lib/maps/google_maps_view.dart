@@ -12,7 +12,7 @@ import 'package:postnow/ui/view/payments.dart';
 
 const double EURO_PER_KM = 0.96;
 const double EURO_START  = 5.00;
-const bool TEST = false;
+const bool TEST = true;
 
 enum MenuTyp {
   FROM_OR_TO,
@@ -30,9 +30,8 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
   List<Driver> drivers = List();
   Set<Polyline> polylines = {};
   List<LatLng> routeCoords;
-  final places = direction.GoogleMapsDirections(apiKey: "<Your-API-Key>");
   GoogleMapPolyline googleMapPolyline = new GoogleMapPolyline(apiKey: "AIzaSyDUr-GnemethAnyLSQZc6YPsT_lFeBXaI8");
-  Marker choosedMarker;
+  Marker chosenMarker;
   Driver driver;
   DatabaseReference driverRef, jobsRef;
   GoogleMapController _controller;
@@ -125,23 +124,32 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
     print(job.start_time);
     if (snapshot == job) {
       job = snapshot;
-      if (job.status == Status.ON_ROAD) {
-        setState(() {
-          menuTyp = MenuTyp.ACCEPTED;
-        });
-        if (job.driverId != null) {
-          for (Driver d in drivers) {
-            if (d.key == job.driverId) {
-              myDriver = d;
-              setState(() {
+      switch (job.status) {
+        case Status.ON_ROAD:
+          setState(() {
+            menuTyp = MenuTyp.ACCEPTED;
+          });
+          if (job.driverId != null) {
+            for (Driver d in drivers) {
+              if (d.key == job.driverId) {
                 myDriver = d;
-                myDriver.isMyDriver = true;
-              });
-              await addToRoutePolyline(myDriver.getLatLng(), origin, job.getRouteMode());
-              setNewCameraPosition(myDriver.getLatLng(), LatLng(myPosition.latitude, myPosition.longitude), false);
+                setState(() {
+                  myDriver = d;
+                  myDriver.isMyDriver = true;
+                });
+                await addToRoutePolyline(myDriver.getLatLng(), origin, job.getRouteMode());
+                setNewCameraPosition(myDriver.getLatLng(), LatLng(myPosition.latitude, myPosition.longitude), false);
+              }
             }
           }
-        }
+          break;
+        case Status.CANCELLED:
+          polylines = {};
+          chosenMarker = null;
+          setNewCameraPosition(LatLng(myPosition.latitude, myPosition.longitude), null, true);
+          setState(() {
+            menuTyp = null;
+          });
       }
     }
   }
@@ -203,7 +211,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                   setState(() {
                     polylines = {};
                     menuTyp = MenuTyp.FROM_OR_TO;
-                    choosedMarker = Marker(
+                    chosenMarker = Marker(
                         markerId: MarkerId("choosed"),
                         position: LatLng(t.latitude, t.longitude),
                         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue)
@@ -231,8 +239,8 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
         }
       }
     }
-    if (choosedMarker != null)
-      markers.add(choosedMarker);
+    if (chosenMarker != null)
+      markers.add(chosenMarker);
     return markers;
   }
 
@@ -259,7 +267,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                   RaisedButton(
                     onPressed: () {
                       setState(() {
-                        LatLng chosen = LatLng(choosedMarker.position.latitude, choosedMarker.position.longitude);
+                        LatLng chosen = LatLng(chosenMarker.position.latitude, chosenMarker.position.longitude);
                         getRoute(chosen, false);
                         setState(() {
                           menuTyp = MenuTyp.CONFIRM;
@@ -270,8 +278,8 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                   ),
                   RaisedButton(
                     onPressed: () {
-                      LatLng choosed = LatLng(choosedMarker.position.latitude, choosedMarker.position.longitude);
-                      getRoute(choosed, true);
+                      LatLng chosen = LatLng(chosenMarker.position.latitude, chosenMarker.position.longitude);
+                      getRoute(chosen, true);
                       setState(() {
                         menuTyp = MenuTyp.CONFIRM;
                       });

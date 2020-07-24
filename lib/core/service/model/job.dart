@@ -12,7 +12,8 @@ enum Vehicle {
 enum Status {
   WAITING,
   ON_ROAD,
-  FINISHED
+  FINISHED,
+  CANCELLED
 }
 
 class Job {
@@ -53,6 +54,8 @@ class Job {
         return Status.ON_ROAD;
       case "finished":
         return Status.FINISHED;
+      case "no_driver_found":
+        return Status.CANCELLED;
     }
     return null;
   }
@@ -65,6 +68,8 @@ class Job {
         return "on_the_road";
       case Status.FINISHED:
         return "finished";
+      case Status.CANCELLED:
+        return "no_driver_found";
     }
     return null;
   }
