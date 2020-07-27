@@ -1,5 +1,5 @@
 # Uncomment this line to define a global platform for your project
-platform :ios, '9.0'
+platform :ios, '10.0'
 
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
@@ -76,15 +76,6 @@ target 'Runner' do
     File.symlink(path, symlink)
     pod name, :path => File.join(symlink, 'ios')
   end
-
-  # add the Firebase pod for Google Analytics
-  pod 'Firebase/Analytics'
-  pod 'Firebase/Auth'
-  pod 'Firebase/Messaging'
-  pod 'Firebase/Core'
-  pod 'Firebase'
-  # add pods for any other desired Firebase products
-  # https://firebase.google.com/docs/ios/setup#available-pods
 end
 
 post_install do |installer|
@@ -94,3 +85,4 @@ post_install do |installer|
     end
   end
 end
+pod 'Braintree/Apple-Pay'

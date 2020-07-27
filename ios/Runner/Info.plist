@@ -28,6 +28,19 @@
 				<string>com.googleusercontent.apps.303896015523-7eambfls09dt273ilm90nm3m82k62dk5</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLIconFile</key>
+			<string></string>
+			<key>CFBundleURLName</key>
+			<string>com.mali.postnow.payments</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.mali.postnow.payments</string>
+			</array>
+		</dict>
+		<dict/>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
@@ -35,6 +48,8 @@
 	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>To scan credit cards.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>This app needs access to location when open and in the background.</string>
 	<key>NSLocationAlwaysUsageDescription</key>

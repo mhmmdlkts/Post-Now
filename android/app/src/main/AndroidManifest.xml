@@ -6,13 +6,26 @@
          additional functionality it is fine to subclass or reimplement
          FlutterApplication and put your custom class here. -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
+
     <application
         android:name="io.flutter.app.FlutterApplication"
         android:label="Post Now"
         android:icon="@mipmap/ic_launcher">
 
+        <meta-data android:name="com.google.android.gms.wallet.api.enabled" android:value="true"/>
         <meta-data android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyApP0S1huhzumSkh4IoeNJUXWjmWbIirVM"/>
+
+        <activity android:name="com.braintreepayments.api.BraintreeBrowserSwitchActivity"
+            android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="${applicationId}.braintree" />
+            </intent-filter>
+        </activity>
 
         <activity
             android:name=".MainActivity"

@@ -8,6 +8,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_webservice/directions.dart' as direction;
 import 'package:postnow/core/service/model/driver.dart';
 import 'package:postnow/core/service/model/job.dart';
+import 'package:postnow/core/service/payment_service.dart';
 import 'package:postnow/ui/view/payments.dart';
 
 const double EURO_PER_KM = 0.96;
@@ -18,6 +19,8 @@ enum MenuTyp {
   FROM_OR_TO,
   CONFIRM,
   SEARCH_DRIVER,
+  PAYMENT_WAITING,
+  PAYMENT_DECLINED,
   ACCEPTED
 }
 
@@ -171,18 +174,15 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
     });
   }
 
-  _navigateToPaymentsAndGetResult(BuildContext context) async {
-    final bool result = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => Payments())
-    );
-    if (result == null || !result) {
-      // TODO is not payed
-    } else {
+  _navigateToPaymentsAndGetResult(BuildContext context, double price) async {
+    setState(() {
+      menuTyp = MenuTyp.PAYMENT_WAITING;
+    });
+    PaymentService().openPayMenu(price).then((result) => {
       setState(() {
-        menuTyp = MenuTyp.SEARCH_DRIVER;
-      });
-    }
+        menuTyp = result ? MenuTyp.SEARCH_DRIVER : MenuTyp.PAYMENT_DECLINED;
+      })
+    });
   }
 
 
@@ -202,6 +202,8 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                     zoom: 9
                 ),
                 onMapCreated: onMapCreated,
+                zoomControlsEnabled: false,
+                myLocationButtonEnabled: menuTyp == null,
                 myLocationEnabled: true,
                 polylines: polylines,
                 markers: _createMarker(),
@@ -253,6 +255,10 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
       case MenuTyp.SEARCH_DRIVER:
         addJobToPool();
         return searchDriverMenu();
+      case MenuTyp.PAYMENT_WAITING:
+        return paymentWaiting();
+      case MenuTyp.PAYMENT_DECLINED:
+        return paymentDeclined();
     }
     return Container();
   }
@@ -323,7 +329,9 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                             onPressed: () {
                               setState(() {
                                 //menuTyp = MenuTyp.PAY;
-                                _navigateToPaymentsAndGetResult(context);
+                                if (price == 0)
+                                  return;
+                                _navigateToPaymentsAndGetResult(context, price);
                               });
                             },
                           ),
@@ -367,16 +375,80 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
       )
   );
 
+  Widget paymentWaiting() => Positioned(
+      bottom: 0,
+      child: SizedBox (
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height/4,
+          child: Column(
+              children: <Widget>[
+                Card(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    children: <Widget>[
+                      ListTile(
+                        leading: Icon(Icons.payment),
+                        title: Text('Ödeme bekleniyor.'),
+                      ),
+                      menuTyp != MenuTyp.ACCEPTED ? Padding (
+                        padding: EdgeInsets.all(10.0),
+                        child: CircularProgressIndicator(
+                          valueColor: new AlwaysStoppedAnimation<Color>(Colors.deepPurple),
+                        ),
+                      ): Container()
+                    ],
+                  ),
+                ),
+              ]
+          )
+      )
+  );
+
+  Widget paymentDeclined() => Positioned(
+      bottom: 0,
+      child: SizedBox (
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height/4,
+          child: Column(
+              children: <Widget>[
+                Card(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    children: <Widget>[
+                      ListTile(
+                        leading: Icon(Icons.error_outline),
+                        title: Text('Ödeme basarisiz.'),
+                      ),
+                      ButtonBar(
+                        children: <Widget>[
+                          FlatButton(
+                            child: const Text('Kapat'),
+                            onPressed: () {
+                              setState(() {
+                                menuTyp = null;
+                              });
+                            },
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ]
+          )
+      )
+  );
+
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
   void addJobToPool() async {
     if (job != null)
       return;
     job = Job(
-      name: "Ali",
-      vehicle: Vehicle.CAR,
-      origin: origin,
-      destination: destination
+        name: "Ali",
+        vehicle: Vehicle.CAR,
+        origin: origin,
+        destination: destination
     );
     jobsRef.push().set(job.toMap());
   }
