@@ -1,7 +1,6 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:google_map_polyline/google_map_polyline.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:intl/intl.dart';
 
 
 enum Vehicle {
@@ -27,8 +26,10 @@ class Job {
   DateTime finish_time;
   LatLng origin;
   LatLng destination;
+  String originAddress;
+  String destinationAddress;
 
-  Job({this.name, this.vehicle, this.origin, this.destination}) {
+  Job({this.name, this.vehicle, this.origin, this.destination, this.originAddress, this.destinationAddress}) {
     start_time = DateTime.now();
     status = Status.WAITING;
   }
@@ -41,6 +42,8 @@ class Job {
     vehicle = stringToVehicle(snapshot.value["vehicle"]);
     origin = stringToLatLng(snapshot.value["origin"]);
     destination = stringToLatLng(snapshot.value["destination"]);
+    originAddress = snapshot.value["origin-address"];
+    destinationAddress = snapshot.value["destination-address"];
     start_time = stringToDateTime(snapshot.value["start-time"]);
     accept_time = stringToDateTime(snapshot.value["accept-time"]);
     finish_time = stringToDateTime(snapshot.value["finish-time"]);
@@ -139,6 +142,8 @@ class Job {
     toReturn['vehicle'] = vehicleToString(vehicle);
     toReturn['origin'] = latLngToString(origin);
     toReturn['destination'] = latLngToString(destination);
+    toReturn['origin-address'] = originAddress;
+    toReturn['destination-address'] = destinationAddress;
     toReturn['start-time'] = dateTimeToString(start_time);
     toReturn['accept-time'] = dateTimeToString(accept_time);
     toReturn['finish-time'] = dateTimeToString(finish_time);

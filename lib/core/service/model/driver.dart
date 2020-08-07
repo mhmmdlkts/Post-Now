@@ -1,8 +1,7 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class Driver implements Comparable{
-  double distance;
+class Driver {
   String key;
   String name;
   double lat;
@@ -36,22 +35,15 @@ class Driver implements Comparable{
     return data;
   }
 
-  Marker getMarker() {
+  Marker getMarker(BitmapDescriptor bitmapDescriptor) {
     return Marker(
         markerId: MarkerId(key),
         position: LatLng(lat, long),
-        icon: BitmapDescriptor.defaultMarkerWithHue(isMyDriver ? BitmapDescriptor.hueGreen : BitmapDescriptor.hueRose)
+        icon: bitmapDescriptor,
+        infoWindow: InfoWindow(
+          title: name,
+        ),
     );
-  }
-
-  @override
-  int compareTo(other) {
-    if (this.distance == other.distance)
-      return 0;
-    else if (this.distance < other.distance)
-      return 1;
-    else
-      return -1;
   }
 
   LatLng getLatLng() => LatLng(lat, long);

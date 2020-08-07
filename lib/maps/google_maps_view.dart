@@ -1,22 +1,29 @@
 import 'dart:math' show cos, sqrt, asin;
+import 'dart:typed_data';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_map_polyline/google_map_polyline.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_webservice/directions.dart' as direction;
+import 'package:postnow/core/service/firebase_service.dart';
 import 'package:postnow/core/service/model/driver.dart';
 import 'package:postnow/core/service/model/job.dart';
 import 'package:postnow/core/service/payment_service.dart';
 import 'package:postnow/ui/view/payments.dart';
+import 'dart:ui' as ui;
+
+import '../chat_screen.dart';
 
 const double EURO_PER_KM = 0.96;
 const double EURO_START  = 5.00;
-const bool TEST = true;
+const bool TEST = false;
 
 enum MenuTyp {
   FROM_OR_TO,
+  CALCULATING_DISTANCE,
   CONFIRM,
   SEARCH_DRIVER,
   PAYMENT_WAITING,
@@ -30,6 +37,7 @@ class GoogleMapsView extends StatefulWidget {
 }
 
 class _GoogleMapsViewState extends State<GoogleMapsView> {
+  BitmapDescriptor packageLocationIcon, driverLocationIcon;
   List<Driver> drivers = List();
   Set<Polyline> polylines = {};
   List<LatLng> routeCoords;
@@ -48,18 +56,19 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
   Driver myDriver;
 
   getRoute(LatLng point, bool fromCurrentLoc) async {
+    print("---");
     polylines = {};
-    myPosition = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-    LatLng current = LatLng(myPosition.latitude, myPosition.longitude);
+    Position pos = await getMyPosition();
+    LatLng current = LatLng(pos.latitude, pos.longitude);
     origin = fromCurrentLoc ? current : point;
     destination = fromCurrentLoc ? point : current;
 
     setNewCameraPosition(origin, destination, false);
-
     List<Placemark> destination_placemarks = await Geolocator().placemarkFromCoordinates(destination.latitude, destination.longitude);
     List<Placemark> origin_placemarks = await Geolocator().placemarkFromCoordinates(origin.latitude, origin.longitude);
 
     await setRoutePolyline(origin, destination, RouteMode.driving);
+    menuTyp = MenuTyp.CONFIRM;
 
     setState(() {
 
@@ -69,6 +78,10 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
         destinationAddress = destination_placemarks[0].name;
       });
 
+  }
+
+  void onPositionChanged(Position position) {
+    setMyPosition(position);
   }
 
   void calculateDistance () {
@@ -104,27 +117,46 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
   @override
   void initState() {
     super.initState();
+    getBytesFromAsset('assets/package_map_marker.png', 180).then((value) => {
+      packageLocationIcon = BitmapDescriptor.fromBytes(value)
+    });
+    getBytesFromAsset('assets/driver_map_marker.png', 130).then((value) => {
+      driverLocationIcon = BitmapDescriptor.fromBytes(value)
+    });
+
+    getMyPosition();
+
     driver = Driver();
     driverRef = FirebaseDatabase.instance.reference().child('drivers');
-    driverRef.onChildChanged.listen(_onDriversDataChanged);
+
     driverRef.onChildAdded.listen(_onDriversDataAdded);
+    driverRef.onChildChanged.listen(_onDriversDataChanged);
 
     jobsRef = FirebaseDatabase.instance.reference().child('jobs');
     jobsRef.onChildChanged.listen(_onJobsDataChanged);
+
+    var locationOptions = LocationOptions(accuracy: LocationAccuracy.high, distanceFilter: 10);
+
+    Geolocator().getPositionStream(locationOptions).listen(onPositionChanged);
   }
 
-  Future<void> _onDriversDataAdded(Event event) async {
-    myPosition = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+  void _onDriversDataAdded(Event event) {
     setState(() {
       Driver snapshot = Driver.fromSnapshot(event.snapshot);
-      snapshot.distance = _coordinateDistance(snapshot.getLatLng(), LatLng(myPosition.latitude, myPosition.longitude));
       drivers.add(snapshot);
     });
   }
 
-  Future<void> _onJobsDataChanged(Event event) async {
+  Future<Uint8List> getBytesFromAsset(String path, int width) async {
+    ByteData data = await rootBundle.load(path);
+    ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(), targetWidth: width);
+    ui.FrameInfo fi = await codec.getNextFrame();
+    return (await fi.image.toByteData(format: ui.ImageByteFormat.png)).buffer.asUint8List();
+  }
+
+  void _onJobsDataChanged(Event event) async {
     Job snapshot = Job.fromSnapshot(event.snapshot);
-    print(job.start_time);
+    Position pos = await getMyPosition();
     if (snapshot == job) {
       job = snapshot;
       switch (job.status) {
@@ -140,8 +172,9 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                   myDriver = d;
                   myDriver.isMyDriver = true;
                 });
-                await addToRoutePolyline(myDriver.getLatLng(), origin, job.getRouteMode());
-                setNewCameraPosition(myDriver.getLatLng(), LatLng(myPosition.latitude, myPosition.longitude), false);
+                addToRoutePolyline(myDriver.getLatLng(), origin, job.getRouteMode()).then((value) => {
+                  setNewCameraPosition(myDriver.getLatLng(), LatLng(pos.latitude, pos.longitude), false)
+                });
               }
             }
           }
@@ -149,7 +182,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
         case Status.CANCELLED:
           polylines = {};
           chosenMarker = null;
-          setNewCameraPosition(LatLng(myPosition.latitude, myPosition.longitude), null, true);
+          setNewCameraPosition(LatLng(pos.latitude, pos.longitude), null, true);
           setState(() {
             menuTyp = null;
           });
@@ -178,9 +211,14 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
     setState(() {
       menuTyp = MenuTyp.PAYMENT_WAITING;
     });
+
     PaymentService().openPayMenu(price).then((result) => {
       setState(() {
-        menuTyp = result ? MenuTyp.SEARCH_DRIVER : MenuTyp.PAYMENT_DECLINED;
+        if (result) {
+          addJobToPool();
+          menuTyp = MenuTyp.SEARCH_DRIVER;
+        } else
+          menuTyp = MenuTyp.PAYMENT_DECLINED;
       })
     });
   }
@@ -190,6 +228,11 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
   Widget build(BuildContext context) {
 
     return new Scaffold(
+      appBar: AppBar(
+        title: Text("Post Now", style: TextStyle(color: Colors.white)),
+        brightness: Brightness.dark,
+        iconTheme:  IconThemeData(color: Colors.white),
+      ),
       body:Stack(
           children: <Widget> [
             SizedBox(
@@ -198,13 +241,12 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
               child: GoogleMap(
                 mapType: MapType.normal,
                 initialCameraPosition: CameraPosition(
-                    target: LatLng(47.823995, 13.023349),
-                    zoom: 9
+                    target: LatLng(0.0, 0.0)
                 ),
                 onMapCreated: onMapCreated,
                 zoomControlsEnabled: false,
-                myLocationButtonEnabled: menuTyp == null,
                 myLocationEnabled: true,
+                myLocationButtonEnabled: false,
                 polylines: polylines,
                 markers: _createMarker(),
                 onTap: (t) {
@@ -214,9 +256,9 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                     polylines = {};
                     menuTyp = MenuTyp.FROM_OR_TO;
                     chosenMarker = Marker(
-                        markerId: MarkerId("choosed"),
-                        position: LatLng(t.latitude, t.longitude),
-                        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue)
+                      markerId: MarkerId("choosed"),
+                      position: LatLng(t.latitude, t.longitude),
+                      icon: packageLocationIcon,
                     );
                   });
                 },
@@ -225,6 +267,43 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
             getBottomMenu(),
           ]
       ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            DrawerHeader(
+              child: Text('Ayarlar', style: TextStyle(fontSize: 20, color: Colors.white)),
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+            ),
+            ListTile(
+              title: Text('Item 1'),
+              onTap: () {
+                // Update the state of the app
+                // ...
+                // Then close the drawer
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: Text('Cikis Yap'),
+              onTap: () {
+                FirebaseService().signOut();
+              },
+            ),
+          ],
+        ),
+      ),
+      floatingActionButton: menuTyp == null ? FloatingActionButton(
+        onPressed: () {
+          if (myPosition == null)
+            return;
+          setNewCameraPosition(LatLng(myPosition.latitude, myPosition.longitude), null, true);
+        },
+        child: Icon(Icons.my_location, color: Colors.white,),
+        backgroundColor: Colors.lightBlueAccent,
+      ) : null,
     );
   }
 
@@ -233,11 +312,11 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
     for (Driver driver in drivers) {
       if (menuTyp != MenuTyp.ACCEPTED) {
         if (driver.isOnline) {
-          markers.add(driver.getMarker());
+          markers.add(driver.getMarker(driverLocationIcon));
         }
       } else {
         if (driver.isMyDriver) {
-          markers.add(driver.getMarker());
+          markers.add(driver.getMarker(driverLocationIcon));
         }
       }
     }
@@ -250,52 +329,87 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
     switch (menuTyp) {
       case MenuTyp.FROM_OR_TO:
         return fromOrToMenu();
+      case MenuTyp.CALCULATING_DISTANCE:
+        return calcDistanceMenu();
       case MenuTyp.CONFIRM:
         return confirmMenu();
       case MenuTyp.SEARCH_DRIVER:
-        addJobToPool();
         return searchDriverMenu();
       case MenuTyp.PAYMENT_WAITING:
         return paymentWaiting();
       case MenuTyp.PAYMENT_DECLINED:
         return paymentDeclined();
+      case MenuTyp.ACCEPTED:
+        return jobAcceptedMenu();
     }
     return Container();
   }
 
+  Widget jobAcceptedMenu() => Positioned(
+      bottom: 0,
+      child: SizedBox(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height/4,
+          child: Column(
+              children: <Widget>[
+                Card(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    children: <Widget>[
+                      ListTile(
+                        leading: Icon(Icons.directions_car),
+                        title: Text('Sürücünüz: ${myDriver.name}'),
+                        subtitle: Text("Durum: " + "Paketinizi almaya gidiyor."),
+                      ),
+                      ButtonBar(
+                        children: <Widget>[
+                          FlatButton(
+                            child: const Text('Mesaj Gönder'),
+                            onPressed: messageScreen,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ]
+          )
+      )
+  );
+
   Widget fromOrToMenu() => Positioned(
-          bottom: 0,
-          child: SizedBox(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height/4,
-            child: Column(
-                children: <Widget>[
-                  RaisedButton(
-                    onPressed: () {
-                      setState(() {
-                        LatLng chosen = LatLng(chosenMarker.position.latitude, chosenMarker.position.longitude);
-                        getRoute(chosen, false);
-                        setState(() {
-                          menuTyp = MenuTyp.CONFIRM;
-                        });
-                      });
-                    },
-                    child: const Text('Getir', style: TextStyle(fontSize: 20)),
-                  ),
-                  RaisedButton(
-                    onPressed: () {
+      bottom: 0,
+      child: SizedBox(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height/4,
+          child: Column(
+              children: <Widget>[
+                RaisedButton(
+                  onPressed: () {
+                    setState(() {
                       LatLng chosen = LatLng(chosenMarker.position.latitude, chosenMarker.position.longitude);
-                      getRoute(chosen, true);
                       setState(() {
-                        menuTyp = MenuTyp.CONFIRM;
+                        menuTyp = MenuTyp.CALCULATING_DISTANCE;
                       });
-                    },
-                    child: const Text('Götür', style: TextStyle(fontSize: 20)),
-                  ),
-                ]
-            )
-        )
-      );
+                      getRoute(chosen, false);
+                    });
+                  },
+                  child: const Text('Getir', style: TextStyle(fontSize: 20)),
+                ),
+                RaisedButton(
+                  onPressed: () {
+                    LatLng chosen = LatLng(chosenMarker.position.latitude, chosenMarker.position.longitude);
+                    getRoute(chosen, true);
+                    setState(() {
+                      menuTyp = MenuTyp.CALCULATING_DISTANCE;
+                    });
+                  },
+                  child: const Text('Götür', style: TextStyle(fontSize: 20)),
+                ),
+              ]
+          )
+      )
+  );
 
   Widget confirmMenu() => Positioned(
       bottom: 0,
@@ -404,6 +518,31 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
       )
   );
 
+  Widget calcDistanceMenu() => Positioned(
+      bottom: 0,
+      child: SizedBox (
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height/4,
+          child: Column(
+              children: <Widget>[
+                Card(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    children: <Widget>[
+                      ListTile(
+                        leading: Icon(Icons.payment),
+                        title: Text('Yol hesaplaniyor.'),
+                      ),
+                      CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Colors.deepPurple),
+                      ),
+                    ],
+                  ),
+                ),
+              ]
+          )
+      )
+  );
+
   Widget paymentDeclined() => Positioned(
       bottom: 0,
       child: SizedBox (
@@ -425,7 +564,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                             child: const Text('Kapat'),
                             onPressed: () {
                               setState(() {
-                                menuTyp = null;
+                                menuTyp = MenuTyp.CONFIRM;
                               });
                             },
                           ),
@@ -442,19 +581,20 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
   void addJobToPool() async {
-    if (job != null)
-      return;
     job = Job(
-        name: "Ali",
-        vehicle: Vehicle.CAR,
-        origin: origin,
-        destination: destination
+      name: "Robot",
+      vehicle: Vehicle.CAR,
+      origin: origin,
+      destination: destination,
+      originAddress: originAddress,
+      destinationAddress: destinationAddress
     );
     jobsRef.push().set(job.toMap());
+    print(job.key);
   }
 
   void setNewCameraPosition(LatLng first, LatLng second, bool centerFirst) {
-    if (first == null)
+    if (first == null || _controller == null)
       return;
     CameraUpdate cameraUpdate;
     if (second == null) {
@@ -469,16 +609,16 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
       // first second arasini ortala, ikisini de sigdir
       cameraUpdate = CameraUpdate.newCameraPosition(
           CameraPosition(target:
-            LatLng(
+          LatLng(
               (first.latitude + second.latitude) / 2,
               (first.longitude + second.longitude) / 2
-            ),
-            zoom: _coordinateDistance(first, second)));
+          ),
+              zoom: _coordinateDistance(first, second)));
 
       LatLngBounds bound = _latLngBoundsCalculate(first, second);
       cameraUpdate = CameraUpdate.newLatLngBounds(bound, 70);
     }
-    _controller.moveCamera(cameraUpdate);
+    _controller.animateCamera(cameraUpdate);
   }
    LatLngBounds _latLngBoundsCalculate(LatLng first, LatLng second) {
     bool check = first.latitude < second.latitude;
@@ -537,5 +677,33 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
           endCap: Cap.buttCap
       ));
     });
+  }
+
+  Future<Position> getMyPosition() async {
+    if (myPosition != null)
+      return myPosition;
+
+    setMyPosition(await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.low));
+
+    Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high).then((value) => {
+      myPosition = value,
+    });
+
+    return myPosition;
+  }
+
+  void setMyPosition(Position pos) {
+    if (myPosition == null)
+      setNewCameraPosition(new LatLng(pos.latitude, pos.longitude), null, true);
+    myPosition = pos;
+  }
+
+  void messageScreen() async {
+    final bool result = await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => Chat_Screen(job.key, myDriver.name))
+    );
+    if (result)
+      Navigator.pop(context, result);
   }
 }

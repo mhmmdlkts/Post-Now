@@ -46,7 +46,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Post Now',
       theme: ThemeData(
-        primarySwatch: Colors.grey,
+        primarySwatch: Colors.lightBlue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: FirebaseService().handleAuth(),
@@ -107,6 +107,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        brightness: Brightness.dark,
       ),
       body: Center(
         child: Column(

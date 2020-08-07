@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:postnow/core/service/model/user.dart';
 import 'package:postnow/maps/google_maps_view.dart';
 
+import '../../chat_screen.dart';
 import '../../main.dart';
 
 class FirebaseService {
