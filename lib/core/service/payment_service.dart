@@ -40,8 +40,10 @@ class PaymentService {
     );
     BraintreeDropInResult result = await BraintreeDropIn.start(request);
 
-    if (result == null)
+    if (result == null) {
       print('Selection was canceled.');
+      return false;
+    }
 
     String nonce = result.paymentMethodNonce.nonce;
     url = "https://us-central1-post-now-f3c53.cloudfunctions.net/braintree_sendNonce?nonce=" + nonce + "&amount=" + amount.toString();

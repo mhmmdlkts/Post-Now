@@ -15,8 +15,6 @@ FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 Future<void> init() async {
   WidgetsFlutterBinding.ensureInitialized();
   await _firebaseMessaging.requestNotificationPermissions();
-  final token = _firebaseMessaging.getToken();
-  print(token);
   _firebaseMessaging.configure(onLaunch: (message) {
     print("onLaunch");
     return Future.value(true);
@@ -27,12 +25,6 @@ Future<void> init() async {
   },
   onMessage: (message) {
     print("onMessage");
-    /*showDialog(
-      context: context,
-      builder: (context) => Dialog(
-        child: Text(message["natification"]["title"]),
-      )
-    );*/
     return Future.value(true);
   },
 );
@@ -40,7 +32,6 @@ Future<void> init() async {
 }
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -144,7 +135,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
+        onPressed: () async {
           codeSent ? FirebaseService().signInWithOTP(smsCode, verificationId) : _nextClick(phoneNo);
         },
         tooltip: 'Next',
