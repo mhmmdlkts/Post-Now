@@ -1,9 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:postnow/core/service/firebase_service.dart';
-import 'package:postnow/ui/view/fire_home_view.dart';
+
+import 'core/service/model/user.dart';
 
 void main() async {
   await init();
@@ -56,17 +58,13 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String phoneNo, verificationId, smsCode;
+  String name, phoneNo, verificationId, smsCode;
 
   bool codeSent = false;
 
   Future<void> _nextClick(phoneNo) async {
-    final PhoneVerificationCompleted verified = (AuthCredential authResult) {
+    final PhoneVerificationCompleted verified = (AuthCredential authResult) async {
       FirebaseService().signIn(authResult);
-      /*Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => SmsVerifyPage(title: "SMS Verification")),
-      );*/
     };
 
     final PhoneVerificationFailed verificationFailed = (AuthException authException) {
@@ -90,7 +88,8 @@ class _MyHomePageState extends State<MyHomePage> {
         verificationCompleted: verified,
         verificationFailed: verificationFailed,
         codeSent: smsSent,
-        codeAutoRetrievalTimeout: autoTimeout);
+        codeAutoRetrievalTimeout: autoTimeout
+    );
   }
 
   @override
@@ -98,7 +97,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
-        brightness: Brightness.dark,
+        brightness: Brightness.light,
       ),
       body: Center(
         child: Column(
@@ -108,10 +107,21 @@ class _MyHomePageState extends State<MyHomePage> {
               'Post Now',
             ),
             TextFormField(
+              decoration: InputDecoration(
+                icon: Icon(Icons.person),
+                hintText: "Name",
+              ),
+              onChanged: (val) {
+                setState(() {
+                  name = val;
+                });
+              },
+            ),
+            TextFormField(
               keyboardType: TextInputType.phone,
               decoration: InputDecoration(
                 icon: Icon(Icons.smartphone),
-                hintText: "Exp. 00436601234567",
+                hintText: "Exp. +436601234567",
               ),
               onChanged: (val) {
                 setState(() {
@@ -136,67 +146,24 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          codeSent ? FirebaseService().signInWithOTP(smsCode, verificationId) : _nextClick(phoneNo);
+          if(codeSent) {
+            FirebaseService().signInWithOTP(smsCode, verificationId).then((value) => sendUserInfo(value.user));
+          } else {
+            _nextClick(phoneNo);
+          }
         },
-        tooltip: 'Next',
-        child: Icon(Icons.arrow_forward),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
-
-
-    );
-  }
-}
-
-
-class SmsVerifyPage extends StatefulWidget {
-  SmsVerifyPage({Key key, this.title}) : super(key: key);
-
-  final String title;
-
-  @override
-  _SmsVerifyPageState createState() => _SmsVerifyPageState();
-}
-
-class _SmsVerifyPageState extends State<SmsVerifyPage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => FireHomeView()),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'Post Now',
-            ),
-            TextFormField(
-              keyboardType: TextInputType.number,
-              maxLength: 6,
-              inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
-              decoration: InputDecoration(
-                icon: Icon(Icons.verified_user),
-                hintText: "Exp. 123456",
-              ),
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
         child: Icon(Icons.arrow_forward),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+
+  Future<String> getPushToken() async {
+    return _firebaseMessaging.getToken();
+  }
+
+  sendUserInfo(FirebaseUser u) async {
+    String token = await getPushToken();
+    User user = new User(name: name, phone: phoneNo, token: token);
+    FirebaseDatabase.instance.reference().child('users').child(u.uid).set(user.toJson());
   }
 }

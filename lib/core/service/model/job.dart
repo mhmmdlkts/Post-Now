@@ -11,6 +11,7 @@ enum Vehicle {
 enum Status {
   WAITING,
   ON_ROAD,
+  PACKAGE_PICKED,
   FINISHED,
   CANCELLED
 }
@@ -18,6 +19,7 @@ enum Status {
 class Job {
   String key;
   String driverId;
+  String userId;
   String name;
   Status status;
   Vehicle vehicle;
@@ -29,7 +31,7 @@ class Job {
   String originAddress;
   String destinationAddress;
 
-  Job({this.name, this.vehicle, this.origin, this.destination, this.originAddress, this.destinationAddress}) {
+  Job({this.name, this.userId, this.vehicle, this.origin, this.destination, this.originAddress, this.destinationAddress}) {
     start_time = DateTime.now();
     status = Status.WAITING;
   }
@@ -38,6 +40,7 @@ class Job {
     key = snapshot.key;
     name = snapshot.value["name"];
     driverId = snapshot.value["driver-id"];
+    userId = snapshot.value["user-id"];
     status = stringToStatus(snapshot.value["status"]);
     vehicle = stringToVehicle(snapshot.value["vehicle"]);
     origin = stringToLatLng(snapshot.value["origin"]);
@@ -55,6 +58,8 @@ class Job {
         return Status.WAITING;
       case "on_the_road":
         return Status.ON_ROAD;
+      case "package_picked":
+        return Status.PACKAGE_PICKED;
       case "finished":
         return Status.FINISHED;
       case "no_driver_found":
@@ -69,6 +74,8 @@ class Job {
         return "waiting";
       case Status.ON_ROAD:
         return "on_the_road";
+      case Status.PACKAGE_PICKED:
+        return "package_picked";
       case Status.FINISHED:
         return "finished";
       case Status.CANCELLED:
@@ -138,6 +145,7 @@ class Job {
     Map toReturn = new Map();
     toReturn['name'] = name;
     toReturn['driver-id'] = driverId;
+    toReturn['user-id'] = userId;
     toReturn['status'] = statusToString(status);
     toReturn['vehicle'] = vehicleToString(vehicle);
     toReturn['origin'] = latLngToString(origin);
@@ -151,6 +159,6 @@ class Job {
   }
 
   @override
-  bool operator == (covariant Job other) => start_time.compareTo(other.start_time) == 0;
+  bool operator == (covariant Job other) => key.compareTo(key) == 0;
 
 }

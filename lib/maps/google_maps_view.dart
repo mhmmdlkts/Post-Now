@@ -20,7 +20,7 @@ import '../chat_screen.dart';
 
 const double EURO_PER_KM = 0.96;
 const double EURO_START  = 5.00;
-const bool TEST = false;
+const bool TEST = true;
 
 enum MenuTyp {
   FROM_OR_TO,
@@ -29,13 +29,19 @@ enum MenuTyp {
   SEARCH_DRIVER,
   PAYMENT_WAITING,
   PAYMENT_DECLINED,
-  ACCEPTED
+  ACCEPTED,
+  PACKAGE_PICKED,
+  COMPLETED
 }
 
 class GoogleMapsView extends StatefulWidget {
+  final String uid;
+  GoogleMapsView(this.uid);
+
   @override
-  _GoogleMapsViewState createState() => _GoogleMapsViewState();
+  _GoogleMapsViewState createState() => _GoogleMapsViewState(uid);
 }
+
 
 const String mapsApiKey = "AIzaSyDUr-GnemethAnyLSQZc6YPsT_lFeBXaI8";
 
@@ -47,12 +53,11 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
   GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: mapsApiKey);
   GoogleMapPolyline googleMapPolyline = new GoogleMapPolyline(apiKey: mapsApiKey);
   Marker packageMarker, destinationMarker;
-  Driver driver;
   DatabaseReference driverRef, jobsRef;
   GoogleMapController _mapController;
   TextEditingController originTextController, destinationTextController;
   MenuTyp menuTyp;
-  double price = 0;
+  double price = 0.0;
   double totalDistance = 0.0;
   String originAddress, destinationAddress;
   Position myPosition;
@@ -60,6 +65,11 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
   Job job;
   Driver myDriver;
   bool isDestinationButtonChosen = false;
+  String uid;
+
+  _GoogleMapsViewState(uid) {
+    this.uid = uid;
+  }
 
   getRoute() async {
     polylines.clear();
@@ -130,7 +140,6 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
     originTextController = new TextEditingController(text: '');
     destinationTextController = new TextEditingController(text: '');
 
-    driver = Driver();
     driverRef = FirebaseDatabase.instance.reference().child('drivers');
 
     driverRef.onChildAdded.listen(_onDriversDataAdded);
@@ -160,8 +169,8 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
 
   void _onJobsDataChanged(Event event) async {
     Job snapshot = Job.fromSnapshot(event.snapshot);
-    Position pos = await getMyPosition();
     if (snapshot == job) {
+      print(snapshot.status);
       job = snapshot;
       switch (job.status) {
         case Status.ON_ROAD:
@@ -176,20 +185,27 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                   myDriver = d;
                   myDriver.isMyDriver = true;
                 });
-                addToRoutePolyline(myDriver.getLatLng(), origin, job.getRouteMode()).then((value) => {
-                  setNewCameraPosition(myDriver.getLatLng(), LatLng(pos.latitude, pos.longitude), false)
-                });
+                polylines.clear();
               }
             }
           }
           break;
+        case Status.PACKAGE_PICKED:
+          setState(() {
+            menuTyp = MenuTyp.PACKAGE_PICKED;
+          });
+          break;
+        case Status.FINISHED:
+          setState(() {
+            menuTyp = MenuTyp.COMPLETED;
+          });
+          break;
         case Status.CANCELLED:
           polylines.clear();
           packageMarker = null;
-          setNewCameraPosition(LatLng(pos.latitude, pos.longitude), null, true);
-          setState(() {
-            menuTyp = null;
-          });
+          setNewCameraPosition(LatLng(myPosition.latitude, myPosition.longitude), null, true);
+          clearJob();
+          break;
       }
     }
   }
@@ -215,6 +231,14 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
     setState(() {
       menuTyp = MenuTyp.PAYMENT_WAITING;
     });
+
+    if (TEST) {
+      setState(() {
+        addJobToPool();
+        menuTyp = MenuTyp.SEARCH_DRIVER;
+      });
+      return;
+    }
 
     PaymentService().openPayMenu(price).then((result) => {
       setState(() {
@@ -350,7 +374,8 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
         );
         setPlaceForOrigin(address: address);
       }
-      isDestinationButtonChosen = !isDestinationButtonChosen;
+      if (isDestinationButtonChosen? origin == null : destination == null)
+        isDestinationButtonChosen = !isDestinationButtonChosen;
     });
   }
 
@@ -398,9 +423,80 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
           return paymentDeclined();
         case MenuTyp.ACCEPTED:
           return jobAcceptedMenu();
+        case MenuTyp.PACKAGE_PICKED:
+          return packagePickedPicked();
+        case MenuTyp.COMPLETED:
+          return jobCompleted();
       }
       return Container();
     }
+
+    Widget jobCompleted() => Positioned(
+        bottom: 0,
+        child: SizedBox(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height/4,
+            child: Column(
+                children: <Widget>[
+                  Card(
+
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      children: <Widget>[
+                        ListTile(
+                          leading: Icon(Icons.directions_car),
+                          title: Text('Paketiniz size ulasti.'),
+                        ),
+                        ButtonBar(
+                          children: <Widget>[
+                            FlatButton(
+                              child: const Text('Tamam'),
+                              onPressed: () {
+                                clearJob();
+                              },
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ]
+            )
+        )
+    );
+
+    Widget packagePickedPicked() => Positioned(
+        bottom: 0,
+        child: SizedBox(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height/4,
+            child: Column(
+                children: <Widget>[
+                  Card(
+
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      children: <Widget>[
+                        ListTile(
+                          leading: Icon(Icons.directions_car),
+                          title: Text('Sürücünüz: ${myDriver.name}'),
+                          subtitle: Text("Durum: " + "Paketinizi alindi size dogru yol aliyor."),
+                        ),
+                        ButtonBar(
+                          children: <Widget>[
+                            FlatButton(
+                              child: const Text('Mesaj Gönder'),
+                              onPressed: messageScreen,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ]
+            )
+        )
+    );
 
     Widget jobAcceptedMenu() => Positioned(
         bottom: 0,
@@ -410,6 +506,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
             child: Column(
                 children: <Widget>[
                   Card(
+
                     child: Column(
                       mainAxisSize: MainAxisSize.max,
                       children: <Widget>[
@@ -620,6 +717,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
     void addJobToPool() async {
       job = Job(
           name: "Robot",
+          userId: uid,
           vehicle: Vehicle.CAR,
           origin: origin,
           destination: destination,
@@ -935,7 +1033,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                       onTapButton();
                       Prediction p = await PlacesAutocomplete.show(
                         hint: "Adres giriniz",
-                        startText: isDestination ? destinationTextController.text : originTextController.text,
+                        // startText: isDestination ? destinationTextController.text : originTextController.text,
                         context: context,
                         apiKey: mapsApiKey,
                         logo: Image.asset("assets/none.png"),
@@ -954,6 +1052,10 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                     style: TextStyle(color: Colors.white, fontSize: 14),
                     textInputAction: TextInputAction.done,
                     decoration: new InputDecoration(
+                      hintText: isDestination
+                          ? 'Paket Adresi'
+                          : 'Teslimat adresi',
+                      hintStyle: TextStyle(color: Colors.white70),
                       contentPadding: new EdgeInsets.symmetric(
                           horizontal: 10, vertical: 8),
                       border: new OutlineInputBorder(
@@ -1076,4 +1178,25 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
     child: Icon(Icons.arrow_forward, color: Colors.white,),
     backgroundColor: Colors.redAccent,
   );
+
+  void clearJob() {
+    setState(() {
+      originTextController.clear();
+      destinationTextController.clear();
+      isDestinationButtonChosen = false;
+      totalDistance = 0.0;
+      price = 0.0;
+      packageMarker = null;
+      destinationMarker = null;
+      routeCoords = null;
+      polylines = null;
+      myDriver = null;
+      originAddress = null;
+      destinationAddress = null;
+      destination = null;
+      origin = null;
+      job = null;
+      menuTyp = null;
+    });
+  }
 }

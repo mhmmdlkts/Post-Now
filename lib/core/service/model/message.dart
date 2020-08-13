@@ -19,7 +19,7 @@ class Message {
 
   Message.fromSnapshot(DataSnapshot snapshot) {
     key = snapshot.key;
-    from_driver = snapshot.value["from-driver"];
+    from_driver = snapshot.value["from_driver"];
     read = snapshot.value["read"];
     message = snapshot.value["message"];
     img = snapshot.value["img"];
@@ -40,7 +40,7 @@ class Message {
 
   Map toMap() {
     Map toReturn = new Map();
-    toReturn['from-driver'] = from_driver;
+    toReturn['from_driver'] = from_driver;
     toReturn['read'] = read;
     toReturn['message'] = message;
     toReturn['img'] = img;
