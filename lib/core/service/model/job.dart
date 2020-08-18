@@ -21,6 +21,7 @@ class Job {
   String driverId;
   String userId;
   String name;
+  String pin;
   Status status;
   Vehicle vehicle;
   DateTime start_time;
@@ -41,6 +42,7 @@ class Job {
     name = snapshot.value["name"];
     driverId = snapshot.value["driver-id"];
     userId = snapshot.value["user-id"];
+    pin = snapshot.value["pin"];
     status = stringToStatus(snapshot.value["status"]);
     vehicle = stringToVehicle(snapshot.value["vehicle"]);
     origin = stringToLatLng(snapshot.value["origin"]);
@@ -143,19 +145,55 @@ class Job {
 
   Map toMap() {
     Map toReturn = new Map();
-    toReturn['name'] = name;
-    toReturn['driver-id'] = driverId;
-    toReturn['user-id'] = userId;
-    toReturn['status'] = statusToString(status);
-    toReturn['vehicle'] = vehicleToString(vehicle);
-    toReturn['origin'] = latLngToString(origin);
-    toReturn['destination'] = latLngToString(destination);
-    toReturn['origin-address'] = originAddress;
-    toReturn['destination-address'] = destinationAddress;
-    toReturn['start-time'] = dateTimeToString(start_time);
-    toReturn['accept-time'] = dateTimeToString(accept_time);
-    toReturn['finish-time'] = dateTimeToString(finish_time);
+    if (name != null) toReturn['name'] = name;
+    if (driverId != null) toReturn['driver-id'] = driverId;
+    if (userId != null) toReturn['user-id'] = userId;
+    if (pin != null) toReturn['pin'] = pin;
+    if (status != null) toReturn['status'] = statusToString(status);
+    if (vehicle != null) toReturn['vehicle'] = vehicleToString(vehicle);
+    if (origin != null) toReturn['origin'] = latLngToString(origin);
+    if (destination != null) toReturn['destination'] = latLngToString(destination);
+    if (originAddress != null) toReturn['origin-address'] = originAddress;
+    if (destinationAddress != null) toReturn['destination-address'] = destinationAddress;
+    if (start_time != null) toReturn['start-time'] = dateTimeToString(start_time);
+    if (accept_time != null) toReturn['accept-time'] = dateTimeToString(accept_time);
+    if (finish_time != null) toReturn['finish-time'] = dateTimeToString(finish_time);
     return toReturn;
+  }
+
+  Map<String, dynamic> toJson() => {
+    'key': key,
+    'name': name,
+    'driver-id': driverId,
+    'user-id': userId,
+    'pin': pin,
+    'status': statusToString(status),
+    'vehicle': vehicleToString(vehicle),
+    'origin': latLngToString(origin),
+    'destination': latLngToString(destination),
+    'origin-address': originAddress,
+    'destination-address': destinationAddress,
+    'start-time': dateTimeToString(start_time),
+    'accept-time': dateTimeToString(accept_time),
+    'finish-time': dateTimeToString(finish_time),
+  };
+
+
+  Job.fromJson(Map<String, dynamic> json) {
+    key = json["key"];
+    name = json["name"];
+    driverId = json["driver-id"];
+    userId = json["user-id"];
+    pin = json["pin"];
+    status = stringToStatus(json["status"]);
+    vehicle = stringToVehicle(json["vehicle"]);
+    origin = stringToLatLng(json["origin"]);
+    destination = stringToLatLng(json["destination"]);
+    originAddress = json["origin-address"];
+    destinationAddress = json["destination-address"];
+    start_time = stringToDateTime(json["start-time"]);
+    accept_time = stringToDateTime(json["accept-time"]);
+    finish_time = stringToDateTime(json["finish-time"]);
   }
 
   @override

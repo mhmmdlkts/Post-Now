@@ -41,6 +41,11 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.lightBlue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
+        primaryTextTheme: TextTheme(
+          headline6: TextStyle(
+              color: Colors.white
+          )
+        )
       ),
       home: FirebaseService().handleAuth(),
     );
@@ -59,12 +64,13 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   String name, phoneNo, verificationId, smsCode;
+  final _formKey = GlobalKey<FormState>();
 
   bool codeSent = false;
 
   Future<void> _nextClick(phoneNo) async {
     final PhoneVerificationCompleted verified = (AuthCredential authResult) async {
-      FirebaseService().signIn(authResult);
+      FirebaseService().signIn(authResult).then((value) => sendUserInfo(value.user));
     };
 
     final PhoneVerificationFailed verificationFailed = (AuthException authException) {
@@ -97,62 +103,91 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
-        brightness: Brightness.light,
+        brightness: Brightness.dark,
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'Post Now',
+      body: Container(
+        padding: EdgeInsets.all(20),
+        child: Center(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  'Post Now',
+                ),
+                TextFormField(
+                  decoration: InputDecoration(
+                    icon: Icon(Icons.person),
+                    hintText: "Name",
+                  ),
+                  validator: (value) {
+                    if (value.length < 3) {
+                      return 'Please enter your name';
+                    }
+                    return null;
+                  },
+                  onChanged: (val) {
+                    setState(() {
+                      name = val;
+                    });
+                  },
+                ),
+                TextFormField(
+                  keyboardType: TextInputType.phone,
+                  decoration: InputDecoration(
+                    icon: Icon(Icons.smartphone),
+                    hintText: "Exp. +436601234567",
+                  ),
+                  validator: (value) {
+                    RegExp regExp = new RegExp(
+                      r"^[+]{1}[0-9]{8,14}$",
+                    );
+                    if (!regExp.hasMatch(value)) {
+                      return 'Please enter your phone number correctly';
+                    }
+                    return null;
+                  },
+                  onChanged: (val) {
+                    setState(() {
+                      phoneNo = val;
+                    });
+                  },
+                ),
+                codeSent? TextFormField(
+                  maxLength: 6,
+                  decoration: InputDecoration(
+                    icon: Icon(Icons.verified_user),
+                    hintText: "Exp. 123456",
+                  ),
+                  validator: (value) {
+                    if (value.length < 2) {
+                      return 'Please enter the code sms correctly';
+                    }
+                    return null;
+                  },
+                  onChanged: (val) {
+                    setState(() {
+                      smsCode = val;
+                    });
+                  },
+                ) : Container(),
+              ],
             ),
-            TextFormField(
-              decoration: InputDecoration(
-                icon: Icon(Icons.person),
-                hintText: "Name",
-              ),
-              onChanged: (val) {
-                setState(() {
-                  name = val;
-                });
-              },
-            ),
-            TextFormField(
-              keyboardType: TextInputType.phone,
-              decoration: InputDecoration(
-                icon: Icon(Icons.smartphone),
-                hintText: "Exp. +436601234567",
-              ),
-              onChanged: (val) {
-                setState(() {
-                  phoneNo = val;
-                });
-              },
-            ),
-            codeSent? TextFormField(
-              maxLength: 6,
-              decoration: InputDecoration(
-                icon: Icon(Icons.verified_user),
-                hintText: "Exp. 123456",
-              ),
-              onChanged: (val) {
-                setState(() {
-                  smsCode = val;
-                });
-              },
-            ) : Container(),
-          ],
+          )
         ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          if(codeSent) {
-            FirebaseService().signInWithOTP(smsCode, verificationId).then((value) => sendUserInfo(value.user));
-          } else {
-            _nextClick(phoneNo);
+          if (_formKey.currentState.validate()) {
+            if(codeSent) {
+              FirebaseService().signInWithOTP(smsCode, verificationId).then((value) => sendUserInfo(value.user));
+            } else {
+              _nextClick(phoneNo);
+            }
           }
         },
-        child: Icon(Icons.arrow_forward),
+        child: Icon(Icons.arrow_forward, color: Colors.white,),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }

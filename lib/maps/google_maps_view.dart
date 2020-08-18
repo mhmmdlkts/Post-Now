@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math' show cos, sqrt, asin;
 import 'dart:typed_data';
 import 'package:firebase_database/firebase_database.dart';
@@ -14,6 +15,7 @@ import 'package:postnow/core/service/model/driver.dart';
 import 'package:postnow/core/service/model/job.dart';
 import 'package:postnow/core/service/payment_service.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:ui' as ui;
 
 import '../chat_screen.dart';
@@ -47,6 +49,7 @@ const String mapsApiKey = "AIzaSyDUr-GnemethAnyLSQZc6YPsT_lFeBXaI8";
 
 class _GoogleMapsViewState extends State<GoogleMapsView> {
   BitmapDescriptor packageLocationIcon, driverLocationIcon, homeLocationIcon;
+  List<String> orders = List();
   List<Driver> drivers = List();
   Set<Polyline> polylines = Set();
   List<LatLng> routeCoords;
@@ -136,6 +139,12 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
     });
 
     getMyPosition();
+
+    SharedPreferences.getInstance().then((value) => {
+        if (value.containsKey('orders'))
+          orders = value.getStringList('orders')
+      }
+    );
 
     originTextController = new TextEditingController(text: '');
     destinationTextController = new TextEditingController(text: '');
@@ -344,9 +353,11 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
   setMarker(t, {String address}) {
     if (menuTyp != MenuTyp.FROM_OR_TO && menuTyp != null)
       return;
+    if (t is Position)
+      t = LatLng(t.latitude, t.longitude);
     setState(() {
       polylines.clear();
-      LatLng chosen = LatLng(t.latitude, t.longitude);
+      LatLng chosen = t;
       if (isDestinationButtonChosen) {
         destination = chosen;
         destinationMarker = Marker(
@@ -482,11 +493,12 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                           title: Text('Sürücünüz: ${myDriver.name}'),
                           subtitle: Text("Durum: " + "Paketinizi alindi size dogru yol aliyor."),
                         ),
+                        Text("Pin: " + job.pin.toString()),
                         ButtonBar(
                           children: <Widget>[
                             FlatButton(
                               child: const Text('Mesaj Gönder'),
-                              onPressed: messageScreen,
+                              onPressed: openMessageScreen,
                             ),
                           ],
                         ),
@@ -519,7 +531,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                           children: <Widget>[
                             FlatButton(
                               child: const Text('Mesaj Gönder'),
-                              onPressed: messageScreen,
+                              onPressed: openMessageScreen,
                             ),
                           ],
                         ),
@@ -723,6 +735,11 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
           destination: destination,
           originAddress: originAddress,
           destinationAddress: destinationAddress
+      );
+      orders.add(json.encode(job.toJson()));
+      SharedPreferences.getInstance().then((value) => {
+          value.setStringList('orders', orders)
+        }
       );
       jobsRef.push().set(job.toMap());
     }
@@ -942,13 +959,11 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
       myPosition = pos;
     }
 
-    void messageScreen() async {
-      final bool result = await Navigator.push(
+    void openMessageScreen() async {
+      await Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => Chat_Screen(job.key, myDriver.name))
       );
-      if (result)
-        Navigator.pop(context, result);
     }
 
     getDesOrOriginButton(String activePath, String notActivePath, String activePathPressed, String notActivePathPressed, String label, bool isDestination) {
@@ -1072,10 +1087,10 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
               ),
               (isDestination == isDestinationButtonChosen && myPosition != null) ?
               RaisedButton(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(18.0),
-                  ),
-                  onPressed: (){
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18.0),
+                ),
+                onPressed: (){
                   setMarker(LatLng(myPosition.latitude, myPosition.longitude));
                 },
                 color: Colors.blue,
@@ -1086,6 +1101,10 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                   ],
                 )
               ) : Container(),
+              (isDestination == isDestinationButtonChosen) ?
+              getLastAddress(1) : Container(),
+              (isDestination == isDestinationButtonChosen) ?
+              getLastAddress(2) : Container(),
             ],
           )
       );
@@ -1198,5 +1217,41 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
       job = null;
       menuTyp = null;
     });
+  }
+
+  getLastAddress(int i) {
+    if (orders.length < i)
+      return Container();
+    Job order = Job.fromJson(json.decode(orders[orders.length-i]));
+    return Container(
+        width: (MediaQuery
+            .of(context)
+            .size
+            .width) * (0.4),
+        child: RaisedButton(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(18.0),
+            ),
+            onPressed: () {
+              setMarker(isDestinationButtonChosen ? order.destination : order.origin,
+                  address: isDestinationButtonChosen ? order.destinationAddress : order.originAddress);
+            },
+            color: Colors.redAccent,
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 5),
+                    child: Text(isDestinationButtonChosen
+                        ? order.destinationAddress
+                        : order.originAddress,
+                      style: TextStyle(color: Colors.white),
+                      textAlign: TextAlign.center,),
+                  )
+                ]
+            )
+        )
+    );
   }
 }
