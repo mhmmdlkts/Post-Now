@@ -15,6 +15,7 @@ import 'package:postnow/core/service/model/driver.dart';
 import 'package:postnow/core/service/model/job.dart';
 import 'package:postnow/core/service/payment_service.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
+import 'package:postnow/ui/view/all_orders.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:ui' as ui;
 
@@ -56,7 +57,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
   GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: mapsApiKey);
   GoogleMapPolyline googleMapPolyline = new GoogleMapPolyline(apiKey: mapsApiKey);
   Marker packageMarker, destinationMarker;
-  DatabaseReference driverRef, jobsRef;
+  DatabaseReference driverRef, jobsRef, userRef;
   GoogleMapController _mapController;
   TextEditingController originTextController, destinationTextController;
   MenuTyp menuTyp;
@@ -155,7 +156,10 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
     driverRef.onChildChanged.listen(_onDriversDataChanged);
 
     jobsRef = FirebaseDatabase.instance.reference().child('jobs');
+    jobsRef.onChildAdded.listen(_onJobsDataAdded);
     jobsRef.onChildChanged.listen(_onJobsDataChanged);
+
+    userRef = FirebaseDatabase.instance.reference().child('users').child(uid);
 
     var locationOptions = LocationOptions(accuracy: LocationAccuracy.high, distanceFilter: 10);
 
@@ -174,6 +178,13 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
     ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(), targetWidth: width);
     ui.FrameInfo fi = await codec.getNextFrame();
     return (await fi.image.toByteData(format: ui.ImageByteFormat.png)).buffer.asUint8List();
+  }
+
+  void _onJobsDataAdded(Event event) async {
+    Job snapshot = Job.fromSnapshot(event.snapshot);
+    if (snapshot == job) {
+      userRef.child("orders").child(snapshot.key).set(snapshot.key);
+    }
   }
 
   void _onJobsDataChanged(Event event) async {
@@ -288,12 +299,12 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
               ),
             ),
             ListTile(
-              title: Text('Item 1'),
+              title: Text('Siparislerin'),
               onTap: () {
-                // Update the state of the app
-                // ...
-                // Then close the drawer
-                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AllOrders(uid)),
+                );
               },
             ),
             ListTile(
@@ -731,6 +742,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
           name: "Robot",
           userId: uid,
           vehicle: Vehicle.CAR,
+          price: price,
           origin: origin,
           destination: destination,
           originAddress: originAddress,
@@ -1202,13 +1214,13 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
     setState(() {
       originTextController.clear();
       destinationTextController.clear();
+      polylines = Set();
       isDestinationButtonChosen = false;
       totalDistance = 0.0;
       price = 0.0;
       packageMarker = null;
       destinationMarker = null;
       routeCoords = null;
-      polylines = null;
       myDriver = null;
       originAddress = null;
       destinationAddress = null;

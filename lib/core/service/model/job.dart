@@ -22,6 +22,7 @@ class Job {
   String userId;
   String name;
   String pin;
+  double price;
   Status status;
   Vehicle vehicle;
   DateTime start_time;
@@ -32,7 +33,7 @@ class Job {
   String originAddress;
   String destinationAddress;
 
-  Job({this.name, this.userId, this.vehicle, this.origin, this.destination, this.originAddress, this.destinationAddress}) {
+  Job({this.name, this.userId, this.driverId, this.vehicle, this.price, this.origin, this.destination, this.originAddress, this.destinationAddress}) {
     start_time = DateTime.now();
     status = Status.WAITING;
   }
@@ -43,6 +44,7 @@ class Job {
     driverId = snapshot.value["driver-id"];
     userId = snapshot.value["user-id"];
     pin = snapshot.value["pin"];
+    price = snapshot.value["price"];
     status = stringToStatus(snapshot.value["status"]);
     vehicle = stringToVehicle(snapshot.value["vehicle"]);
     origin = stringToLatLng(snapshot.value["origin"]);
@@ -149,6 +151,7 @@ class Job {
     if (driverId != null) toReturn['driver-id'] = driverId;
     if (userId != null) toReturn['user-id'] = userId;
     if (pin != null) toReturn['pin'] = pin;
+    if (price != null) toReturn['price'] = price;
     if (status != null) toReturn['status'] = statusToString(status);
     if (vehicle != null) toReturn['vehicle'] = vehicleToString(vehicle);
     if (origin != null) toReturn['origin'] = latLngToString(origin);
@@ -167,6 +170,7 @@ class Job {
     'driver-id': driverId,
     'user-id': userId,
     'pin': pin,
+    'price': price,
     'status': statusToString(status),
     'vehicle': vehicleToString(vehicle),
     'origin': latLngToString(origin),
@@ -185,6 +189,7 @@ class Job {
     driverId = json["driver-id"];
     userId = json["user-id"];
     pin = json["pin"];
+    price = json["price"];
     status = stringToStatus(json["status"]);
     vehicle = stringToVehicle(json["vehicle"]);
     origin = stringToLatLng(json["origin"]);
@@ -194,6 +199,10 @@ class Job {
     start_time = stringToDateTime(json["start-time"]);
     accept_time = stringToDateTime(json["accept-time"]);
     finish_time = stringToDateTime(json["finish-time"]);
+  }
+
+  getDriverId() {
+    return driverId == null ? "No Driver" : driverId;
   }
 
   @override
