@@ -208,4 +208,8 @@ class Job {
   @override
   bool operator == (covariant Job other) => key.compareTo(key) == 0;
 
+  String getStatusMessageKey() {
+    return "MODELS.JOB." + Status.WAITING.toString().split('.')[1];
+  }
+
 }

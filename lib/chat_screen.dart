@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:path/path.dart' as path_package;
 import 'package:path_provider/path_provider.dart';
 import 'package:postnow/core/service/model/message.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'dart:io' as i;
 
 
@@ -185,7 +186,7 @@ class _Chat_ScreenState extends State<Chat_Screen> {
                         controller: textEditingController,
                         style: TextStyle(color: Colors.white),
                         decoration: InputDecoration(
-                            hintText: "Mesajinizi buraya giriniz...",
+                            hintText: "CHAT.TYPE_MESSAGE_HERE".tr(),
                             hintStyle: TextStyle(color: Colors.white54),
                             border: InputBorder.none
                         ),
@@ -320,20 +321,11 @@ class _Chat_ScreenState extends State<Chat_Screen> {
   StorageUploadTask _uploadTask;
 
   Future<String> startUpload(dbImagePath, imagePath) async {
-    print("nasii");
-    if (imagePath == null) {
-      print("Ama null");
-      return null;
-    }
-    if (dbImagePath == null) {
-      print("Ama bu null");
+    if (imagePath == null || dbImagePath == null) {
       return null;
     }
     setState(() {
-      print("aaa:" + imagePath);
-      print("bbb:" + dbImagePath);
       _uploadTask = _storage.ref().child(dbImagePath).putFile(i.File(imagePath));
-      print("ccc:" + i.File(imagePath).toString());
     });
     var snapshot = await _uploadTask.onComplete;
     setState(() {

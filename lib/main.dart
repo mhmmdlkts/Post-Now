@@ -6,10 +6,21 @@ import 'package:flutter/services.dart';
 import 'package:postnow/core/service/firebase_service.dart';
 
 import 'core/service/model/user.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'dart:ui' as ui;
 
 void main() async {
   await init();
-  runApp(MyApp());
+  runApp(
+      EasyLocalization(
+          supportedLocales: [Locale('en', ''), Locale('de', ''), Locale('tr', '')],
+          path: 'assets/translations',
+          fallbackLocale: Locale('en', ''),
+          saveLocale: true,
+          useOnlyLangCode: true,
+          child: MyApp()
+      ),
+  );
 }
 
 FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
@@ -17,27 +28,30 @@ FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 Future<void> init() async {
   WidgetsFlutterBinding.ensureInitialized();
   await _firebaseMessaging.requestNotificationPermissions();
-  _firebaseMessaging.configure(onLaunch: (message) {
-    print("onLaunch");
-    return Future.value(true);
-  },
-  onResume: (message) {
-    print("onResume");
-    return Future.value(true);
-  },
-  onMessage: (message) {
-    print("onMessage");
-    return Future.value(true);
-  },
-);
-
+  _firebaseMessaging.configure(
+    onLaunch: (message) {
+      print("onLaunch");
+      return Future.value(true);
+    },
+    onResume: (message) {
+      print("onResume");
+      return Future.value(true);
+    },
+    onMessage: (message) {
+      print("onMessage");
+      return Future.value(true);
+    },
+  );
 }
 
 class MyApp extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
+    if (context.locale.languageCode != ui.window.locale.languageCode)
+      context.locale = Locale(ui.window.locale.languageCode, '');
     return MaterialApp(
-      title: 'Post Now',
+      title: 'APP_NAME'.tr(),
       theme: ThemeData(
         primarySwatch: Colors.lightBlue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
@@ -108,73 +122,71 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Container(
         padding: EdgeInsets.all(20),
         child: Center(
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text(
-                  'Post Now',
-                ),
-                TextFormField(
-                  decoration: InputDecoration(
-                    icon: Icon(Icons.person),
-                    hintText: "Name",
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text("APP_NAME".tr()),
+                  TextFormField(
+                    decoration: InputDecoration(
+                      icon: Icon(Icons.person),
+                      hintText: "LOGIN.NAME_FIELD_HINT".tr(),
+                    ),
+                    validator: (value) {
+                      if (value.length < 3) {
+                        return "LOGIN.NAME_FIELD_VALIDATOR_ENTER_NAME".tr();
+                      }
+                      return null;
+                    },
+                    onChanged: (val) {
+                      setState(() {
+                        name = val;
+                      });
+                    },
                   ),
-                  validator: (value) {
-                    if (value.length < 3) {
-                      return 'Please enter your name';
-                    }
-                    return null;
-                  },
-                  onChanged: (val) {
-                    setState(() {
-                      name = val;
-                    });
-                  },
-                ),
-                TextFormField(
-                  keyboardType: TextInputType.phone,
-                  decoration: InputDecoration(
-                    icon: Icon(Icons.smartphone),
-                    hintText: "Exp. +436601234567",
+                  TextFormField(
+                    keyboardType: TextInputType.phone,
+                    decoration: InputDecoration(
+                      icon: Icon(Icons.smartphone),
+                      hintText: "LOGIN.PHONE_FIELD_HINT".tr(),
+                    ),
+                    validator: (value) {
+                      RegExp regExp = new RegExp(
+                        r"^[+]{1}[0-9]{8,14}$",
+                      );
+                      if (!regExp.hasMatch(value)) {
+                        return "LOGIN.PHONE_FIELD_VALIDATOR_ENTER_NAME".tr();
+                      }
+                      return null;
+                    },
+                    onChanged: (val) {
+                      setState(() {
+                        phoneNo = val;
+                      });
+                    },
                   ),
-                  validator: (value) {
-                    RegExp regExp = new RegExp(
-                      r"^[+]{1}[0-9]{8,14}$",
-                    );
-                    if (!regExp.hasMatch(value)) {
-                      return 'Please enter your phone number correctly';
-                    }
-                    return null;
-                  },
-                  onChanged: (val) {
-                    setState(() {
-                      phoneNo = val;
-                    });
-                  },
-                ),
-                codeSent? TextFormField(
-                  maxLength: 6,
-                  decoration: InputDecoration(
-                    icon: Icon(Icons.verified_user),
-                    hintText: "Exp. 123456",
-                  ),
-                  validator: (value) {
-                    if (value.length < 2) {
-                      return 'Please enter the code sms correctly';
-                    }
-                    return null;
-                  },
-                  onChanged: (val) {
-                    setState(() {
-                      smsCode = val;
-                    });
-                  },
-                ) : Container(),
-              ],
-            ),
-          )
+                  codeSent? TextFormField(
+                    maxLength: 6,
+                    decoration: InputDecoration(
+                      icon: Icon(Icons.verified_user),
+                      hintText: "LOGIN.SMS_CODE_FIELD_HINT".tr(),
+                    ),
+                    validator: (value) {
+                      if (value.length < 2) {
+                        return "LOGIN.SMS_CODE_FIELD_VALIDATOR_ENTER_NAME".tr();
+                      }
+                      return null;
+                    },
+                    onChanged: (val) {
+                      setState(() {
+                        smsCode = val;
+                      });
+                    },
+                  ) : Container(),
+                ],
+              ),
+            )
         ),
       ),
       floatingActionButton: FloatingActionButton(

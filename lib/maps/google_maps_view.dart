@@ -13,12 +13,14 @@ import 'package:google_maps_webservice/places.dart';
 import 'package:postnow/core/service/firebase_service.dart';
 import 'package:postnow/core/service/model/driver.dart';
 import 'package:postnow/core/service/model/job.dart';
+import 'package:postnow/core/service/model/user.dart';
 import 'package:postnow/core/service/payment_service.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:postnow/ui/view/all_orders.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:ui' as ui;
 
+import 'package:easy_localization/easy_localization.dart';
 import '../chat_screen.dart';
 
 const double EURO_PER_KM = 0.96;
@@ -27,6 +29,7 @@ const bool TEST = true;
 
 enum MenuTyp {
   FROM_OR_TO,
+  NO_DRIVER_AVAILABLE,
   CALCULATING_DISTANCE,
   CONFIRM,
   SEARCH_DRIVER,
@@ -70,6 +73,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
   Driver myDriver;
   bool isDestinationButtonChosen = false;
   String uid;
+  User me = User();
 
   _GoogleMapsViewState(uid) {
     this.uid = uid;
@@ -160,6 +164,10 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
     jobsRef.onChildChanged.listen(_onJobsDataChanged);
 
     userRef = FirebaseDatabase.instance.reference().child('users').child(uid);
+
+    userRef.once().then((snapshot) => {
+      me = User.fromSnapshot(snapshot),
+    });
 
     var locationOptions = LocationOptions(accuracy: LocationAccuracy.high, distanceFilter: 10);
 
@@ -277,7 +285,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
 
     return new Scaffold(
       appBar: AppBar(
-        title: Text("Post Now", style: TextStyle(color: Colors.white)),
+        title: Text(("APP_NAME".tr()), style: TextStyle(color: Colors.white)),
         brightness: Brightness.dark,
         iconTheme:  IconThemeData(color: Colors.white),
       ),
@@ -293,13 +301,21 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
           padding: EdgeInsets.zero,
           children: <Widget>[
             DrawerHeader(
-              child: Text('Ayarlar', style: TextStyle(fontSize: 20, color: Colors.white)),
+              child: Stack(
+                children: <Widget>[
+                  Text("SETTINGS".tr(), style: TextStyle(fontSize: 20, color: Colors.white)),
+                  Positioned(
+                    bottom: 0,
+                    child: Text(me.getName(), style: TextStyle(fontSize: 22, color: Colors.white)),
+                  )
+                ],
+              ),
               decoration: BoxDecoration(
                 color: Colors.blue,
               ),
             ),
             ListTile(
-              title: Text('Siparislerin'),
+              title: Text('MAPS.SIDE_MENU.MY_ORDERS'.tr()),
               onTap: () {
                 Navigator.push(
                   context,
@@ -308,7 +324,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
               },
             ),
             ListTile(
-              title: Text('Cikis Yap'),
+              title: Text('MAPS.SIDE_MENU.SIGN_OUT'.tr()),
               onTap: () {
                 FirebaseService().signOut();
               },
@@ -433,6 +449,8 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
       switch (menuTyp) {
         case MenuTyp.FROM_OR_TO:
           return fromOrToMenu();
+        case MenuTyp.NO_DRIVER_AVAILABLE:
+          return noDriverAvailableMenu();
         case MenuTyp.CALCULATING_DISTANCE:
           return calcDistanceMenu();
         case MenuTyp.CONFIRM:
@@ -446,7 +464,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
         case MenuTyp.ACCEPTED:
           return jobAcceptedMenu();
         case MenuTyp.PACKAGE_PICKED:
-          return packagePickedPicked();
+          return packagePicked();
         case MenuTyp.COMPLETED:
           return jobCompleted();
       }
@@ -467,12 +485,12 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                       children: <Widget>[
                         ListTile(
                           leading: Icon(Icons.directions_car),
-                          title: Text('Paketiniz size ulasti.'),
+                          title: Text('MAPS.BOTTOM_MENUS.PACKAGE_PICKED.PACKAGE_DELIVERED'.tr()),
                         ),
                         ButtonBar(
                           children: <Widget>[
                             FlatButton(
-                              child: const Text('Tamam'),
+                              child: Text('OK'.tr()),
                               onPressed: () {
                                 clearJob();
                               },
@@ -487,7 +505,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
         )
     );
 
-    Widget packagePickedPicked() => Positioned(
+    Widget packagePicked() => Positioned(
         bottom: 0,
         child: SizedBox(
             width: MediaQuery.of(context).size.width,
@@ -501,14 +519,14 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                       children: <Widget>[
                         ListTile(
                           leading: Icon(Icons.directions_car),
-                          title: Text('Sürücünüz: ${myDriver.name}'),
-                          subtitle: Text("Durum: " + "Paketinizi alindi size dogru yol aliyor."),
+                          title: Text("MAPS.BOTTOM_MENUS.YOUR_DRIVER".tr(namedArgs: {'name': myDriver.name})),
+                          subtitle: Text("MAPS.BOTTOM_MENUS.PACKAGE_PICKED.STATUS".tr()),
                         ),
-                        Text("Pin: " + job.pin.toString()),
+                        Text("MAPS.BOTTOM_MENUS.PACKAGE_PICKED.CONFIRMATION_PIN".tr(namedArgs: {'pin': job.pin.toString()})),
                         ButtonBar(
                           children: <Widget>[
                             FlatButton(
-                              child: const Text('Mesaj Gönder'),
+                              child: Text('SEND_MESSAGE'.tr()),
                               onPressed: openMessageScreen,
                             ),
                           ],
@@ -535,13 +553,13 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                       children: <Widget>[
                         ListTile(
                           leading: Icon(Icons.directions_car),
-                          title: Text('Sürücünüz: ${myDriver.name}'),
-                          subtitle: Text("Durum: " + "Paketinizi almaya gidiyor."),
+                          title: Text("MAPS.BOTTOM_MENUS.YOUR_DRIVER".tr(namedArgs: {'name': myDriver.name})),
+                          subtitle: Text("MAPS.BOTTOM_MENUS.JOB_ACCEPTED.STATUS".tr()),
                         ),
                         ButtonBar(
                           children: <Widget>[
                             FlatButton(
-                              child: const Text('Mesaj Gönder'),
+                              child: Text('SEND_MESSAGE'.tr()),
                               onPressed: openMessageScreen,
                             ),
                           ],
@@ -567,6 +585,39 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
         )
     );
 
+    Widget noDriverAvailableMenu() => Positioned(
+        bottom: 0,
+        child: SizedBox(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height/4,
+            child: Column(
+                children: <Widget>[
+                  Card(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      children: <Widget>[
+                        ListTile(
+                          leading: Icon(Icons.directions_car),
+                          title: Text('NO_AVAILABLE_DRIVER_MESSAGE'.tr()),
+                        ),
+                        ButtonBar(
+                          children: <Widget>[
+                            FlatButton(
+                              child: Text('OK'.tr()),
+                              onPressed: () {
+                                clearJob();
+                              },
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ]
+            )
+        )
+    );
+
     Widget confirmMenu() => Positioned(
         bottom: 0,
         child: SizedBox (
@@ -580,13 +631,13 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                       children: <Widget>[
                         ListTile(
                           leading: Icon(Icons.payment),
-                          title: Text('Tutar $price €'),
-                          subtitle: Text('From: $originAddress\nTo: $destinationAddress'),
+                          title: Text('MAPS.PRICE'.tr(namedArgs: {'price': price.toString()})),
+                          subtitle: Text('MAPS.BOTTOM_MENUS.CONFIRM.FROM_TO'.tr(namedArgs: {'from': originAddress, 'to': destinationAddress})),
                         ),
                         ButtonBar(
                           children: <Widget>[
                             FlatButton(
-                              child: const Text('Iptal et'),
+                              child: Text('CANCEL'.tr()),
                               onPressed: () {
                                 setState(() {
                                   polylines.clear();
@@ -596,7 +647,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                               },
                             ),
                             FlatButton(
-                              child: const Text('Onayla'),
+                              child: Text('ACCEPT'.tr()),
                               onPressed: () {
                                 setState(() {
                                   //menuTyp = MenuTyp.PAY;
@@ -629,8 +680,8 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                       children: <Widget>[
                         ListTile(
                           leading: Icon(Icons.directions_car),
-                          title: Text('Siparisiniz Onayladi'),
-                          subtitle: Text('Paketinizi teslim edicek soför bekleniyor.'),
+                          title: Text("MAPS.BOTTOM_MENUS.SEARCH_DRIVER.ORDER_ACCEPTED".tr()),
+                          subtitle: Text("MAPS.BOTTOM_MENUS.SEARCH_DRIVER.STATUS".tr()),
                         ),
                         menuTyp != MenuTyp.ACCEPTED ? Padding (
                           padding: EdgeInsets.all(10.0),
@@ -659,7 +710,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                       children: <Widget>[
                         ListTile(
                           leading: Icon(Icons.payment),
-                          title: Text('Ödeme bekleniyor.'),
+                          title: Text('MAPS.BOTTOM_MENUS.PAYMENT_WAITING.PAYMENT_WAITING'.tr()),
                         ),
                         menuTyp != MenuTyp.ACCEPTED ? Padding (
                           padding: EdgeInsets.all(10.0),
@@ -688,7 +739,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                       children: <Widget>[
                         ListTile(
                           leading: Icon(Icons.payment),
-                          title: Text('Yol hesaplaniyor.'),
+                          title: Text('MAPS.BOTTOM_MENUS.CALCULATING_DISTANCE.CALCULATING_DISTANCE'.tr()),
                         ),
                         CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Colors.deepPurple),
                         ),
@@ -713,12 +764,12 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                       children: <Widget>[
                         ListTile(
                           leading: Icon(Icons.error_outline),
-                          title: Text('Ödeme basarisiz.'),
+                          title: Text('MAPS.BOTTOM_MENUS.CALCULATING_DISTANCE.CALCULATING_DISTANCE'.tr()),
                         ),
                         ButtonBar(
                           children: <Widget>[
                             FlatButton(
-                              child: const Text('Kapat'),
+                              child: Text('CLOSE'.tr()),
                               onPressed: () {
                                 setState(() {
                                   menuTyp = MenuTyp.CONFIRM;
@@ -864,7 +915,6 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
       List<LatLng> subSubList = List();
 
       if (c == 0) {
-        print("anaaaa");
         await drawOneLine(
             p1, p2, color, PolylineId(id.value + "_first"),
             pieceDuration);
@@ -1080,8 +1130,8 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                     textInputAction: TextInputAction.done,
                     decoration: new InputDecoration(
                       hintText: isDestination
-                          ? 'Paket Adresi'
-                          : 'Teslimat adresi',
+                          ? "MAPS.DESTINATION_ADDRESS".tr()
+                          : "MAPS.PACKAGE_ADDRESS".tr(),
                       hintStyle: TextStyle(color: Colors.white70),
                       contentPadding: new EdgeInsets.symmetric(
                           horizontal: 10, vertical: 8),
@@ -1109,7 +1159,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                 child: Row(
                   children: <Widget>[
                     Icon(Icons.location_on, color: Colors.white),
-                    Text("Current Location", style: TextStyle(color: Colors.white)),
+                    Text("MAPS.CURRENT_LOCATION".tr(), style: TextStyle(color: Colors.white)),
                   ],
                 )
               ) : Container(),
@@ -1197,12 +1247,22 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
     backgroundColor: Colors.lightBlueAccent,
   );
 
+    bool isOnlineDriverAvailable() {
+      for (int i = 0; i < drivers.length; i++) {
+        if (drivers[i].isOnline)
+          return true;
+      }
+      return false;
+    }
+
   void goToPayFloatingActionButton() => FloatingActionButton(
     onPressed: () {
       setState(() {
-        setState(() {
-          menuTyp = MenuTyp.CALCULATING_DISTANCE;
-        });
+        if (!isOnlineDriverAvailable()) {
+          menuTyp = MenuTyp.NO_DRIVER_AVAILABLE;
+          return;
+        }
+        menuTyp = MenuTyp.CALCULATING_DISTANCE;
         getRoute();
       });
     },

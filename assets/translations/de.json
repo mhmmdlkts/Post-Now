@@ -1,0 +1,9 @@
+{
+  "APP_NAME": "DE Post Now",
+  "NAME_FIELD_HINT": "DE Isminizi giriniz",
+  "NAME_FIELD_VALIDATOR_ENTER_NAME": "DE Lütfen isminizi giriniz",
+  "PHONE_FIELD_HINT": "DE Örnek: +436601231212",
+  "PHONE_FIELD_VALIDATOR_ENTER_NAME": "DE Lütfen telefon numaranizi dogru giriniz",
+  "SMS_CODE_FIELD_HINT": "DE Örnek: 123456",
+  "SMS_CODE_FIELD_VALIDATOR_ENTER_NAME": "DE Lütfen sms kodunu dogru giriniz"
+}

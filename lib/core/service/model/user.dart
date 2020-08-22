@@ -22,4 +22,8 @@ class User {
     if (token != null) data['token'] = this.token;
     return data;
   }
+
+  String getName() {
+    return name == null? "Name" : name;
+  }
 }
