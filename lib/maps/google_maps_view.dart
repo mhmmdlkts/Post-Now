@@ -25,7 +25,7 @@ import '../chat_screen.dart';
 
 const double EURO_PER_KM = 0.96;
 const double EURO_START  = 5.00;
-const bool TEST = true;
+const bool TEST = false;
 
 enum MenuTyp {
   FROM_OR_TO,
@@ -298,7 +298,6 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
       ),
       drawer: Drawer(
         child: ListView(
-          padding: EdgeInsets.zero,
           children: <Widget>[
             DrawerHeader(
               child: Stack(
@@ -598,7 +597,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                       children: <Widget>[
                         ListTile(
                           leading: Icon(Icons.directions_car),
-                          title: Text('NO_AVAILABLE_DRIVER_MESSAGE'.tr()),
+                          title: Text('MAPS.NO_AVAILABLE_DRIVER_MESSAGE'.tr()),
                         ),
                         ButtonBar(
                           children: <Widget>[
@@ -1109,13 +1108,13 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                     onTap: () async {
                       onTapButton();
                       Prediction p = await PlacesAutocomplete.show(
-                        hint: "Adres giriniz",
+                        hint: "MAPS.TYPE_ADDRESS".tr(),
                         // startText: isDestination ? destinationTextController.text : originTextController.text,
                         context: context,
                         apiKey: mapsApiKey,
                         logo: Image.asset("assets/none.png"),
                         mode: Mode.overlay, // Mode.fullscreen
-                        language: "de",
+                        language: 'de',
                         components: [new Component(Component.country, "at")]);
                       LatLng wrotePlace = await predictionToLatLng(p);
                       setMarker(wrotePlace, address: predictionToString(p));
@@ -1148,19 +1147,23 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                 )
               ),
               (isDestination == isDestinationButtonChosen && myPosition != null) ?
-              RaisedButton(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18.0),
-                ),
-                onPressed: (){
-                  setMarker(LatLng(myPosition.latitude, myPosition.longitude));
-                },
-                color: Colors.blue,
-                child: Row(
-                  children: <Widget>[
-                    Icon(Icons.location_on, color: Colors.white),
-                    Text("MAPS.CURRENT_LOCATION".tr(), style: TextStyle(color: Colors.white)),
-                  ],
+              Container(
+                    width: (MediaQuery
+                        .of(context)
+                        .size
+                        .width) * (0.4),
+                    child: RaisedButton(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18.0),
+                  ),
+                  onPressed: (){
+                    setMarker(LatLng(myPosition.latitude, myPosition.longitude));
+                  },
+                  color: Colors.blue,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(vertical: 5),
+                    child: Text("MAPS.CURRENT_LOCATION".tr(), style: TextStyle(color: Colors.white), textAlign: TextAlign.center,),
+                  )
                 )
               ) : Container(),
               (isDestination == isDestinationButtonChosen) ?
@@ -1296,6 +1299,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
       return Container();
     Job order = Job.fromJson(json.decode(orders[orders.length-i]));
     return Container(
+      margin: EdgeInsets.only(bottom: 5),
         width: (MediaQuery
             .of(context)
             .size

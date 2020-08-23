@@ -14,12 +14,16 @@
     "SMS_CODE_FIELD_HINT": "Örnek: 123456",
     "SMS_CODE_FIELD_VALIDATOR_ENTER_NAME": "Lütfen sms kodunu dogru giriniz"
   },
+  "ALL_ORDERS": {
+    "ORDER_HISTORY": "Siparis Gecmisi"
+  },
   "MAPS": {
     "NO_AVAILABLE_DRIVER_MESSAGE": "Yakininizda online soför bulunmamaktadir.",
     "CURRENT_LOCATION": "Mevcut Konum",
     "PRICE": "Tutar: {price}€",
     "PACKAGE_ADDRESS": "Paket adresi",
     "DESTINATION_ADDRESS": "Teslimat adresi",
+    "TYPE_ADDRESS": "Adresi Giriniz",
     "SIDE_MENU": {
       "MY_ORDERS": "Siparislerim",
       "SIGN_OUT": "Cikis yap"

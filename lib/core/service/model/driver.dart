@@ -12,11 +12,15 @@ class Driver {
   Driver({this.name, this.isOnline, this.lat, this.long});
 
   Driver.fromSnapshot(DataSnapshot snapshot) {
-    key = snapshot.key;
-    name = snapshot.value["name"];
-    isOnline = snapshot.value["isOnline"];
-    lat = snapshot.value["lat"] + 0.0;
-    long = snapshot.value["long"] + 0.0;
+    try {
+      key = snapshot.key;
+      name = snapshot.value["name"];
+      isOnline = snapshot.value["isOnline"];
+      lat = snapshot.value["lat"] + 0.0;
+      long = snapshot.value["long"] + 0.0;
+    } catch (e) {
+      print("Driver can't tranform from snapshot");
+    }
   }
 
   Driver.fromJson(Map<String, dynamic> json) {

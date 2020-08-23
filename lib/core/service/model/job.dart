@@ -44,7 +44,7 @@ class Job {
     driverId = snapshot.value["driver-id"];
     userId = snapshot.value["user-id"];
     pin = snapshot.value["pin"];
-    price = snapshot.value["price"];
+    price = snapshot.value["price"] + 0.0;
     status = stringToStatus(snapshot.value["status"]);
     vehicle = stringToVehicle(snapshot.value["vehicle"]);
     origin = stringToLatLng(snapshot.value["origin"]);

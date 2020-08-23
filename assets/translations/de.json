@@ -1,9 +1,71 @@
 {
-  "APP_NAME": "DE Post Now",
-  "NAME_FIELD_HINT": "DE Isminizi giriniz",
-  "NAME_FIELD_VALIDATOR_ENTER_NAME": "DE Lütfen isminizi giriniz",
-  "PHONE_FIELD_HINT": "DE Örnek: +436601231212",
-  "PHONE_FIELD_VALIDATOR_ENTER_NAME": "DE Lütfen telefon numaranizi dogru giriniz",
-  "SMS_CODE_FIELD_HINT": "DE Örnek: 123456",
-  "SMS_CODE_FIELD_VALIDATOR_ENTER_NAME": "DE Lütfen sms kodunu dogru giriniz"
+  "APP_NAME": "Post Now",
+  "OK": "Tamam",
+  "CANCEL": "Iptal",
+  "ACCEPT": "Onayla",
+  "CLOSE": "Kapat",
+  "SETTINGS": "Ayarlar",
+  "SEND_MESSAGE": "Mesaj Gönder",
+  "LOGIN": {
+    "NAME_FIELD_HINT": "Isminizi giriniz",
+    "NAME_FIELD_VALIDATOR_ENTER_NAME": "Lütfen isminizi giriniz",
+    "PHONE_FIELD_HINT": "Örnek: +436601231212",
+    "PHONE_FIELD_VALIDATOR_ENTER_NAME": "Lütfen telefon numaranizi dogru giriniz",
+    "SMS_CODE_FIELD_HINT": "Örnek: 123456",
+    "SMS_CODE_FIELD_VALIDATOR_ENTER_NAME": "Lütfen sms kodunu dogru giriniz"
+  },
+  "ALL_ORDERS": {
+    "ORDER_HISTORY": "Siparis Gecmisi"
+  },
+  "MAPS": {
+    "NO_AVAILABLE_DRIVER_MESSAGE": "Yakininizda online soför bulunmamaktadir.",
+    "CURRENT_LOCATION": "Mevcut Konum",
+    "PRICE": "Tutar: {price}€",
+    "PACKAGE_ADDRESS": "Paket adresi",
+    "DESTINATION_ADDRESS": "Teslimat adresi",
+    "TYPE_ADDRESS": "Adresi Giriniz",
+    "SIDE_MENU": {
+      "MY_ORDERS": "Siparislerim",
+      "SIGN_OUT": "Cikis yap"
+    },
+    "BOTTOM_MENUS": {
+      "YOUR_DRIVER": "Sürücünüz: {name}",
+      "PACKAGE_PICKED": {
+        "STATUS": "Durum: Paketinizi alindi size dogru yol aliyor.",
+        "CONFIRMATION_PIN": "Pin: {pin}",
+        "PACKAGE_DELIVERED": "Paketiniz size ulasti."
+      },
+      "JOB_ACCEPTED": {
+        "STATUS": "Durum: Paketinizi almaya gidiyor."
+      },
+      "CONFIRM": {
+        "FROM_TO": "Paket Adresi: {from}\nTeslimat adresi: {to}"
+      },
+      "SEARCH_DRIVER": {
+        "STATUS": "Durum: Paketinizi teslim edicek soför bekleniyor.",
+        "ORDER_ACCEPTED": "Siparisiniz onaylandi"
+      },
+      "PAYMENT_WAITING": {
+        "PAYMENT_WAITING": "Ödeme bekleniyor."
+      },
+      "PAYMENT_DECLINED": {
+        "PAYMENT_DECLINED": "Ödeme basarisiz."
+      },
+      "CALCULATING_DISTANCE": {
+        "CALCULATING_DISTANCE": "Yol hesaplaniyor."
+      }
+    }
+  },
+  "CHAT": {
+    "TYPE_MESSAGE_HERE": "Mesajinizi buraya giriniz..."
+  },
+  "MODELS": {
+    "JOB": {
+      "WAITING": "Sürücü bekleniyor.",
+      "ON_ROAD": "Sürücü siparisi onayladi.",
+      "PACKAGE_PICKED": "Sürücü paketi teslim aldi.",
+      "FINISHED": "Paket teslim edildi.",
+      "CANCELLED": "Siparis iptal edildi."
+    }
+  }
 }

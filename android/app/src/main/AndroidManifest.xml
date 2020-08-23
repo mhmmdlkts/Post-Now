@@ -12,10 +12,10 @@
         android:name="io.flutter.app.FlutterApplication"
         android:label="Post Now"
         android:icon="@mipmap/ic_launcher">
-
-        <meta-data android:name="com.google.android.gms.wallet.api.enabled" android:value="true"/>
         <meta-data android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyApP0S1huhzumSkh4IoeNJUXWjmWbIirVM"/>
+
+        <meta-data android:name="com.google.android.gms.wallet.api.enabled" android:value="true"/>
 
         <activity android:name="com.braintreepayments.api.BraintreeBrowserSwitchActivity"
             android:launchMode="singleTask">

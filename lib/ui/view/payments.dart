@@ -93,7 +93,7 @@ class _PaymentsState extends State<Payments> {
 
   Future<void> openPayMenu(double amount) async {
     String customerId = await getCustomerId();
-    var url = "https://us-central1-post-now-f3c53.cloudfunctions.net/braintree_getToken" + (customerId == null ? "" : "?customerId=" + customerId);
+    var url = "https://europe-west1-post-now-f3c53.cloudfunctions.net/braintree_getToken" + (customerId == null ? "" : "?customerId=" + customerId);
     String token;
     print(url);
     try {
@@ -128,7 +128,7 @@ class _PaymentsState extends State<Payments> {
       print('Selection was canceled.');
 
     String nonce = result.paymentMethodNonce.nonce;
-    url = "https://us-central1-post-now-f3c53.cloudfunctions.net/braintree_sendNonce?nonce=" + nonce + "&amount=" + amount.toString();
+    url = "https://europe-west1-post-now-f3c53.cloudfunctions.net/braintree_sendNonce?nonce=" + nonce + "&amount=" + amount.toString();
     String transactionId;
     try {
       http.Response response = await http.get(url);
@@ -151,7 +151,7 @@ class _PaymentsState extends State<Payments> {
     if (prefs == null)
       prefs = await SharedPreferences.getInstance();
     FirebaseUser user = await FirebaseAuth.instance.currentUser();
-    var url = "https://us-central1-post-now-f3c53.cloudfunctions.net/braintree_createCustomerId?uid=" + user.uid;
+    var url = "https://europe-west1-post-now-f3c53.cloudfunctions.net/braintree_createCustomerId?uid=" + user.uid;
     try {
       http.Response response = await http.get(url);
       String customerId = response.body;
@@ -169,7 +169,7 @@ class _PaymentsState extends State<Payments> {
   Future<bool> checkTransaction(String transactionId) async {
     if (transactionId.toLowerCase() == 'false')
       return false;
-    var url = "https://us-central1-post-now-f3c53.cloudfunctions.net/braintree_checkTransaction?transactionId=" + transactionId;
+    var url = "https://europe-west1-post-now-f3c53.cloudfunctions.net/braintree_checkTransaction?transactionId=" + transactionId;
     try {
       http.Response response = await http.get(url);
       print(response.body);

@@ -8,8 +8,14 @@ class PaymentService {
   static const String PREFS_CUSTOMER_ID = "Braintree_CustomerId";
 
   Future<bool> openPayMenu(double amount) async {
+    print("openPayMenu");
     String customerId = await getCustomerId();
-    var url = "https://us-central1-post-now-f3c53.cloudfunctions.net/braintree_getToken" + (customerId == null ? "" : "?customerId=" + customerId);
+    if (customerId == null)
+      print("customerId null");
+    else
+      print("customerId not null");
+    print("customerId: " + customerId);
+    var url = "https://europe-west1-post-now-f3c53.cloudfunctions.net/braintree_getToken" + (customerId == null ? "" : "?customerId=" + customerId);
     String token;
     print(url);
     try {
@@ -46,7 +52,7 @@ class PaymentService {
     }
 
     String nonce = result.paymentMethodNonce.nonce;
-    url = "https://us-central1-post-now-f3c53.cloudfunctions.net/braintree_sendNonce?nonce=" + nonce + "&amount=" + amount.toString();
+    url = "https://europe-west1-post-now-f3c53.cloudfunctions.net/braintree_sendNonce?nonce=" + nonce + "&amount=" + amount.toString();
     String transactionId;
     try {
       http.Response response = await http.get(url);
@@ -67,17 +73,20 @@ class PaymentService {
   }
 
   Future<String> createCustomerId() async {
+    print("createCustomerId");
     if (prefs == null)
       prefs = await SharedPreferences.getInstance();
     FirebaseUser user = await FirebaseAuth.instance.currentUser();
-    var url = "https://us-central1-post-now-f3c53.cloudfunctions.net/braintree_createCustomerId?uid=" + user.uid;
+    var url = "https://europe-west1-post-now-f3c53.cloudfunctions.net/braintree_createCustomerId?uid=" + user.uid;
+    print(url);
     try {
       http.Response response = await http.get(url);
       String customerId = response.body;
-      prefs.setString(PREFS_CUSTOMER_ID, customerId);
+      await prefs.setString(PREFS_CUSTOMER_ID, customerId);
       print(customerId);
       if (customerId.toLowerCase() == 'false')
         return null;
+      else return customerId;
     } catch (e) {
       print(e.message);
       return null;
@@ -88,7 +97,7 @@ class PaymentService {
   Future<bool> checkTransaction(String transactionId) async {
     if (transactionId.toLowerCase() == 'false')
       return false;
-    var url = "https://us-central1-post-now-f3c53.cloudfunctions.net/braintree_checkTransaction?transactionId=" + transactionId;
+    var url = "https://europe-west1-post-now-f3c53.cloudfunctions.net/braintree_checkTransaction?transactionId=" + transactionId;
     try {
       http.Response response = await http.get(url);
       print(response.body);
