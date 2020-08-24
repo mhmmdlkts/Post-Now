@@ -42,8 +42,8 @@
         "FROM_TO": "Gönderici Adresi: {from}\nAlıcı adresi: {to}"
       },
       "SEARCH_DRIVER": {
-        "STATUS": "Durum: Paketinizi teslim ediecek kurye aranıyor.",
-        "ORDER_ACCEPTED": "Siparisiniz onaylandi"
+        "STATUS": "Durum: Paketinizi için kurye aranıyor.",
+        "ORDER_ACCEPTED": "Siparişiniz onaylandı."
       },
       "PAYMENT_WAITING": {
         "PAYMENT_WAITING": "Ödeme bekleniyor."
