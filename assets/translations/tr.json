@@ -1,13 +1,13 @@
 {
   "APP_NAME": "Post Now",
   "OK": "Tamam",
-  "CANCEL": "Iptal",
+  "CANCEL": "İptal",
   "ACCEPT": "Onayla",
   "CLOSE": "Kapat",
   "SETTINGS": "Ayarlar",
   "SEND_MESSAGE": "Mesaj Gönder",
   "LOGIN": {
-    "NAME_FIELD_HINT": "Isminizi giriniz",
+    "NAME_FIELD_HINT": "İsminizi giriniz",
     "NAME_FIELD_VALIDATOR_ENTER_NAME": "Lütfen isminizi giriniz",
     "PHONE_FIELD_HINT": "Örnek: +436601231212",
     "PHONE_FIELD_VALIDATOR_ENTER_NAME": "Lütfen telefon numaranizi dogru giriniz",
@@ -15,23 +15,23 @@
     "SMS_CODE_FIELD_VALIDATOR_ENTER_NAME": "Lütfen sms kodunu dogru giriniz"
   },
   "ALL_ORDERS": {
-    "ORDER_HISTORY": "Siparis Gecmisi"
+    "ORDER_HISTORY": "Sipariş Geçmişi"
   },
   "MAPS": {
-    "NO_AVAILABLE_DRIVER_MESSAGE": "Yakininizda online soför bulunmamaktadir.",
-    "CURRENT_LOCATION": "Mevcut Konum",
-    "PRICE": "Tutar: {price}€",
-    "PACKAGE_ADDRESS": "Paket adresi",
-    "DESTINATION_ADDRESS": "Teslimat adresi",
+    "NO_AVAILABLE_DRIVER_MESSAGE": "Yakınınızda çevrim içi şoför bulunmamaktadır.",
+    "CURRENT_LOCATION": "Anlık Konum",
+    "PRICE": "Fiyat: {price}€",
+    "PACKAGE_ADDRESS": "Gönderici adresi",
+    "DESTINATION_ADDRESS": "Alıcı adresi",
     "TYPE_ADDRESS": "Adresi Giriniz",
     "SIDE_MENU": {
-      "MY_ORDERS": "Siparislerim",
-      "SIGN_OUT": "Cikis yap"
+      "MY_ORDERS": "Siparişlerim",
+      "SIGN_OUT": "Çıkış yap"
     },
     "BOTTOM_MENUS": {
       "YOUR_DRIVER": "Sürücünüz: {name}",
       "PACKAGE_PICKED": {
-        "STATUS": "Durum: Paketinizi alindi size dogru yol aliyor.",
+        "STATUS": "Durum: Paketiniz yola çıktı.",
         "CONFIRMATION_PIN": "Pin: {pin}",
         "PACKAGE_DELIVERED": "Paketiniz size ulasti."
       },
@@ -39,7 +39,7 @@
         "STATUS": "Durum: Paketinizi almaya gidiyor."
       },
       "CONFIRM": {
-        "FROM_TO": "Paket Adresi: {from}\nTeslimat adresi: {to}"
+        "FROM_TO": "Gönderici Adresi: {from}\nAlıcı adresi: {to}"
       },
       "SEARCH_DRIVER": {
         "STATUS": "Durum: Paketinizi teslim edicek soför bekleniyor.",
@@ -49,23 +49,23 @@
         "PAYMENT_WAITING": "Ödeme bekleniyor."
       },
       "PAYMENT_DECLINED": {
-        "PAYMENT_DECLINED": "Ödeme basarisiz."
+        "PAYMENT_DECLINED": "Ödeme başarısız."
       },
       "CALCULATING_DISTANCE": {
-        "CALCULATING_DISTANCE": "Yol hesaplaniyor."
+        "CALCULATING_DISTANCE": "Mesafe hesaplanıyor."
       }
     }
   },
   "CHAT": {
-    "TYPE_MESSAGE_HERE": "Mesajinizi buraya giriniz..."
+    "TYPE_MESSAGE_HERE": "Mesajınızı buraya giriniz..."
   },
   "MODELS": {
     "JOB": {
       "WAITING": "Sürücü bekleniyor.",
-      "ON_ROAD": "Sürücü siparisi onayladi.",
-      "PACKAGE_PICKED": "Sürücü paketi teslim aldi.",
+      "ON_ROAD": "Sürücü siparişinizi onayladı.",
+      "PACKAGE_PICKED": "Sürücü paketi teslim aldı.",
       "FINISHED": "Paket teslim edildi.",
-      "CANCELLED": "Siparis iptal edildi."
+      "CANCELLED": "Sipariş iptal edildi."
     }
   }
 }
