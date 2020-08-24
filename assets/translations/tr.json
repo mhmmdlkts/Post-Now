@@ -8,17 +8,17 @@
   "SEND_MESSAGE": "Mesaj Gönder",
   "LOGIN": {
     "NAME_FIELD_HINT": "İsminizi giriniz",
-    "NAME_FIELD_VALIDATOR_ENTER_NAME": "Lütfen isminizi giriniz",
+    "NAME_FIELD_VALIDATOR_ENTER_NAME": "Lütfen isminizi giriniz.",
     "PHONE_FIELD_HINT": "Örnek: +436601231212",
-    "PHONE_FIELD_VALIDATOR_ENTER_NAME": "Lütfen telefon numaranizi dogru giriniz",
+    "PHONE_FIELD_VALIDATOR_ENTER_NAME": "Lütfen telefon numaranızı giriniz",
     "SMS_CODE_FIELD_HINT": "Örnek: 123456",
-    "SMS_CODE_FIELD_VALIDATOR_ENTER_NAME": "Lütfen sms kodunu dogru giriniz"
+    "SMS_CODE_FIELD_VALIDATOR_ENTER_NAME": "Lütfen gelen doğrulama kodunu giriniz"
   },
   "ALL_ORDERS": {
     "ORDER_HISTORY": "Sipariş Geçmişi"
   },
   "MAPS": {
-    "NO_AVAILABLE_DRIVER_MESSAGE": "Yakınınızda çevrim içi şoför bulunmamaktadır.",
+    "NO_AVAILABLE_DRIVER_MESSAGE": "Yakınınızda çevrim içi kurye bulunmamaktadır.",
     "CURRENT_LOCATION": "Anlık Konum",
     "PRICE": "Fiyat: {price}€",
     "PACKAGE_ADDRESS": "Gönderici adresi",
@@ -29,21 +29,21 @@
       "SIGN_OUT": "Çıkış yap"
     },
     "BOTTOM_MENUS": {
-      "YOUR_DRIVER": "Sürücünüz: {name}",
+      "YOUR_DRIVER": "Kuryeniz: {name}",
       "PACKAGE_PICKED": {
         "STATUS": "Durum: Paketiniz yola çıktı.",
-        "CONFIRMATION_PIN": "Pin: {pin}",
-        "PACKAGE_DELIVERED": "Paketiniz size ulasti."
+        "CONFIRMATION_PIN": "PIN: {pin}",
+        "PACKAGE_DELIVERED": "Paketiniz teslim edildi."
       },
       "JOB_ACCEPTED": {
-        "STATUS": "Durum: Paketinizi almaya gidiyor."
+        "STATUS": "Durum: Paketinizi teslim almaya geliyor."
       },
       "CONFIRM": {
         "FROM_TO": "Gönderici Adresi: {from}\nAlıcı adresi: {to}"
       },
       "SEARCH_DRIVER": {
-        "STATUS": "Durum: Paketinizi teslim edicek soför bekleniyor.",
-        "ORDER_ACCEPTED": "Siparisiniz onaylandi"
+        "STATUS": "Durum: Paketinizi için kurye aranıyor.",
+        "ORDER_ACCEPTED": "Siparişiniz onaylandı."
       },
       "PAYMENT_WAITING": {
         "PAYMENT_WAITING": "Ödeme bekleniyor."
@@ -61,9 +61,9 @@
   },
   "MODELS": {
     "JOB": {
-      "WAITING": "Sürücü bekleniyor.",
-      "ON_ROAD": "Sürücü siparişinizi onayladı.",
-      "PACKAGE_PICKED": "Sürücü paketi teslim aldı.",
+      "WAITING": "Kurye bekleniyor.",
+      "ON_ROAD": "Kurye siparişinizi onayladı.",
+      "PACKAGE_PICKED": "Kurye paketi teslim aldı.",
       "FINISHED": "Paket teslim edildi.",
       "CANCELLED": "Sipariş iptal edildi."
     }

@@ -1,71 +1,71 @@
 {
   "APP_NAME": "Post Now",
-  "OK": "Tamam",
-  "CANCEL": "Iptal",
-  "ACCEPT": "Onayla",
-  "CLOSE": "Kapat",
-  "SETTINGS": "Ayarlar",
-  "SEND_MESSAGE": "Mesaj Gönder",
+  "OK": "Ok",
+  "CANCEL": "Abbrechen",
+  "ACCEPT": "Akzeptieren",
+  "CLOSE": "Schließen",
+  "SETTINGS": "Einstellungen",
+  "SEND_MESSAGE": "Nachricht senden",
   "LOGIN": {
-    "NAME_FIELD_HINT": "Isminizi giriniz",
-    "NAME_FIELD_VALIDATOR_ENTER_NAME": "Lütfen isminizi giriniz",
-    "PHONE_FIELD_HINT": "Örnek: +436601231212",
-    "PHONE_FIELD_VALIDATOR_ENTER_NAME": "Lütfen telefon numaranizi dogru giriniz",
-    "SMS_CODE_FIELD_HINT": "Örnek: 123456",
-    "SMS_CODE_FIELD_VALIDATOR_ENTER_NAME": "Lütfen sms kodunu dogru giriniz"
+    "NAME_FIELD_HINT": "Ihr Name",
+    "NAME_FIELD_VALIDATOR_ENTER_NAME": "Bitte geben Sie Ihren Namen ein.",
+    "PHONE_FIELD_HINT": "zB: +436601231212",
+    "PHONE_FIELD_VALIDATOR_ENTER_NAME": "Bitte geben Sie Ihre Telefonnummer ein.",
+    "SMS_CODE_FIELD_HINT": "zB: 123456",
+    "SMS_CODE_FIELD_VALIDATOR_ENTER_NAME": "Geben Sie Ihren Validierungscode ein."
   },
   "ALL_ORDERS": {
-    "ORDER_HISTORY": "Siparis Gecmisi"
+    "ORDER_HISTORY": "Bestellverlauf"
   },
   "MAPS": {
-    "NO_AVAILABLE_DRIVER_MESSAGE": "Yakininizda online soför bulunmamaktadir.",
-    "CURRENT_LOCATION": "Mevcut Konum",
-    "PRICE": "Tutar: {price}€",
-    "PACKAGE_ADDRESS": "Paket adresi",
-    "DESTINATION_ADDRESS": "Teslimat adresi",
-    "TYPE_ADDRESS": "Adresi Giriniz",
+    "NO_AVAILABLE_DRIVER_MESSAGE": "Kein verfügbarer Lieferant in Ihrer Nähe.",
+    "CURRENT_LOCATION": "Aktueller Standort",
+    "PRICE": "Preis: {price}€",
+    "PACKAGE_ADDRESS": "Absenderadresse",
+    "DESTINATION_ADDRESS": "Empfängeradresse",
+    "TYPE_ADDRESS": "Adresse eingeben",
     "SIDE_MENU": {
-      "MY_ORDERS": "Siparislerim",
-      "SIGN_OUT": "Cikis yap"
+      "MY_ORDERS": "Meine Bestellungen",
+      "SIGN_OUT": "Abmelden"
     },
     "BOTTOM_MENUS": {
-      "YOUR_DRIVER": "Sürücünüz: {name}",
+      "YOUR_DRIVER": "Ihr Lieferant: {name}",
       "PACKAGE_PICKED": {
-        "STATUS": "Durum: Paketinizi alindi size dogru yol aliyor.",
-        "CONFIRMATION_PIN": "Pin: {pin}",
-        "PACKAGE_DELIVERED": "Paketiniz size ulasti."
+        "STATUS": "Status: Ihr Paket ist unterwegs.",
+        "CONFIRMATION_PIN": "PIN: {pin}",
+        "PACKAGE_DELIVERED": "Paket wurde geliefert."
       },
       "JOB_ACCEPTED": {
-        "STATUS": "Durum: Paketinizi almaya gidiyor."
+        "STATUS": "Status: Der Lieferant ist auf dem Weg, das Paket ab zu holen."
       },
       "CONFIRM": {
-        "FROM_TO": "Paket Adresi: {from}\nTeslimat adresi: {to}"
+        "FROM_TO": "Absenderadresse: {from}\nEmpfängeradresse: {to}"
       },
       "SEARCH_DRIVER": {
-        "STATUS": "Durum: Paketinizi teslim edicek soför bekleniyor.",
-        "ORDER_ACCEPTED": "Siparisiniz onaylandi"
+        "STATUS": "Status: Warten auf Lieferant für Ihre Bestellung.",
+        "ORDER_ACCEPTED": "Bestellung angenommen."
       },
       "PAYMENT_WAITING": {
-        "PAYMENT_WAITING": "Ödeme bekleniyor."
+        "PAYMENT_WAITING": "Warten auf Zahlung."
       },
       "PAYMENT_DECLINED": {
-        "PAYMENT_DECLINED": "Ödeme basarisiz."
+        "PAYMENT_DECLINED": "Zahlung nicht erfolgreich."
       },
       "CALCULATING_DISTANCE": {
-        "CALCULATING_DISTANCE": "Yol hesaplaniyor."
+        "CALCULATING_DISTANCE": "Entfernung wird berechnet."
       }
     }
   },
   "CHAT": {
-    "TYPE_MESSAGE_HERE": "Mesajinizi buraya giriniz..."
+    "TYPE_MESSAGE_HERE": "Geben Sie Ihre Nachricht ein..."
   },
   "MODELS": {
     "JOB": {
-      "WAITING": "Sürücü bekleniyor.",
-      "ON_ROAD": "Sürücü siparisi onayladi.",
-      "PACKAGE_PICKED": "Sürücü paketi teslim aldi.",
-      "FINISHED": "Paket teslim edildi.",
-      "CANCELLED": "Siparis iptal edildi."
+      "WAITING": "Warten auf Lieferant.",
+      "ON_ROAD": "Der Lieferant hat Ihre Bestellung angenommen.",
+      "PACKAGE_PICKED": "Der Lieferant hat das Paket abgeholt.",
+      "FINISHED": "Ihr Paket wurde geliefert.",
+      "CANCELLED": "Bestellung wurde storniert."
     }
   }
 }

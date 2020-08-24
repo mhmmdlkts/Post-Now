@@ -1,71 +1,71 @@
 {
   "APP_NAME": "Post Now",
-  "OK": "Tamam",
-  "CANCEL": "Iptal",
-  "ACCEPT": "Onayla",
-  "CLOSE": "Kapat",
-  "SETTINGS": "Ayarlar",
-  "SEND_MESSAGE": "Mesaj Gönder",
+  "OK": "Ok",
+  "CANCEL": "Cancel",
+  "ACCEPT": "Accept",
+  "CLOSE": "Close",
+  "SETTINGS": "Settings",
+  "SEND_MESSAGE": "Send a message",
   "LOGIN": {
-    "NAME_FIELD_HINT": "Isminizi giriniz",
-    "NAME_FIELD_VALIDATOR_ENTER_NAME": "Lütfen isminizi giriniz",
-    "PHONE_FIELD_HINT": "Örnek: +436601231212",
-    "PHONE_FIELD_VALIDATOR_ENTER_NAME": "Lütfen telefon numaranizi dogru giriniz",
-    "SMS_CODE_FIELD_HINT": "Örnek: 123456",
-    "SMS_CODE_FIELD_VALIDATOR_ENTER_NAME": "Lütfen sms kodunu dogru giriniz"
+    "NAME_FIELD_HINT": "Your name",
+    "NAME_FIELD_VALIDATOR_ENTER_NAME": "Please enter your name.",
+    "PHONE_FIELD_HINT": "Example. +436601231212",
+    "PHONE_FIELD_VALIDATOR_ENTER_NAME": "Please enter your phone number.",
+    "SMS_CODE_FIELD_HINT": "Example: 123456",
+    "SMS_CODE_FIELD_VALIDATOR_ENTER_NAME": "Enter your validation code."
   },
   "ALL_ORDERS": {
-    "ORDER_HISTORY": "Siparis Gecmisi"
+    "ORDER_HISTORY": "Order History"
   },
   "MAPS": {
-    "NO_AVAILABLE_DRIVER_MESSAGE": "Yakininizda online soför bulunmamaktadir.",
-    "CURRENT_LOCATION": "Mevcut Konum",
-    "PRICE": "Tutar: {price}€",
-    "PACKAGE_ADDRESS": "Paket adresi",
-    "DESTINATION_ADDRESS": "Teslimat adresi",
-    "TYPE_ADDRESS": "Adresi Giriniz",
+    "NO_AVAILABLE_DRIVER_MESSAGE": "No available driver in your area.",
+    "CURRENT_LOCATION": "Current Location",
+    "PRICE": "Price: {price}€",
+    "PACKAGE_ADDRESS": "Sender adress",
+    "DESTINATION_ADDRESS": "Recipient adress",
+    "TYPE_ADDRESS": "Enter the adress",
     "SIDE_MENU": {
-      "MY_ORDERS": "Siparislerim",
-      "SIGN_OUT": "Cikis yap"
+      "MY_ORDERS": "My Orders",
+      "SIGN_OUT": "Logout"
     },
     "BOTTOM_MENUS": {
-      "YOUR_DRIVER": "Sürücünüz: {name}",
+      "YOUR_DRIVER": "Your Carrier: {name}",
       "PACKAGE_PICKED": {
-        "STATUS": "Durum: Paketinizi alindi size dogru yol aliyor.",
-        "CONFIRMATION_PIN": "Pin: {pin}",
-        "PACKAGE_DELIVERED": "Paketiniz size ulasti."
+        "STATUS": "Status: Your package is on it's way.",
+        "CONFIRMATION_PIN": "PIN: {pin}",
+        "PACKAGE_DELIVERED": "Package has been delivered."
       },
       "JOB_ACCEPTED": {
-        "STATUS": "Durum: Paketinizi almaya gidiyor."
+        "STATUS": "Status: The carrier is on the way to pick up the package."
       },
       "CONFIRM": {
-        "FROM_TO": "Paket Adresi: {from}\nTeslimat adresi: {to}"
+        "FROM_TO": "Sender Adress: {from}\nReceiver Adress: {to}"
       },
       "SEARCH_DRIVER": {
-        "STATUS": "Durum: Paketinizi teslim edicek soför bekleniyor.",
-        "ORDER_ACCEPTED": "Siparisiniz onaylandi"
+        "STATUS": "Status: Waiting for carrier for your order.",
+        "ORDER_ACCEPTED": "Order accepted."
       },
       "PAYMENT_WAITING": {
-        "PAYMENT_WAITING": "Ödeme bekleniyor."
+        "PAYMENT_WAITING": "Waiting for payment."
       },
       "PAYMENT_DECLINED": {
-        "PAYMENT_DECLINED": "Ödeme basarisiz."
+        "PAYMENT_DECLINED": "Payment unsuccessful."
       },
       "CALCULATING_DISTANCE": {
-        "CALCULATING_DISTANCE": "Yol hesaplaniyor."
+        "CALCULATING_DISTANCE": "Distance is being calculating."
       }
     }
   },
   "CHAT": {
-    "TYPE_MESSAGE_HERE": "Mesajinizi buraya giriniz..."
+    "TYPE_MESSAGE_HERE": "Enter your message..."
   },
   "MODELS": {
     "JOB": {
-      "WAITING": "Sürücü bekleniyor.",
-      "ON_ROAD": "Sürücü siparisi onayladi.",
-      "PACKAGE_PICKED": "Sürücü paketi teslim aldi.",
-      "FINISHED": "Paket teslim edildi.",
-      "CANCELLED": "Siparis iptal edildi."
+      "WAITING": "Waiting for carrier.",
+      "ON_ROAD": "The carrier accepted your order.",
+      "PACKAGE_PICKED": "The carrier picked up the package.",
+      "FINISHED": "Your package has been delivered.",
+      "CANCELLED": "Order has been cancelled."
     }
   }
 }
