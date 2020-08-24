@@ -8,7 +8,7 @@
   "SEND_MESSAGE": "Mesaj Gönder",
   "LOGIN": {
     "NAME_FIELD_HINT": "İsminizi giriniz",
-    "NAME_FIELD_VALIDATOR_ENTER_NAME": "Lütfen isminizi giriniz",
+    "NAME_FIELD_VALIDATOR_ENTER_NAME": "Lütfen isminizi giriniz..",
     "PHONE_FIELD_HINT": "Örnek: +436601231212",
     "PHONE_FIELD_VALIDATOR_ENTER_NAME": "Lütfen telefon numaranizi dogru giriniz",
     "SMS_CODE_FIELD_HINT": "Örnek: 123456",
