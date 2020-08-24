@@ -32,11 +32,11 @@
       "YOUR_DRIVER": "Your Carrier: {name}",
       "PACKAGE_PICKED": {
         "STATUS": "Status: Your package is on it's way.",
-        "CONFIRMATION_PIN": "Pin: {pin}",
-        "PACKAGE_DELIVERED": "Paketiniz size ulasti."
+        "CONFIRMATION_PIN": "PIN: {pin}",
+        "PACKAGE_DELIVERED": "Package has been delivered."
       },
       "JOB_ACCEPTED": {
-        "STATUS": "Status: Carrier is on it's way to get the package."
+        "STATUS": "Status: The carrier is on the way to pick up the package."
       },
       "CONFIRM": {
         "FROM_TO": "Sender Adress: {from}\nReceiver Adress: {to}"

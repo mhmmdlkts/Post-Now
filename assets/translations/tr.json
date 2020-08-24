@@ -32,7 +32,7 @@
       "YOUR_DRIVER": "Kuryeniz: {name}",
       "PACKAGE_PICKED": {
         "STATUS": "Durum: Paketiniz yola çıktı.",
-        "CONFIRMATION_PIN": "Pin: {pin}",
+        "CONFIRMATION_PIN": "PIN: {pin}",
         "PACKAGE_DELIVERED": "Paketiniz teslim edildi."
       },
       "JOB_ACCEPTED": {
