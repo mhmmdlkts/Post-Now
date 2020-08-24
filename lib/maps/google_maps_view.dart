@@ -262,16 +262,16 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
 
     if (TEST) {
       setState(() {
-        addJobToPool();
+        addJobToPool('test_transaction_id');
         menuTyp = MenuTyp.SEARCH_DRIVER;
       });
       return;
     }
 
-    PaymentService().openPayMenu(price).then((result) => {
+    PaymentService().openPayMenu(price, uid).then((result) => {
       setState(() {
-        if (result) {
-          addJobToPool();
+        if (result != null) {
+          addJobToPool(result);
           menuTyp = MenuTyp.SEARCH_DRIVER;
         } else
           menuTyp = MenuTyp.PAYMENT_DECLINED;
@@ -763,7 +763,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                       children: <Widget>[
                         ListTile(
                           leading: Icon(Icons.error_outline),
-                          title: Text('MAPS.BOTTOM_MENUS.CALCULATING_DISTANCE.CALCULATING_DISTANCE'.tr()),
+                          title: Text('MAPS.BOTTOM_MENUS.PAYMENT_DECLINED.PAYMENT_DECLINED'.tr()),
                         ),
                         ButtonBar(
                           children: <Widget>[
@@ -787,10 +787,11 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
 
     final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
-    void addJobToPool() async {
+    void addJobToPool(transactionId) async {
       job = Job(
           name: "Robot",
           userId: uid,
+          transactionId: transactionId,
           vehicle: Vehicle.CAR,
           price: price,
           origin: origin,
@@ -1023,7 +1024,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
     void openMessageScreen() async {
       await Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => Chat_Screen(job.key, myDriver.name))
+          MaterialPageRoute(builder: (context) => Chat_Screen(job.key, myDriver.name, false))
       );
     }
 

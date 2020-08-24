@@ -22,6 +22,7 @@ class Job {
   String userId;
   String name;
   String pin;
+  String transactionId;
   double price;
   Status status;
   Vehicle vehicle;
@@ -33,7 +34,7 @@ class Job {
   String originAddress;
   String destinationAddress;
 
-  Job({this.name, this.userId, this.driverId, this.vehicle, this.price, this.origin, this.destination, this.originAddress, this.destinationAddress}) {
+  Job({this.name, this.userId, this.driverId, this.vehicle, this.transactionId, this.price, this.origin, this.destination, this.originAddress, this.destinationAddress}) {
     start_time = DateTime.now();
     status = Status.WAITING;
   }
@@ -44,6 +45,7 @@ class Job {
     driverId = snapshot.value["driver-id"];
     userId = snapshot.value["user-id"];
     pin = snapshot.value["pin"];
+    transactionId = snapshot.value["transactionId"];
     price = snapshot.value["price"] + 0.0;
     status = stringToStatus(snapshot.value["status"]);
     vehicle = stringToVehicle(snapshot.value["vehicle"]);
@@ -151,6 +153,7 @@ class Job {
     if (driverId != null) toReturn['driver-id'] = driverId;
     if (userId != null) toReturn['user-id'] = userId;
     if (pin != null) toReturn['pin'] = pin;
+    if (transactionId != null) toReturn['transactionId'] = transactionId;
     if (price != null) toReturn['price'] = price;
     if (status != null) toReturn['status'] = statusToString(status);
     if (vehicle != null) toReturn['vehicle'] = vehicleToString(vehicle);
@@ -170,6 +173,7 @@ class Job {
     'driver-id': driverId,
     'user-id': userId,
     'pin': pin,
+    'transactionId': transactionId,
     'price': price,
     'status': statusToString(status),
     'vehicle': vehicleToString(vehicle),
@@ -189,6 +193,7 @@ class Job {
     driverId = json["driver-id"];
     userId = json["user-id"];
     pin = json["pin"];
+    transactionId = json["transactionId"];
     price = json["price"];
     status = stringToStatus(json["status"]);
     vehicle = stringToVehicle(json["vehicle"]);

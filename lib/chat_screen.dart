@@ -12,14 +12,16 @@ import 'dart:io' as i;
 
 class Chat_Screen extends StatefulWidget {
   final String jobId, name;
-  Chat_Screen(this.jobId, this.name);
+  final bool isDriverApp;
+  Chat_Screen(this.jobId, this.name, this.isDriverApp);
 
   @override
-  _Chat_ScreenState createState() => _Chat_ScreenState(jobId, name);
+  _Chat_ScreenState createState() => _Chat_ScreenState(jobId, name, isDriverApp);
 }
 
 class _Chat_ScreenState extends State<Chat_Screen> {
   final String jobId, name;
+  final bool isDriverApp;
   DatabaseReference ref;
   String inputMessage = "";
   TextEditingController textEditingController = new TextEditingController();
@@ -30,11 +32,10 @@ class _Chat_ScreenState extends State<Chat_Screen> {
   bool isCameraOpen = false;
   bool showCapturedPhoto = false;
   var imagePath = "";
-  var imagePathTest = "/var/mobile/Containers/Data/Application/7589CF76-7454-461C-BE63-EB53F1AD8208/Library/Caches/2020-08-06 21:47:42.104487.png";
   List<CameraDescription> cameras;
   bool isBackCamera = true;
 
-  _Chat_ScreenState(this.jobId, this.name);
+  _Chat_ScreenState(this.jobId, this.name, this.isDriverApp);
 
   @override
   void initState() {
@@ -133,24 +134,24 @@ class _Chat_ScreenState extends State<Chat_Screen> {
   );
 
   Widget conversationBubble(String message, String imgPath, String sendTime, bool fromDriver) => Row(
-    mainAxisAlignment: !fromDriver ? MainAxisAlignment.end : MainAxisAlignment.start,
+    mainAxisAlignment: isDriverApp == fromDriver ? MainAxisAlignment.end : MainAxisAlignment.start,
     children: <Widget>[
       Container(
         constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width/5*4),
         decoration: new BoxDecoration(
-            color: !fromDriver ? Colors.blue : Colors.blueGrey,
+            color: isDriverApp == fromDriver ? Colors.blue : Colors.blueGrey,
             borderRadius: new BorderRadius.only(
-                topLeft: Radius.circular(!fromDriver ? 12.0 : 0.0),
-                topRight: Radius.circular(!fromDriver ? 0.0 : 12.0),
+                topLeft: Radius.circular(isDriverApp == fromDriver ? 12.0 : 0.0),
+                topRight: Radius.circular(isDriverApp == fromDriver ? 0.0 : 12.0),
                 bottomLeft: const Radius.circular(12.0),
                 bottomRight: const Radius.circular(12.0)
             )
         ),
-        alignment: !fromDriver ? Alignment.topRight : Alignment.topLeft,
+        alignment: isDriverApp == fromDriver ? Alignment.topRight : Alignment.topLeft,
         padding: imgPath == null ? EdgeInsets.all(12) : EdgeInsets.symmetric(vertical: 12, horizontal: 6),
         margin: EdgeInsets.only(top: 15, right: 4, left: 4),
         child : Column(
-          crossAxisAlignment: !fromDriver ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          crossAxisAlignment: isDriverApp == fromDriver ? CrossAxisAlignment.end : CrossAxisAlignment.start,
           children: <Widget>[
             imgPath == null ? Container() : Padding(
               child: Image.network(
@@ -312,7 +313,7 @@ class _Chat_ScreenState extends State<Chat_Screen> {
     if (imagePath != "") {
       dbImagePath = await startUpload('chat/images/$jobId/${DateTime.now()}.png', imagePath);
     }
-    Message message = new Message(from_driver: false, message: inputMessage, img: dbImagePath);
+    Message message = new Message(from_driver: isDriverApp, message: inputMessage, img: dbImagePath);
     ref.push().set(message.toMap());
     clearField();
   }

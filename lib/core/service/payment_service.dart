@@ -7,7 +7,7 @@ class PaymentService {
   SharedPreferences prefs;
   static const String PREFS_CUSTOMER_ID = "Braintree_CustomerId";
 
-  Future<bool> openPayMenu(double amount) async {
+  Future<String> openPayMenu(double amount, String uid) async {
     print("openPayMenu");
     String customerId = await getCustomerId();
     if (customerId == null)
@@ -48,23 +48,23 @@ class PaymentService {
 
     if (result == null) {
       print('Selection was canceled.');
-      return false;
+      return null;
     }
 
     String nonce = result.paymentMethodNonce.nonce;
     url = "https://europe-west1-post-now-f3c53.cloudfunctions.net/braintree_sendNonce?nonce=" + nonce + "&amount=" + amount.toString();
+
     String transactionId;
     try {
       http.Response response = await http.get(url);
       transactionId = response.body;
     } catch (e) {
       print(e.message);
-      print(false);
     }
-    if (await checkTransaction(transactionId))
-      return true;
+    if (await checkTransaction(uid, amount, transactionId))
+      return transactionId;
     else
-      return false;
+      return null;
   }
 
   Future<String> getCustomerId() async {
@@ -94,10 +94,11 @@ class PaymentService {
     return null;
   }
 
-  Future<bool> checkTransaction(String transactionId) async {
+  Future<bool> checkTransaction(String uid, double price, String transactionId) async {
     if (transactionId.toLowerCase() == 'false')
       return false;
-    var url = "https://europe-west1-post-now-f3c53.cloudfunctions.net/braintree_checkTransaction?transactionId=" + transactionId;
+    print(uid);
+    var url = "https://europe-west1-post-now-f3c53.cloudfunctions.net/braintree_checkTransaction?transactionId=" + transactionId + "&uid=" + uid  + "&price=" + price.toString();
     try {
       http.Response response = await http.get(url);
       print(response.body);

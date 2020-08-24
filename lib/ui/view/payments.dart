@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:postnow/ui/view/credit_card.dart';
 import 'package:flutter_braintree/flutter_braintree.dart';
 import 'package:http/http.dart' as http;
@@ -79,8 +79,8 @@ class _PaymentsState extends State<Payments> {
               },
               child :Padding(
               padding: const EdgeInsets.all(16.0),
-              child: const Text(
-                "Iptal",
+              child: Text(
+                "CANCEL".tr(),
                 style: TextStyle(fontSize: 22.0)
                 ),
               ),
@@ -118,7 +118,7 @@ class _PaymentsState extends State<Payments> {
       ),
       paypalRequest: BraintreePayPalRequest(
         amount: amount.toString(),
-        displayName: 'Post Now',
+        displayName: 'APP_NAME'.tr(),
         currencyCode: 'EUR',
       ),
     );
@@ -137,9 +137,9 @@ class _PaymentsState extends State<Payments> {
       print(e.message);
     }
     if (await checkTransaction(transactionId))
-      print("Onaylandi");
+      print("Accepted");
     else
-      print("Red Edildi");
+      print("Declined");
   }
 
   Future<String> getCustomerId() async {
