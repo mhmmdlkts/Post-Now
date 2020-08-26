@@ -21,7 +21,7 @@ class Job {
   String driverId;
   String userId;
   String name;
-  String pin;
+  String sign;
   String transactionId;
   double price;
   Status status;
@@ -44,7 +44,7 @@ class Job {
     name = snapshot.value["name"];
     driverId = snapshot.value["driver-id"];
     userId = snapshot.value["user-id"];
-    pin = snapshot.value["pin"];
+    sign = snapshot.value["sign"];
     transactionId = snapshot.value["transactionId"];
     price = snapshot.value["price"] + 0.0;
     status = stringToStatus(snapshot.value["status"]);
@@ -152,7 +152,7 @@ class Job {
     if (name != null) toReturn['name'] = name;
     if (driverId != null) toReturn['driver-id'] = driverId;
     if (userId != null) toReturn['user-id'] = userId;
-    if (pin != null) toReturn['pin'] = pin;
+    if (sign != null) toReturn['sign'] = sign;
     if (transactionId != null) toReturn['transactionId'] = transactionId;
     if (price != null) toReturn['price'] = price;
     if (status != null) toReturn['status'] = statusToString(status);
@@ -172,7 +172,7 @@ class Job {
     'name': name,
     'driver-id': driverId,
     'user-id': userId,
-    'pin': pin,
+    'sign': sign,
     'transactionId': transactionId,
     'price': price,
     'status': statusToString(status),
@@ -192,7 +192,7 @@ class Job {
     name = json["name"];
     driverId = json["driver-id"];
     userId = json["user-id"];
-    pin = json["pin"];
+    sign = json["sign"];
     transactionId = json["transactionId"];
     price = json["price"];
     status = stringToStatus(json["status"]);

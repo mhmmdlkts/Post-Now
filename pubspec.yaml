@@ -55,6 +55,7 @@ dependencies:
   path_provider: ^1.6.11
   path: ^1.6.4
   easy_localization: ^2.3.3
+  characters: ^1.0.0
 
 dev_dependencies:
   flutter_test:

@@ -48,8 +48,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    /* if (context.locale.languageCode != ui.window.locale.languageCode)
-      context.locale = Locale(ui.window.locale.languageCode, ''); */
+    if (context.locale.languageCode != ui.window.locale.languageCode)
+      context.locale = Locale(ui.window.locale.languageCode, '');
     return MaterialApp(
       title: 'APP_NAME'.tr(),
       theme: ThemeData(

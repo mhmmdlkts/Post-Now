@@ -1,18 +1,24 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:postnow/maps/google_maps_view.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import '../../main.dart';
+import '../../sign_up.dart';
 
 class FirebaseService {
+  String phone;
 
   handleAuth() => StreamBuilder(
     stream: FirebaseAuth.instance.onAuthStateChanged,
     builder: (BuildContext context, snapshot) {
       if (snapshot.hasData) {
-        return GoogleMapsView(snapshot.data.uid);
+        /*if (phone)
+          return SignUp(snapshot.data.uid, phone);
+        else*/
+          return GoogleMapsView(snapshot.data.uid);
       } else {
-        return MyHomePage(title: 'Post Now');
+        return MyHomePage(title: "APP_NAME".tr());
       }
     },
   );

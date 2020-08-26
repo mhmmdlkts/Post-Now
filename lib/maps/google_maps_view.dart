@@ -521,7 +521,6 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                           title: Text("MAPS.BOTTOM_MENUS.YOUR_DRIVER".tr(namedArgs: {'name': myDriver.name})),
                           subtitle: Text("MAPS.BOTTOM_MENUS.PACKAGE_PICKED.STATUS".tr()),
                         ),
-                        Text("MAPS.BOTTOM_MENUS.PACKAGE_PICKED.CONFIRMATION_PIN".tr(namedArgs: {'pin': job.pin.toString()})),
                         ButtonBar(
                           children: <Widget>[
                             FlatButton(
