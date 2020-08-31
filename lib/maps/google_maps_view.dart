@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:screen/screen.dart';
 import 'dart:math' show cos, sqrt, asin;
 import 'dart:typed_data';
 import 'package:firebase_database/firebase_database.dart';
@@ -10,6 +11,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_map_polyline/google_map_polyline.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_webservice/places.dart';
+import 'package:oktoast/oktoast.dart';
+import 'package:postnow/Dialogs/message_toast.dart';
 import 'package:postnow/core/service/firebase_service.dart';
 import 'package:postnow/core/service/model/driver.dart';
 import 'package:postnow/core/service/model/job.dart';
@@ -52,6 +55,7 @@ class GoogleMapsView extends StatefulWidget {
 const String mapsApiKey = "AIzaSyDUr-GnemethAnyLSQZc6YPsT_lFeBXaI8";
 
 class _GoogleMapsViewState extends State<GoogleMapsView> {
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   BitmapDescriptor packageLocationIcon, driverLocationIcon, homeLocationIcon;
   List<String> orders = List();
   List<Driver> drivers = List();
@@ -75,9 +79,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
   String uid;
   User me = User();
 
-  _GoogleMapsViewState(uid) {
-    this.uid = uid;
-  }
+  _GoogleMapsViewState(this.uid);
 
   getRoute() async {
     polylines.clear();
@@ -133,6 +135,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
   @override
   void initState() {
     super.initState();
+    Screen.keepOn(true);
     getBytesFromAsset('assets/package_map_marker.png', 130).then((value) => {
       packageLocationIcon = BitmapDescriptor.fromBytes(value)
     });
@@ -157,13 +160,39 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
     driverRef = FirebaseDatabase.instance.reference().child('drivers');
 
     driverRef.onChildAdded.listen(_onDriversDataAdded);
-    driverRef.onChildChanged.listen(_onDriversDataChanged);
+    driverRef.onChildChanged    .listen(_onDriversDataChanged);
 
     jobsRef = FirebaseDatabase.instance.reference().child('jobs');
     jobsRef.onChildAdded.listen(_onJobsDataAdded);
-    jobsRef.onChildChanged.listen(_onJobsDataChanged);
+
+    jobsRef.onChildChanged.listen((Event e) {
+      Job j = Job.fromSnapshot(e.snapshot);
+      _onJobsDataChanged(j);
+    });
 
     userRef = FirebaseDatabase.instance.reference().child('users').child(uid);
+
+    _firebaseMessaging.configure(onMessage: (Map<String, dynamic> message) {
+      print('onResume: $message');
+      final data = message["data"];
+      if (data == null)
+        return;
+      switch (data["typ"]) {
+        case "message":
+          showMessageToast(data["key"], data["name"], data["message"]);
+          break;
+      }
+
+      return;
+    }, onResume: (Map<String, dynamic> message) {
+      print('onResume: $message');
+      return;
+    }, onLaunch: (Map<String, dynamic> message) {
+      print('onLaunch: $message');
+      return;
+    });
+
+    setJobIfExist();
 
     userRef.once().then((snapshot) => {
       me = User.fromSnapshot(snapshot),
@@ -195,11 +224,10 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
     }
   }
 
-  void _onJobsDataChanged(Event event) async {
-    Job snapshot = Job.fromSnapshot(event.snapshot);
-    if (snapshot == job) {
-      print(snapshot.status);
-      job = snapshot;
+  void _onJobsDataChanged(Job j) async {
+    if (j == job) {
+      print(j.status);
+      job = j;
       switch (job.status) {
         case Status.ON_ROAD:
           setState(() {
@@ -525,7 +553,9 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                           children: <Widget>[
                             FlatButton(
                               child: Text('SEND_MESSAGE'.tr()),
-                              onPressed: openMessageScreen,
+                              onPressed: () {
+                                openMessageScreen(job.key, myDriver.name);
+                              },
                             ),
                           ],
                         ),
@@ -558,7 +588,9 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                           children: <Widget>[
                             FlatButton(
                               child: Text('SEND_MESSAGE'.tr()),
-                              onPressed: openMessageScreen,
+                              onPressed: () {
+                                openMessageScreen(job.key, myDriver.name);
+                              },
                             ),
                           ],
                         ),
@@ -783,8 +815,6 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
             )
         )
     );
-
-    final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
     void addJobToPool(transactionId) async {
       job = Job(
@@ -1020,10 +1050,10 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
       myPosition = pos;
     }
 
-    void openMessageScreen() async {
+    void openMessageScreen(key, name) async {
       await Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => Chat_Screen(job.key, myDriver.name, false))
+          MaterialPageRoute(builder: (context) => Chat_Screen(key, name, false))
       );
     }
 
@@ -1329,5 +1359,35 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
             )
         )
     );
+  }
+
+  showMessageToast(key, name, message) {
+    showToastWidget(
+        MessageToast(
+          message: message,
+          name: name,
+          onPressed: () {
+            openMessageScreen(key, name);
+          },
+        ),
+        duration: Duration(seconds: 5),
+        position: ToastPosition.top,
+        handleTouch: true
+    );
+  }
+
+  void setJobIfExist() {
+    userRef.child("currentJob").once().then((DataSnapshot snapshot){
+      final jobId = snapshot.value.toString();
+      if (jobId != null) {
+        print(jobId);
+        jobsRef.child(jobId).once().then((DataSnapshot snapshot){
+          Job j = Job.fromJson(snapshot.value, key: snapshot.key);
+          print(j.status);
+          job = j;
+          _onJobsDataChanged(j);
+        });
+      }
+    });
   }
 }

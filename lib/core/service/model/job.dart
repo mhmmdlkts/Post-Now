@@ -187,14 +187,19 @@ class Job {
   };
 
 
-  Job.fromJson(Map<String, dynamic> json) {
-    key = json["key"];
+
+
+  Job.fromJson(Map json, {key}) {
+    if (key == null)
+      this.key = json["key"];
+    else
+      this.key = key;
     name = json["name"];
     driverId = json["driver-id"];
     userId = json["user-id"];
     sign = json["sign"];
     transactionId = json["transactionId"];
-    price = json["price"];
+    price = json["price"] + 0.0;
     status = stringToStatus(json["status"]);
     vehicle = stringToVehicle(json["vehicle"]);
     origin = stringToLatLng(json["origin"]);
