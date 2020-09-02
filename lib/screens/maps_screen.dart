@@ -1,47 +1,32 @@
-import 'dart:async';
-import 'dart:convert';
-import 'package:screen/screen.dart';
-import 'dart:math' show cos, sqrt, asin;
-import 'dart:typed_data';
-import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:google_map_polyline/google_map_polyline.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:google_maps_webservice/places.dart';
-import 'package:oktoast/oktoast.dart';
-import 'package:postnow/Dialogs/message_toast.dart';
-import 'package:postnow/core/service/firebase_service.dart';
-import 'package:postnow/core/service/model/driver.dart';
-import 'package:postnow/core/service/model/job.dart';
-import 'package:postnow/core/service/model/user.dart';
-import 'package:postnow/core/service/payment_service.dart';
-import 'package:flutter_google_places/flutter_google_places.dart';
-import 'package:postnow/ui/view/all_orders.dart';
+import 'package:postnow/screens/orders_overview_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:ui' as ui;
-
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:easy_localization/easy_localization.dart';
-import '../chat_screen.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:postnow/services/payment_service.dart';
+import 'package:postnow/enums/job_vehicle_enum.dart';
+import 'package:postnow/services/maps_service.dart';
+import 'package:google_maps_webservice/places.dart';
+import 'package:postnow/Dialogs/message_toast.dart';
+import 'package:postnow/services/auth_service.dart';
+import 'package:postnow/enums/job_status_enum.dart';
+import 'package:postnow/environment/api-keys.dart';
+import 'package:postnow/enums/menu_typ_enum.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:postnow/models/driver.dart';
+import 'package:postnow/models/user.dart';
+import 'package:postnow/models/job.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:oktoast/oktoast.dart';
+import 'package:screen/screen.dart';
+import 'chat_screen.dart';
+import 'dart:convert';
+import 'dart:async';
 
-const double EURO_PER_KM = 0.96;
-const double EURO_START  = 5.00;
-const bool TEST = false;
-
-enum MenuTyp {
-  FROM_OR_TO,
-  NO_DRIVER_AVAILABLE,
-  CALCULATING_DISTANCE,
-  CONFIRM,
-  SEARCH_DRIVER,
-  PAYMENT_WAITING,
-  PAYMENT_DECLINED,
-  ACCEPTED,
-  PACKAGE_PICKED,
-  COMPLETED
-}
 
 class GoogleMapsView extends StatefulWidget {
   final String uid;
@@ -51,25 +36,23 @@ class GoogleMapsView extends StatefulWidget {
   _GoogleMapsViewState createState() => _GoogleMapsViewState(uid);
 }
 
-
-const String mapsApiKey = "AIzaSyDUr-GnemethAnyLSQZc6YPsT_lFeBXaI8";
-
 class _GoogleMapsViewState extends State<GoogleMapsView> {
+  final GoogleMapPolyline _googleMapPolyline = new GoogleMapPolyline(apiKey: GOOGLE_DIRECTIONS_API_KEY);
+  final GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: GOOGLE_DIRECTIONS_API_KEY);
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
-  BitmapDescriptor packageLocationIcon, driverLocationIcon, homeLocationIcon;
-  List<String> orders = List();
-  List<Driver> drivers = List();
-  Set<Polyline> polylines = Set();
-  List<LatLng> routeCoords;
-  GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: mapsApiKey);
-  GoogleMapPolyline googleMapPolyline = new GoogleMapPolyline(apiKey: mapsApiKey);
-  Marker packageMarker, destinationMarker;
-  DatabaseReference driverRef, jobsRef, userRef;
-  GoogleMapController _mapController;
+  final List<Driver> _drivers = List();
+  User me = User();
+  Set<Polyline> _polyLines = Set();
+  List<String> _orders = List();
+  BitmapDescriptor _packageLocationIcon, _driverLocationIcon, _homeLocationIcon;
   TextEditingController originTextController, destinationTextController;
-  MenuTyp menuTyp;
-  double price = 0.0;
+  Marker _packageMarker, _destinationMarker;
+  GoogleMapController _mapController;
+  List<LatLng> _routeCoordinate;
+  MapsService _mapsService;
   double totalDistance = 0.0;
+  double price = 0.0;
+  MenuTyp menuTyp;
   String originAddress, destinationAddress;
   Position myPosition;
   LatLng origin, destination;
@@ -77,14 +60,15 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
   Driver myDriver;
   bool isDestinationButtonChosen = false;
   String uid;
-  User me = User();
 
-  _GoogleMapsViewState(this.uid);
+  _GoogleMapsViewState(this.uid) {
+    _mapsService = MapsService(uid);
+  }
 
   getRoute() async {
-    polylines.clear();
+    _polyLines.clear();
 
-    setNewCameraPosition(origin, destination, false);
+    _mapsService.setNewCameraPosition(_mapController, origin, destination, false);
 
     await setRoutePolyline(origin, destination, RouteMode.driving);
     menuTyp = MenuTyp.CONFIRM;
@@ -104,7 +88,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
       return 0.0;
     double totalDistance = 0.0;
     for (int i = 0; i < coords.length - 1; i++) {
-      totalDistance += _coordinateDistance(
+      totalDistance += _mapsService.coordinateDistance(
           coords[i],
           coords[i + 1]
       );
@@ -113,7 +97,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
   }
 
   void calculatePrice () {
-    totalDistance = calculateDistance(routeCoords);
+    totalDistance = calculateDistance(_routeCoordinate);
     double calcPrice = EURO_START;
     calcPrice += totalDistance * EURO_PER_KM;
     setState(() {
@@ -121,56 +105,43 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
     });
   }
 
-  double _coordinateDistance(LatLng latLng1, LatLng latLng2) {
-    if (latLng1 == null || latLng2 == null)
-      return 0.0;
-    var p = 0.017453292519943295;
-    var c = cos;
-    var a = 0.5 -
-        c((latLng2.latitude - latLng1.latitude) * p) / 2 +
-        c(latLng1.latitude * p) * c(latLng2.latitude * p) * (1 - c((latLng2.longitude - latLng1.longitude) * p)) / 2;
-    return 12742 * asin(sqrt(a));
-  }
-
   @override
   void initState() {
     super.initState();
     Screen.keepOn(true);
-    getBytesFromAsset('assets/package_map_marker.png', 130).then((value) => {
-      packageLocationIcon = BitmapDescriptor.fromBytes(value)
-    });
-    getBytesFromAsset('assets/driver_map_marker.png', 150).then((value) => {
-      driverLocationIcon = BitmapDescriptor.fromBytes(value)
-    });
-    getBytesFromAsset('assets/home_map_marker.png', 130).then((value) => {
-      homeLocationIcon = BitmapDescriptor.fromBytes(value)
-    });
+    _mapsService.getBytesFromAsset('assets/package_map_marker.png', 130).then((value) => { setState((){
+      _packageLocationIcon = BitmapDescriptor.fromBytes(value);
+    })});
+    _mapsService.getBytesFromAsset('assets/driver_map_marker.png', 150).then((value) => { setState((){
+      _driverLocationIcon = BitmapDescriptor.fromBytes(value);
+    })});
+    _mapsService.getBytesFromAsset('assets/home_map_marker.png', 130).then((value) => { setState((){
+      _homeLocationIcon = BitmapDescriptor.fromBytes(value);
+    })});
 
     getMyPosition();
 
     SharedPreferences.getInstance().then((value) => {
         if (value.containsKey('orders'))
-          orders = value.getStringList('orders')
+          _orders = value.getStringList('orders')
       }
     );
 
     originTextController = new TextEditingController(text: '');
     destinationTextController = new TextEditingController(text: '');
 
-    driverRef = FirebaseDatabase.instance.reference().child('drivers');
+    _mapsService.driverRef.onChildAdded.listen(_onDriversDataAdded);
+    _mapsService.driverRef.onChildChanged    .listen(_onDriversDataChanged);
 
-    driverRef.onChildAdded.listen(_onDriversDataAdded);
-    driverRef.onChildChanged    .listen(_onDriversDataChanged);
 
-    jobsRef = FirebaseDatabase.instance.reference().child('jobs');
-    jobsRef.onChildAdded.listen(_onJobsDataAdded);
+    _mapsService.jobsRef.onChildAdded.listen(_onJobsDataAdded);
 
-    jobsRef.onChildChanged.listen((Event e) {
-      Job j = Job.fromSnapshot(e.snapshot);
-      _onJobsDataChanged(j);
+    _mapsService.jobsRef.onChildChanged.listen((Event e) {
+      setState(() {
+        Job j = Job.fromSnapshot(e.snapshot);
+        _onJobsDataChanged(j);
+      });
     });
-
-    userRef = FirebaseDatabase.instance.reference().child('users').child(uid);
 
     _firebaseMessaging.configure(onMessage: (Map<String, dynamic> message) {
       print('onResume: $message');
@@ -194,7 +165,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
 
     setJobIfExist();
 
-    userRef.once().then((snapshot) => {
+    _mapsService.userRef.once().then((snapshot) => {
       me = User.fromSnapshot(snapshot),
     });
 
@@ -206,21 +177,14 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
   void _onDriversDataAdded(Event event) {
     setState(() {
       Driver snapshot = Driver.fromSnapshot(event.snapshot);
-      drivers.add(snapshot);
+      _drivers.add(snapshot);
     });
-  }
-
-  Future<Uint8List> getBytesFromAsset(String path, int width) async {
-    ByteData data = await rootBundle.load(path);
-    ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(), targetWidth: width);
-    ui.FrameInfo fi = await codec.getNextFrame();
-    return (await fi.image.toByteData(format: ui.ImageByteFormat.png)).buffer.asUint8List();
   }
 
   void _onJobsDataAdded(Event event) async {
     Job snapshot = Job.fromSnapshot(event.snapshot);
     if (snapshot == job) {
-      userRef.child("orders").child(snapshot.key).set(snapshot.key);
+      _mapsService.userRef.child("orders").child(snapshot.key).set(snapshot.key);
     }
   }
 
@@ -230,26 +194,19 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
       job = j;
       switch (job.status) {
         case Status.ON_ROAD:
-          setState(() {
-            menuTyp = MenuTyp.ACCEPTED;
-          });
+          menuTyp = MenuTyp.ACCEPTED;
           if (job.driverId != null) {
-            for (Driver d in drivers) {
+            for (Driver d in _drivers) {
               if (d.key == job.driverId) {
                 myDriver = d;
-                setState(() {
-                  myDriver = d;
-                  myDriver.isMyDriver = true;
-                });
-                polylines.clear();
+                myDriver.isMyDriver = true;
+                _polyLines.clear();
               }
             }
           }
           break;
         case Status.PACKAGE_PICKED:
-          setState(() {
-            menuTyp = MenuTyp.PACKAGE_PICKED;
-          });
+          menuTyp = MenuTyp.PACKAGE_PICKED;
           break;
         case Status.FINISHED:
           setState(() {
@@ -257,9 +214,9 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
           });
           break;
         case Status.CANCELLED:
-          polylines.clear();
-          packageMarker = null;
-          setNewCameraPosition(LatLng(myPosition.latitude, myPosition.longitude), null, true);
+          _polyLines.clear();
+          _packageMarker = null;
+          _mapsService.setNewCameraPosition(_mapController, LatLng(myPosition.latitude, myPosition.longitude), null, true);
           clearJob();
           break;
       }
@@ -267,11 +224,11 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
   }
 
   void _onDriversDataChanged(Event event) {
-    var old = drivers.singleWhere((entry) {
+    var old = _drivers.singleWhere((entry) {
       return entry.key == event.snapshot.key;
     });
     setState(() {
-      drivers[drivers.indexOf(old)] = Driver.fromSnapshot(event.snapshot);
+      _drivers[_drivers.indexOf(old)] = Driver.fromSnapshot(event.snapshot);
     });
   }
 
@@ -365,21 +322,21 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
 
   Set<Marker> _createMarker() {
     Set markers = Set<Marker>();
-    for (Driver driver in drivers) {
+    for (Driver driver in _drivers) {
       if (menuTyp != MenuTyp.ACCEPTED) {
         if (driver.isOnline) {
-          markers.add(driver.getMarker(driverLocationIcon));
+          markers.add(driver.getMarker(_driverLocationIcon));
         }
       } else {
         if (driver.isMyDriver) {
-          markers.add(driver.getMarker(driverLocationIcon));
+          markers.add(driver.getMarker(_driverLocationIcon));
         }
       }
     }
-    if (packageMarker != null)
-      markers.add(packageMarker);
-    if (destinationMarker != null)
-      markers.add(destinationMarker);
+    if (_packageMarker != null)
+      markers.add(_packageMarker);
+    if (_destinationMarker != null)
+      markers.add(_destinationMarker);
     return markers;
   }
 
@@ -396,7 +353,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
       zoomControlsEnabled: false,
       myLocationEnabled: true,
       myLocationButtonEnabled: false,
-      polylines: polylines,
+      polylines: _polyLines,
       markers: _createMarker(),
       onTap: (t) {
         setMarker(t);
@@ -410,14 +367,14 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
     if (t is Position)
       t = LatLng(t.latitude, t.longitude);
     setState(() {
-      polylines.clear();
+      _polyLines.clear();
       LatLng chosen = t;
       if (isDestinationButtonChosen) {
         destination = chosen;
-        destinationMarker = Marker(
+        _destinationMarker = Marker(
             markerId: MarkerId("package"),
             position: chosen,
-            icon: homeLocationIcon,
+            icon: _homeLocationIcon,
             onTap: () => {
               setState(() {
                 isDestinationButtonChosen = true;
@@ -427,10 +384,10 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
         setPlaceForDestination(address: address);
       } else {
         origin = chosen;
-        packageMarker = Marker(
+        _packageMarker = Marker(
             markerId: MarkerId("destination"),
             position: chosen,
-            icon: packageLocationIcon,
+            icon: _packageLocationIcon,
             onTap: () => {
               setState(() {
                 isDestinationButtonChosen = false;
@@ -670,7 +627,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                               child: Text('CANCEL'.tr()),
                               onPressed: () {
                                 setState(() {
-                                  polylines.clear();
+                                  _polyLines.clear();
                                   if (destination != null && origin != null)
                                     menuTyp = MenuTyp.FROM_OR_TO;
                                 });
@@ -828,67 +785,35 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
           originAddress: originAddress,
           destinationAddress: destinationAddress
       );
-      orders.add(json.encode(job.toJson()));
+      _orders.add(json.encode(job.toJson()));
       SharedPreferences.getInstance().then((value) => {
-          value.setStringList('orders', orders)
+          value.setStringList('orders', _orders)
         }
       );
-      jobsRef.push().set(job.toMap());
-    }
-
-    void setNewCameraPosition(LatLng first, LatLng second, bool centerFirst) {
-      if (first == null || _mapController == null)
-        return;
-      CameraUpdate cameraUpdate;
-      if (second == null) {
-        // firsti ortala, zoom sabit
-        cameraUpdate = CameraUpdate.newCameraPosition(
-            CameraPosition(target: LatLng(first.latitude, first.longitude), zoom: 13));
-      } else if (centerFirst) {
-        // firsti ortala, secondu da sigdir
-        cameraUpdate = CameraUpdate.newCameraPosition(
-            CameraPosition(target: LatLng(first.latitude, first.longitude), zoom: 13));
-      } else {
-        // first second arasini ortala, ikisini de sigdir
-        cameraUpdate = CameraUpdate.newCameraPosition(
-            CameraPosition(target:
-            LatLng(
-                (first.latitude + second.latitude) / 2,
-                (first.longitude + second.longitude) / 2
-            ),
-                zoom: _coordinateDistance(first, second)));
-
-        LatLngBounds bound = _latLngBoundsCalculate(first, second);
-        cameraUpdate = CameraUpdate.newLatLngBounds(bound, 70);
-      }
-      _mapController.animateCamera(cameraUpdate);
-    }
-    LatLngBounds _latLngBoundsCalculate(LatLng first, LatLng second) {
-      bool check = first.latitude < second.latitude;
-      return LatLngBounds(southwest: check ? first : second, northeast: check ? second : first);
+      _mapsService.jobsRef.push().set(job.toMap());
     }
 
     Future<void> setRoutePolyline(LatLng origin, LatLng destination, RouteMode mode) async {
-      routeCoords = List();
+      _routeCoordinate = List();
       if (TEST) {
-        routeCoords.add(origin);
-        routeCoords.add(destination);
+        _routeCoordinate.add(origin);
+        _routeCoordinate.add(destination);
       } else {
-        routeCoords = await googleMapPolyline.getCoordinatesWithLocation (
+        _routeCoordinate = await _googleMapPolyline.getCoordinatesWithLocation (
             origin: origin,
             destination: destination,
             mode: mode
         );
       }
-      drawPolyline(Colors.black26, [Colors.blue, Colors.blueAccent], routeCoords);
+      drawPolyline(Colors.black26, [Colors.blue, Colors.blueAccent], _routeCoordinate);
     }
 
     initPolyline(Color color) {
       setState(() {
-        polylines.add(Polyline(
+        _polyLines.add(Polyline(
             polylineId: PolylineId("Route_all"),
             visible: true,
-            points: routeCoords,
+            points: _routeCoordinate,
             width: 3,
             color: color,
             startCap: Cap.roundCap,
@@ -900,13 +825,13 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
     drawPolyline(Color firstColor, List<Color> colors, List<LatLng> routeCoords) async {
       int colorIndex = 0;
       while(isDrawableRoute()) {
-        polylines.clear();
+        _polyLines.clear();
         initPolyline(firstColor);
         await new Future.delayed(Duration(milliseconds : 200));
         await drawPolylineHelper(colorIndex, firstColor, colors[colorIndex++ % colors.length], routeCoords);
         await new Future.delayed(Duration(milliseconds : 500));
       }
-      polylines.clear();
+      _polyLines.clear();
     }
 
     bool isDrawableRoute() => menuTyp == MenuTyp.CONFIRM || menuTyp == MenuTyp.CALCULATING_DISTANCE;
@@ -918,7 +843,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
         await drawOneLine(routeCoords[i], routeCoords[i+1], color, PolylineId("Route_" + id.toString() + "_" + i.toString()), 20);
       }
       setState(() {
-        polylines.add(Polyline(
+        _polyLines.add(Polyline(
             polylineId: PolylineId("LastPiece_" + id.toString()),
             visible: true,
             points: routeCoords,
@@ -935,7 +860,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
       const int pieceDuration = 1000;
       await drawOneLine(p1, p2, ce ? Colors.redAccent: Colors.green, PolylineId(id.value + "__" ), pieceDuration);
       const double routePieceDistance = 0.02;
-      double d = _coordinateDistance(p1, p2);
+      double d = _mapsService.coordinateDistance(p1, p2);
       double x = d / routePieceDistance;
       double lat = (p1.latitude - p2.latitude).abs() / x;
       double long = (p1.longitude - p2.longitude).abs() / x;
@@ -989,7 +914,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
 
     drawOneLine(LatLng p1, LatLng p2, Color color, PolylineId id, int duration) async {
       setState(() {
-        polylines.add(Polyline(
+        _polyLines.add(Polyline(
             polylineId: id,
             visible: true,
             points: [p1, p2],
@@ -1009,16 +934,16 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
         newRouteCoords.add(origin);
         newRouteCoords.add(destination);
       } else {
-        newRouteCoords.addAll(await googleMapPolyline.getCoordinatesWithLocation(
+        newRouteCoords.addAll(await _googleMapPolyline.getCoordinatesWithLocation(
             origin: origin,
             destination: destination,
             mode: mode));
       }
 
-      newRouteCoords.addAll(routeCoords);
+      newRouteCoords.addAll(_routeCoordinate);
 
       setState(() {
-        polylines.add(Polyline(
+        _polyLines.add(Polyline(
             polylineId: PolylineId("Route"),
             visible: true,
             points: newRouteCoords,
@@ -1045,7 +970,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
 
     void setMyPosition(Position pos) {
       if (myPosition == null) { // first time
-        setNewCameraPosition(new LatLng(pos.latitude, pos.longitude), null, true);
+        _mapsService.setNewCameraPosition(_mapController, new LatLng(pos.latitude, pos.longitude), null, true);
       }
       myPosition = pos;
     }
@@ -1053,14 +978,14 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
     void openMessageScreen(key, name) async {
       await Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => Chat_Screen(key, name, false))
+          MaterialPageRoute(builder: (context) => ChatScreen(key, name, false))
       );
     }
 
     getDesOrOriginButton(String activePath, String notActivePath, String activePathPressed, String notActivePathPressed, String label, bool isDestination) {
 
       onTapButton() {
-        setNewCameraPosition(isDestination? destination : origin, null, true);
+        _mapsService.setNewCameraPosition(_mapController, isDestination? destination : origin, null, true);
         if (isDestinationButtonChosen != isDestination) {
           setState(() {
             isDestinationButtonChosen = isDestination;
@@ -1141,7 +1066,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                         hint: "MAPS.TYPE_ADDRESS".tr(),
                         // startText: isDestination ? destinationTextController.text : originTextController.text,
                         context: context,
-                        apiKey: mapsApiKey,
+                        apiKey: GOOGLE_DIRECTIONS_API_KEY,
                         logo: Image.asset("assets/none.png"),
                         mode: Mode.overlay, // Mode.fullscreen
                         language: 'de',
@@ -1274,15 +1199,15 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
       if (myPosition == null)
         return;
       LatLng pos = LatLng(myPosition.latitude, myPosition.longitude);
-      setNewCameraPosition(pos, null, true);
+      _mapsService.setNewCameraPosition(_mapController, pos, null, true);
     },
     child: Icon(Icons.my_location, color: Colors.white,),
     backgroundColor: Colors.lightBlueAccent,
   );
 
     bool isOnlineDriverAvailable() {
-      for (int i = 0; i < drivers.length; i++) {
-        if (drivers[i].isOnline)
+      for (int i = 0; i < _drivers.length; i++) {
+        if (_drivers[i].isOnline)
           return true;
       }
       return false;
@@ -1307,13 +1232,13 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
     setState(() {
       originTextController.clear();
       destinationTextController.clear();
-      polylines = Set();
+      _polyLines = Set();
       isDestinationButtonChosen = false;
       totalDistance = 0.0;
       price = 0.0;
-      packageMarker = null;
-      destinationMarker = null;
-      routeCoords = null;
+      _packageMarker = null;
+      _destinationMarker = null;
+      _routeCoordinate = null;
       myDriver = null;
       originAddress = null;
       destinationAddress = null;
@@ -1325,11 +1250,11 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
   }
 
   getLastAddress(int i) {
-    if (orders.length < i)
+    if (_orders.length < i)
       return Container();
-    Job order = Job.fromJson(json.decode(orders[orders.length-i]));
+    Job order = Job.fromJson(json.decode(_orders[_orders.length-i]));
     return Container(
-      margin: EdgeInsets.only(bottom: 5),
+        margin: EdgeInsets.only(bottom: 5),
         width: (MediaQuery
             .of(context)
             .size
@@ -1377,11 +1302,10 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
   }
 
   void setJobIfExist() {
-    userRef.child("currentJob").once().then((DataSnapshot snapshot){
-      final jobId = snapshot.value.toString();
+    _mapsService.userRef.child("currentJob").once().then((DataSnapshot snapshot){
+      final jobId = snapshot.value;
       if (jobId != null) {
-        print(jobId);
-        jobsRef.child(jobId).once().then((DataSnapshot snapshot){
+        _mapsService.jobsRef.child(jobId.toString()).once().then((DataSnapshot snapshot){
           Job j = Job.fromJson(snapshot.value, key: snapshot.key);
           print(j.status);
           job = j;

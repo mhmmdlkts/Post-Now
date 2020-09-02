@@ -3,11 +3,12 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:postnow/core/service/firebase_service.dart';
+import 'package:postnow/services/auth_service.dart';
 
-import 'core/service/model/user.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'dart:ui' as ui;
+
+import 'models/user.dart';
 
 void main() async {
   await init();

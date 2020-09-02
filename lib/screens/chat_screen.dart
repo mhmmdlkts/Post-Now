@@ -1,59 +1,62 @@
 import 'package:camera/camera.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as path_package;
 import 'package:path_provider/path_provider.dart';
-import 'package:postnow/core/service/model/message.dart';
+import 'package:postnow/models/message.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'dart:io' as i;
 
+import 'package:postnow/services/chat_service.dart';
 
-class Chat_Screen extends StatefulWidget {
-  final String jobId, name;
-  final bool isDriverApp;
-  Chat_Screen(this.jobId, this.name, this.isDriverApp);
+
+class ChatScreen extends StatefulWidget {
+  final String _jobId, _name;
+  final bool _isDriverApp;
+  ChatScreen(this._jobId, this._name, this._isDriverApp);
 
   @override
-  _Chat_ScreenState createState() => _Chat_ScreenState(jobId, name, isDriverApp);
+  _ChatScreenState createState() => _ChatScreenState(_jobId, _name, _isDriverApp);
 }
 
-class _Chat_ScreenState extends State<Chat_Screen> {
-  final String jobId, name;
-  final bool isDriverApp;
-  DatabaseReference ref;
-  String inputMessage = "";
-  TextEditingController textEditingController = new TextEditingController();
-  ScrollController listViewController = new ScrollController();
-  List<Message> messages = new List();
+class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
+  final String _jobId, _name;
+  final TextEditingController _textEditingController = new TextEditingController();
+  final ScrollController _listViewController = new ScrollController();
+  final bool _isDriverApp;
+  ChatService _chatService;
+  // Future<void> _initializeControllerFuture;
+  DatabaseReference _chatRef;
+  List<Message> _messages = [];
+  List<CameraDescription> _cameras;
   CameraController _cameraController;
-  Future<void> _initializeControllerFuture;
-  bool isCameraOpen = false;
-  bool showCapturedPhoto = false;
-  var imagePath = "";
-  List<CameraDescription> cameras;
-  bool isBackCamera = true;
+  String _inputMessage = "";
+  String _imagePath = "";
+  bool _isUploading = false;
+  bool _isCameraOpen = false;
+  bool _showCapturedPhoto = false;
+  bool _isBackCamera = true;
 
-  _Chat_ScreenState(this.jobId, this.name, this.isDriverApp);
+  _ChatScreenState(this._jobId, this._name, this._isDriverApp) {
+    _chatService = new ChatService(_jobId);
+  }
 
   @override
   void initState() {
     super.initState();
-    isCameraOpen = false;
-    showCapturedPhoto = false;
+    _isCameraOpen = false;
+    _showCapturedPhoto = false;
 
-    ref = FirebaseDatabase.instance.reference().child('jobs_chat').child(jobId);
-    ref.onChildAdded.listen(onNewMessage);
-    getNextCamera();
+    _chatRef = FirebaseDatabase.instance.reference().child('jobs_chat').child(_jobId);
+    _chatRef.onChildAdded.listen(_onNewMessage);
+    _getNextCamera();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      _cameraController != null
-          ? _initializeControllerFuture = _cameraController.initialize()
-          : null; //on pause camera is disposed, so we need to call again "issue is only for android"
+    if (state == AppLifecycleState.resumed && _cameraController != null) {
+      // _initializeControllerFuture = _cameraController.initialize();
     }
   }
 
@@ -63,25 +66,25 @@ class _Chat_ScreenState extends State<Chat_Screen> {
     super.dispose();
   }
 
-  getNextCamera() async {
-    if (cameras == null)
-      cameras = await availableCameras();
-    _cameraController = CameraController(isBackCamera ? cameras.first : cameras.last,ResolutionPreset.high);
-    _initializeControllerFuture = _cameraController.initialize();
+  _getNextCamera() async {
+    if (_cameras == null)
+      _cameras = await availableCameras();
+    _cameraController = CameraController(_isBackCamera ? _cameras.first : _cameras.last,ResolutionPreset.high);
+    // _initializeControllerFuture = _cameraController.initialize();
     if (!mounted)
       return;
   }
 
-  onNewMessage(event) {
+  _onNewMessage(event) {
     Message message = Message.fromSnapshot(event.snapshot);
-    listViewController.animateTo(
-      listViewController.position.maxScrollExtent + 20,
+    _listViewController.animateTo(
+      _listViewController.position.maxScrollExtent + 20,
       curve: Curves.easeOut,
       duration: const Duration(milliseconds: 300),
     );
 
     setState(() {
-      messages.add(message);
+      _messages.add(message);
     });
   }
 
@@ -96,19 +99,19 @@ class _Chat_ScreenState extends State<Chat_Screen> {
         },
         child: Scaffold (
           appBar: AppBar(
-            title: Text(name, style: TextStyle(color: Colors.white)),iconTheme:  IconThemeData( color: Colors.white),
+            title: Text(_name, style: TextStyle(color: Colors.white)),iconTheme:  IconThemeData( color: Colors.white),
             brightness: Brightness.dark,
             centerTitle: false,
           ),
           body: Stack(
             children: <Widget>[
               Positioned(
-                child: isCameraOpen ? cameraOrImageField() : conversationField(),
+                child: _isCameraOpen ? _cameraOrImageField() : _conversationField(),
               ),
               Positioned(
                   child: new Align(
                       alignment: FractionalOffset.bottomCenter,
-                      child: bottomTextInput()
+                      child: _bottomTextInput()
                   )
               )
             ],
@@ -117,41 +120,41 @@ class _Chat_ScreenState extends State<Chat_Screen> {
     );
   }
 
-  Widget conversationField() => Container(
+  Widget _conversationField() => Container(
       height: MediaQuery.of(context).size.height,
       child: new ListView.builder (
-          controller: listViewController,
-          itemCount: messages.length,
+          controller: _listViewController,
+          itemCount: _messages.length,
           itemBuilder: (BuildContext ctxt, int index) {
             return Stack(
                 children: <Widget>[
-                  conversationBubble(messages[index].message, messages[index].img, messages[index].send_time.toString(), messages[index].from_driver),
-                  Container(height: messages.length-1 == index?160:null,)
+                  _conversationBubble(_messages[index].message, _messages[index].img, _messages[index].send_time.toString(), _messages[index].from_driver),
+                  Container(height: _messages.length-1 == index?160:null,)
                 ]
             );
           }
       )
   );
 
-  Widget conversationBubble(String message, String imgPath, String sendTime, bool fromDriver) => Row(
-    mainAxisAlignment: isDriverApp == fromDriver ? MainAxisAlignment.end : MainAxisAlignment.start,
+  Widget _conversationBubble(String message, String imgPath, String sendTime, bool fromDriver) => Row(
+    mainAxisAlignment: _isDriverApp == fromDriver ? MainAxisAlignment.end : MainAxisAlignment.start,
     children: <Widget>[
       Container(
         constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width/5*4),
         decoration: new BoxDecoration(
-            color: isDriverApp == fromDriver ? Colors.blue : Colors.blueGrey,
+            color: _isDriverApp == fromDriver ? Colors.blue : Colors.blueGrey,
             borderRadius: new BorderRadius.only(
-                topLeft: Radius.circular(isDriverApp == fromDriver ? 12.0 : 0.0),
-                topRight: Radius.circular(isDriverApp == fromDriver ? 0.0 : 12.0),
+                topLeft: Radius.circular(_isDriverApp == fromDriver ? 12.0 : 0.0),
+                topRight: Radius.circular(_isDriverApp == fromDriver ? 0.0 : 12.0),
                 bottomLeft: const Radius.circular(12.0),
                 bottomRight: const Radius.circular(12.0)
             )
         ),
-        alignment: isDriverApp == fromDriver ? Alignment.topRight : Alignment.topLeft,
+        alignment: _isDriverApp == fromDriver ? Alignment.topRight : Alignment.topLeft,
         padding: imgPath == null ? EdgeInsets.all(12) : EdgeInsets.symmetric(vertical: 12, horizontal: 6),
         margin: EdgeInsets.only(top: 15, right: 4, left: 4),
         child : Column(
-          crossAxisAlignment: isDriverApp == fromDriver ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          crossAxisAlignment: _isDriverApp == fromDriver ? CrossAxisAlignment.end : CrossAxisAlignment.start,
           children: <Widget>[
             imgPath == null ? Container() : Padding(
               child: Image.network(
@@ -167,7 +170,7 @@ class _Chat_ScreenState extends State<Chat_Screen> {
     ],
   );
 
-  Widget bottomTextInput() => Container(
+  Widget _bottomTextInput() => Container(
       alignment: Alignment.bottomCenter,
       child: Container(
           color: Colors.blue,
@@ -184,7 +187,7 @@ class _Chat_ScreenState extends State<Chat_Screen> {
                   children: <Widget>[
                     Expanded(
                       child: TextField(
-                        controller: textEditingController,
+                        controller: _textEditingController,
                         style: TextStyle(color: Colors.white),
                         decoration: InputDecoration(
                             hintText: "CHAT.TYPE_MESSAGE_HERE".tr(),
@@ -192,19 +195,19 @@ class _Chat_ScreenState extends State<Chat_Screen> {
                             border: InputBorder.none
                         ),
                         onChanged: (value) => {
-                          inputMessage = value
+                          _inputMessage = value
                         },
                       ),
                     ),
-                    isCameraOpen ? SizedBox.shrink() :
+                    _isCameraOpen ? SizedBox.shrink() :
                     IconButton(
                       onPressed: () {
-                        openCameraWindow();
+                        _openCameraWindow();
                       },
                       icon: Icon(Icons.photo_camera, color: Colors.white,),
                     ),
                     IconButton(
-                      onPressed: sendMessage,
+                      onPressed: _sendMessage,
                       icon: Icon(Icons.send, color: Colors.white,),
                     )
                   ],
@@ -214,13 +217,13 @@ class _Chat_ScreenState extends State<Chat_Screen> {
       )
   );
 
-  void openCameraWindow() async {
+  _openCameraWindow() async {
     setState(() {
-      isCameraOpen = true;
+      _isCameraOpen = true;
     });
   }
 
-  cameraPrev() => Stack(
+  _cameraPrev() => Stack(
     children: <Widget>[
       CameraPreview(_cameraController,),
       /*Positioned.fill(
@@ -244,7 +247,7 @@ class _Chat_ScreenState extends State<Chat_Screen> {
             alignment: Alignment.bottomCenter,
             child: FloatingActionButton(
               child: Icon(Icons.photo_camera, color: Colors.white,),
-              onPressed: onCaptureButtonPressed,
+              onPressed: _onCaptureButtonPressed,
             ),
           )
       ),
@@ -252,17 +255,17 @@ class _Chat_ScreenState extends State<Chat_Screen> {
   );
 
 
-  void onCaptureButtonPressed() async {  //on camera button presstry {
+  _onCaptureButtonPressed() async {  //on camera button presstry {
     try {
       final path = path_package.join(
         (await getTemporaryDirectory()).path, //Temporary path
         '${DateTime.now()}.png',
       );
-      imagePath = path;
-      await _cameraController.takePicture(imagePath); //take photo
-      print(showCapturedPhoto);
+      _imagePath = path;
+      await _cameraController.takePicture(_imagePath); //take photo
+      print(_showCapturedPhoto);
       setState(() {
-        showCapturedPhoto = true;
+        _showCapturedPhoto = true;
       });
     } catch (e) {
       print(e);
@@ -270,27 +273,27 @@ class _Chat_ScreenState extends State<Chat_Screen> {
   }
 
 
-  Widget cameraOrImageField() => Stack(
+  Widget _cameraOrImageField() => Stack(
       children: <Widget>[
-        showCapturedPhoto? Image.file(i.File(imagePath)):cameraPrev(),
+        _showCapturedPhoto? Image.file(i.File(_imagePath)):_cameraPrev(),
         Positioned.fill(
             top: 10,
             left: 10,
             child: Align(
               alignment: Alignment.topLeft,
               child: IconButton(
-                icon: Icon(showCapturedPhoto? Icons.arrow_back_ios : Icons.clear, color: Colors.white,),
+                icon: Icon(_showCapturedPhoto? Icons.arrow_back_ios : Icons.clear, color: Colors.white,),
                 onPressed: () => {
                   setState(() {
-                    showCapturedPhoto = false;
-                    if (!showCapturedPhoto)
-                      isCameraOpen = false;
+                    _showCapturedPhoto = false;
+                    if (!_showCapturedPhoto)
+                      _isCameraOpen = false;
                   })
                 },
               ),
             )
         ),
-        _uploadTask == null ? Container():
+        !_isUploading ? Container():
         Positioned.fill(
             top: 10,
             left: 10,
@@ -302,46 +305,35 @@ class _Chat_ScreenState extends State<Chat_Screen> {
       ]
   );
 
-  bool isMessageSendable() => isCameraOpen ? showCapturedPhoto : true;
+  bool _isMessageSendable() => _isCameraOpen ? _showCapturedPhoto : true;
 
-  sendMessage() async {
-    if (!isMessageSendable())
+  _sendMessage() async {
+    if (!_isMessageSendable())
       return;
-    if (inputMessage.length == 0 && imagePath.length == 0)
+    if (_inputMessage.length == 0 && _imagePath.length == 0)
       return;
     String dbImagePath;
-    if (imagePath != "") {
-      dbImagePath = await startUpload('chat/images/$jobId/${DateTime.now()}.png', imagePath);
+    if (_imagePath != "") {
+      setState(() {
+        _isUploading = true;
+      });
+      dbImagePath = await _chatService.startUpload(_imagePath);
+      setState(() {
+        _isUploading = false;
+      });
     }
-    Message message = new Message(from_driver: isDriverApp, message: inputMessage, img: dbImagePath);
-    ref.push().set(message.toMap());
-    clearField();
+    Message message = new Message(from_driver: _isDriverApp, message: _inputMessage, img: dbImagePath);
+    _chatRef.push().set(message.toMap());
+    _clearField();
   }
 
-  final FirebaseStorage _storage = FirebaseStorage(storageBucket: 'gs://post-now-f3c53.appspot.com');
-  StorageUploadTask _uploadTask;
-
-  Future<String> startUpload(dbImagePath, imagePath) async {
-    if (imagePath == null || dbImagePath == null) {
-      return null;
-    }
+  _clearField() {
     setState(() {
-      _uploadTask = _storage.ref().child(dbImagePath).putFile(i.File(imagePath));
-    });
-    var snapshot = await _uploadTask.onComplete;
-    setState(() {
-      _uploadTask = null;
-    });
-    return await snapshot.ref.getDownloadURL();
-  }
-
-  void clearField() {
-    setState(() {
-      textEditingController.clear();
-      imagePath = "";
-      inputMessage = "";
-      isCameraOpen = false;
-      showCapturedPhoto = false;
+      _textEditingController.clear();
+      _imagePath = "";
+      _inputMessage = "";
+      _isCameraOpen = false;
+      _showCapturedPhoto = false;
     });
   }
 }

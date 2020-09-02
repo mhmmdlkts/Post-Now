@@ -1,0 +1,7 @@
+enum Status {
+  WAITING,
+  ON_ROAD,
+  PACKAGE_PICKED,
+  FINISHED,
+  CANCELLED
+}

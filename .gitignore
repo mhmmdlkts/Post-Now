@@ -57,3 +57,7 @@ key.properties
 *.apk
 *.abb
 **/android/app/debug
+
+# Environment
+lib/environment/
+

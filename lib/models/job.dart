@@ -1,42 +1,42 @@
-import 'package:firebase_database/firebase_database.dart';
 import 'package:google_map_polyline/google_map_polyline.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-
-
-enum Vehicle {
-  CAR,
-  BIKE
-}
-
-enum Status {
-  WAITING,
-  ON_ROAD,
-  PACKAGE_PICKED,
-  FINISHED,
-  CANCELLED
-}
+import 'package:firebase_database/firebase_database.dart';
+import 'package:postnow/enums/job_status_enum.dart';
+import 'package:postnow/enums/job_vehicle_enum.dart';
 
 class Job {
-  String key;
+  String destinationAddress;
+  String transactionId;
+  String originAddress;
+  DateTime acceptTime;
+  DateTime finishTime;
+  DateTime startTime;
+  LatLng destination;
+  Vehicle vehicle;
   String driverId;
   String userId;
+  Status status;
+  LatLng origin;
+  double price;
   String name;
   String sign;
-  String transactionId;
-  double price;
-  Status status;
-  Vehicle vehicle;
-  DateTime start_time;
-  DateTime accept_time;
-  DateTime finish_time;
-  LatLng origin;
-  LatLng destination;
-  String originAddress;
-  String destinationAddress;
+  String key;
 
-  Job({this.name, this.userId, this.driverId, this.vehicle, this.transactionId, this.price, this.origin, this.destination, this.originAddress, this.destinationAddress}) {
-    start_time = DateTime.now();
+  Job({this.name, this.userId, this.price, this.driverId, this.vehicle, this.transactionId, this.origin, this.destination, this.originAddress, this.destinationAddress}) {
+    setStartTime();
     status = Status.WAITING;
+  }
+
+  setStartTime() {
+    startTime = DateTime.now();
+  }
+
+  setAcceptTime() {
+    acceptTime = DateTime.now();
+  }
+
+  setFinishTime() {
+    finishTime = DateTime.now();
   }
 
   Job.fromSnapshot(DataSnapshot snapshot) {
@@ -53,13 +53,13 @@ class Job {
     destination = stringToLatLng(snapshot.value["destination"]);
     originAddress = snapshot.value["origin-address"];
     destinationAddress = snapshot.value["destination-address"];
-    start_time = stringToDateTime(snapshot.value["start-time"]);
-    accept_time = stringToDateTime(snapshot.value["accept-time"]);
-    finish_time = stringToDateTime(snapshot.value["finish-time"]);
+    startTime = stringToDateTime(snapshot.value["start-time"]);
+    acceptTime = stringToDateTime(snapshot.value["accept-time"]);
+    finishTime = stringToDateTime(snapshot.value["finish-time"]);
   }
 
-  static Status stringToStatus(String status_string) {
-    switch (status_string) {
+  static Status stringToStatus(String statusString) {
+    switch (statusString) {
       case "waiting":
         return Status.WAITING;
       case "on_the_road":
@@ -90,8 +90,8 @@ class Job {
     return null;
   }
 
-  static Vehicle stringToVehicle(String vehicle_string) {
-    switch (vehicle_string) {
+  static Vehicle stringToVehicle(String vehicleString) {
+    switch (vehicleString) {
       case "car":
         return Vehicle.CAR;
       case "bike":
@@ -103,19 +103,19 @@ class Job {
   static String vehicleToString(Vehicle vehicle) {
     switch (vehicle) {
       case Vehicle.CAR:
-    return "car";
+        return "car";
       case Vehicle.BIKE:
-    return "bike";
+        return "bike";
     }
     return null;
   }
 
-  static LatLng stringToLatLng(String latlng_string) {
-    if (latlng_string == null)
+  static LatLng stringToLatLng(String latLngString) {
+    if (latLngString == null)
       return null;
-    List<String> latlng = latlng_string.split(",");
-    double lat = double.parse(latlng[0]);
-    double lng = double.parse(latlng[1]);
+    List<String> latLng = latLngString.split(",");
+    double lat = double.parse(latLng[0]);
+    double lng = double.parse(latLng[1]);
     return LatLng(lat, lng);
   }
 
@@ -125,10 +125,10 @@ class Job {
     return "${latLng.latitude},${latLng.longitude}";
   }
 
-  static DateTime stringToDateTime(String dateTime_string) {
-    if (dateTime_string == null)
+  static DateTime stringToDateTime(String dateTimeString) {
+    if (dateTimeString == null)
       return null;
-    return DateTime.parse(dateTime_string);
+    return DateTime.parse(dateTimeString);
   }
 
   static String dateTimeToString(DateTime dateTime) {
@@ -147,26 +147,6 @@ class Job {
     return null;
   }
 
-  Map toMap() {
-    Map toReturn = new Map();
-    if (name != null) toReturn['name'] = name;
-    if (driverId != null) toReturn['driver-id'] = driverId;
-    if (userId != null) toReturn['user-id'] = userId;
-    if (sign != null) toReturn['sign'] = sign;
-    if (transactionId != null) toReturn['transactionId'] = transactionId;
-    if (price != null) toReturn['price'] = price;
-    if (status != null) toReturn['status'] = statusToString(status);
-    if (vehicle != null) toReturn['vehicle'] = vehicleToString(vehicle);
-    if (origin != null) toReturn['origin'] = latLngToString(origin);
-    if (destination != null) toReturn['destination'] = latLngToString(destination);
-    if (originAddress != null) toReturn['origin-address'] = originAddress;
-    if (destinationAddress != null) toReturn['destination-address'] = destinationAddress;
-    if (start_time != null) toReturn['start-time'] = dateTimeToString(start_time);
-    if (accept_time != null) toReturn['accept-time'] = dateTimeToString(accept_time);
-    if (finish_time != null) toReturn['finish-time'] = dateTimeToString(finish_time);
-    return toReturn;
-  }
-
   Map<String, dynamic> toJson() => {
     'key': key,
     'name': name,
@@ -181,13 +161,10 @@ class Job {
     'destination': latLngToString(destination),
     'origin-address': originAddress,
     'destination-address': destinationAddress,
-    'start-time': dateTimeToString(start_time),
-    'accept-time': dateTimeToString(accept_time),
-    'finish-time': dateTimeToString(finish_time),
+    'start-time': dateTimeToString(startTime),
+    'accept-time': dateTimeToString(acceptTime),
+    'finish-time': dateTimeToString(finishTime),
   };
-
-
-
 
   Job.fromJson(Map json, {key}) {
     if (key == null)
@@ -206,20 +183,48 @@ class Job {
     destination = stringToLatLng(json["destination"]);
     originAddress = json["origin-address"];
     destinationAddress = json["destination-address"];
-    start_time = stringToDateTime(json["start-time"]);
-    accept_time = stringToDateTime(json["accept-time"]);
-    finish_time = stringToDateTime(json["finish-time"]);
+    startTime = stringToDateTime(json["start-time"]);
+    acceptTime = stringToDateTime(json["accept-time"]);
+    finishTime = stringToDateTime(json["finish-time"]);
+  }
+
+  Map toMap() {
+    Map toReturn = new Map();
+    if (name != null) toReturn['name'] = name;
+    if (driverId != null) toReturn['driver-id'] = driverId;
+    if (userId != null) toReturn['user-id'] = userId;
+    if (sign != null) toReturn['sign'] = sign;
+    if (price != null) toReturn['price'] = price;
+    if (transactionId != null) toReturn['transactionId'] = transactionId;
+    if (status != null) toReturn['status'] = statusToString(status);
+    if (vehicle != null) toReturn['vehicle'] = vehicleToString(vehicle);
+    if (origin != null) toReturn['origin'] = latLngToString(origin);
+    if (destination != null) toReturn['destination'] = latLngToString(destination);
+    if (originAddress != null) toReturn['origin-address'] = originAddress;
+    if (destinationAddress != null) toReturn['destination-address'] = destinationAddress;
+    if (startTime != null) toReturn['start-time'] = dateTimeToString(startTime);
+    if (acceptTime != null) toReturn['accept-time'] = dateTimeToString(acceptTime);
+    if (finishTime != null) toReturn['finish-time'] = dateTimeToString(finishTime);
+    return toReturn;
+  }
+
+  bool isJobForMe(String uid) {
+    return this.driverId == uid;
+  }
+
+  bool isJobAccepted() {
+    return this.acceptTime != null;
   }
 
   getDriverId() {
     return driverId == null ? "No Driver" : driverId;
   }
 
-  @override
-  bool operator == (covariant Job other) => key.compareTo(key) == 0;
-
   String getStatusMessageKey() {
     return "MODELS.JOB." + Status.WAITING.toString().split('.')[1];
   }
+
+  @override
+  bool operator == (covariant Job other) => key.compareTo(other.key) == 0;
 
 }

@@ -1,7 +1,7 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:postnow/core/service/model/job.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:postnow/models/job.dart';
 
 class AllOrders extends StatefulWidget {
   final String uid;
@@ -60,7 +60,7 @@ class _AllOrders extends State<AllOrders> {
                   Icon(Icons.date_range, color: Colors.black54,),
                   Container(width: padding),
                   Expanded(
-                    child: Text(job.start_time.toString()),
+                    child: Text(job.startTime.toString()),
                   )
                 ],
               ),
