@@ -2,6 +2,7 @@ import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:google_map_polyline/google_map_polyline.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:postnow/screens/orders_overview_screen.dart';
+import 'package:postnow/screens/splash_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -30,10 +31,11 @@ import 'dart:async';
 
 class GoogleMapsView extends StatefulWidget {
   final String uid;
-  GoogleMapsView(this.uid);
+  final ValueChanged<bool> isInitialized;
+  GoogleMapsView(this.isInitialized, this.uid);
 
   @override
-  _GoogleMapsViewState createState() => _GoogleMapsViewState(uid);
+  _GoogleMapsViewState createState() => _GoogleMapsViewState(isInitialized, uid);
 }
 
 class _GoogleMapsViewState extends State<GoogleMapsView> {
@@ -41,7 +43,10 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
   final GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: GOOGLE_DIRECTIONS_API_KEY);
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   final List<Driver> _drivers = List();
+  final ValueChanged<bool> isInitialized;
   User me = User();
+  int initCount = 0;
+  int initDone = 0;
   Set<Polyline> _polyLines = Set();
   List<String> _orders = List();
   BitmapDescriptor _packageLocationIcon, _driverLocationIcon, _homeLocationIcon;
@@ -61,7 +66,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
   bool isDestinationButtonChosen = false;
   String uid;
 
-  _GoogleMapsViewState(this.uid) {
+  _GoogleMapsViewState(this.isInitialized, this.uid) {
     _mapsService = MapsService(uid);
   }
 
@@ -107,23 +112,33 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
 
   @override
   void initState() {
+    initCount++;
     super.initState();
     Screen.keepOn(true);
+
+    initCount++;
     _mapsService.getBytesFromAsset('assets/package_map_marker.png', 130).then((value) => { setState((){
       _packageLocationIcon = BitmapDescriptor.fromBytes(value);
+      nextInitializeDone();
     })});
+
+    initCount++;
     _mapsService.getBytesFromAsset('assets/driver_map_marker.png', 150).then((value) => { setState((){
       _driverLocationIcon = BitmapDescriptor.fromBytes(value);
+      nextInitializeDone();
     })});
+
+    initCount++;
     _mapsService.getBytesFromAsset('assets/home_map_marker.png', 130).then((value) => { setState((){
       _homeLocationIcon = BitmapDescriptor.fromBytes(value);
+      nextInitializeDone();
     })});
 
-    getMyPosition();
-
+    initCount++;
     SharedPreferences.getInstance().then((value) => {
         if (value.containsKey('orders'))
-          _orders = value.getStringList('orders')
+          _orders = value.getStringList('orders'),
+        nextInitializeDone()
       }
     );
 
@@ -131,7 +146,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
     destinationTextController = new TextEditingController(text: '');
 
     _mapsService.driverRef.onChildAdded.listen(_onDriversDataAdded);
-    _mapsService.driverRef.onChildChanged    .listen(_onDriversDataChanged);
+    _mapsService.driverRef.onChildChanged.listen(_onDriversDataChanged);
 
 
     _mapsService.jobsRef.onChildAdded.listen(_onJobsDataAdded);
@@ -163,15 +178,30 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
       return;
     });
 
-    setJobIfExist();
+    initCount++;
+    setJobIfExist().then((value) => {
+      nextInitializeDone()
+    });
 
+    initCount++;
     _mapsService.userRef.once().then((snapshot) => {
       me = User.fromSnapshot(snapshot),
+      nextInitializeDone()
     });
 
     var locationOptions = LocationOptions(accuracy: LocationAccuracy.high, distanceFilter: 10);
 
     Geolocator().getPositionStream(locationOptions).listen(onPositionChanged);
+    nextInitializeDone();
+  }
+
+  nextInitializeDone() {
+    if (initCount == initDone++) {
+      getMyPosition().then((value) => {
+        _mapsService.setNewCameraPosition(_mapController, new LatLng(value.latitude, value.longitude), null, true),
+        isInitialized.call(true)
+      });
+    }
   }
 
   void _onDriversDataAdded(Event event) {
@@ -267,7 +297,6 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
 
   @override
   Widget build(BuildContext context) {
-
     return new Scaffold(
       appBar: AppBar(
         title: Text(("APP_NAME".tr()), style: TextStyle(color: Colors.white)),
@@ -1250,7 +1279,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
   }
 
   getLastAddress(int i) {
-    if (_orders.length < i)
+    if (0 >= i || _orders.length < i)
       return Container();
     Job order = Job.fromJson(json.decode(_orders[_orders.length-i]));
     return Container(
@@ -1301,8 +1330,8 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
     );
   }
 
-  void setJobIfExist() {
-    _mapsService.userRef.child("currentJob").once().then((DataSnapshot snapshot){
+  Future<void> setJobIfExist() async {
+    return _mapsService.userRef.child("currentJob").once().then((DataSnapshot snapshot){
       final jobId = snapshot.value;
       if (jobId != null) {
         _mapsService.jobsRef.child(jobId.toString()).once().then((DataSnapshot snapshot){

@@ -9,16 +9,16 @@ import '../screens/auth_screen.dart';
 class FirebaseService {
   String phone;
 
-  handleAuth() => StreamBuilder(
+  handleAuth(ValueChanged<bool> isInitialized) => StreamBuilder(
     stream: FirebaseAuth.instance.onAuthStateChanged,
     builder: (BuildContext context, snapshot) {
       if (snapshot.hasData) {
         /*if (phone)
           return SignUp(snapshot.data.uid, phone);
         else*/
-          return GoogleMapsView(snapshot.data.uid);
+          return GoogleMapsView(isInitialized, snapshot.data.uid);
       } else {
-        return MyHomePage(title: "APP_NAME".tr());
+        return MyHomePage(isInitialized, title: "APP_NAME".tr());
       }
     },
   );

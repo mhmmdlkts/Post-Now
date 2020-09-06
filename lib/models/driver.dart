@@ -70,5 +70,9 @@ class Driver implements Comparable{
       return -1;
   }
 
+  String getName() {
+    return name == null? "Name" : name;
+  }
+
   LatLng getLatLng() => LatLng(lat, long);
 }

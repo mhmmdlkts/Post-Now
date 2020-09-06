@@ -3,9 +3,10 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:postnow/screens/splash_screen.dart';
 import 'package:postnow/services/auth_service.dart';
 
-import 'package:easy_localization/easy_localization.dart';
+import 'package:easy_localization/easy_localization.dart' as loc;
 import 'dart:ui' as ui;
 
 import 'models/user.dart';
@@ -13,7 +14,7 @@ import 'models/user.dart';
 void main() async {
   await init();
   runApp(
-      EasyLocalization(
+      loc.EasyLocalization(
           supportedLocales: [Locale('en', ''), Locale('de', ''), Locale('tr', '')],
           path: 'assets/translations',
           fallbackLocale: Locale('en', ''),
@@ -45,7 +46,13 @@ Future<void> init() async {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => _MyApp();
+}
+
+class _MyApp extends State<MyApp> {
+  bool isInitialized = false;
 
   @override
   Widget build(BuildContext context) {
@@ -54,34 +61,58 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'APP_NAME'.tr(),
       theme: ThemeData(
-        primarySwatch: Colors.lightBlue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-        primaryTextTheme: TextTheme(
-          headline6: TextStyle(
-              color: Colors.white
+          primarySwatch: Colors.lightBlue,
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+          primaryTextTheme: TextTheme(
+              headline6: TextStyle(
+                  color: Colors.white
+              )
           )
-        )
       ),
-      home: FirebaseService().handleAuth(),
+      home: Stack(
+        children: [
+          FirebaseService().handleAuth((isInitialized) => setState(() {
+            this.isInitialized = isInitialized;
+          })),
+          isInitialized? Container() : SplashScreen(),
+        ],
+      )
     );
   }
 }
 
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  final ValueChanged<bool> isInitialized;
+  MyHomePage(this.isInitialized, {Key key, this.title}) : super(key: key);
 
   final String title;
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _MyHomePageState createState() => _MyHomePageState(isInitialized);
 }
 
 class _MyHomePageState extends State<MyHomePage> {
   String name, phoneNo, verificationId, smsCode;
   final _formKey = GlobalKey<FormState>();
+  final ValueChanged<bool> isInitialized;
 
   bool codeSent = false;
+
+  _MyHomePageState(this.isInitialized);
+
+
+
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(
+      Duration(milliseconds: 1500),
+          () => {
+        isInitialized.call(true)
+          },
+    );
+  }
 
   Future<void> _nextClick(phoneNo) async {
     final PhoneVerificationCompleted verified = (AuthCredential authResult) async {

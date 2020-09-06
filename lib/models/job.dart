@@ -225,6 +225,13 @@ class Job {
   }
 
   @override
-  bool operator == (covariant Job other) => key.compareTo(other.key) == 0;
+  bool operator == (covariant Job other) {
+    if (key != null)
+      return key == other.key;
+    if (originAddress != null && destinationAddress != null) {
+      return originAddress.compareTo(originAddress) == 0 && destinationAddress.compareTo(destinationAddress) == 0;
+    }
+    return false;
+  }
 
 }
