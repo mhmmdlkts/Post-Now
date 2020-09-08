@@ -14,13 +14,6 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    _initializeAsyncDependencies();
-  }
-
-  Future<void> _initializeAsyncDependencies() async {
-    // >>> initialize async dependencies <<<
-    // >>> register favorite dependency manager <<<
-    // >>> reap benefits <<<
   }
 
   @override

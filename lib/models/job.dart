@@ -209,7 +209,7 @@ class Job {
   }
 
   bool isJobForMe(String uid) {
-    return this.driverId == uid;
+    return this.driverId == uid || this.userId == uid;
   }
 
   bool isJobAccepted() {

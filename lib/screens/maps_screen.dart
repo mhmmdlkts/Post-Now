@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:google_map_polyline/google_map_polyline.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -30,12 +31,11 @@ import 'dart:async';
 
 
 class GoogleMapsView extends StatefulWidget {
-  final String uid;
-  final ValueChanged<bool> isInitialized;
-  GoogleMapsView(this.isInitialized, this.uid);
+  final FirebaseUser user;
+  GoogleMapsView(this.user);
 
   @override
-  _GoogleMapsViewState createState() => _GoogleMapsViewState(isInitialized, uid);
+  _GoogleMapsViewState createState() => _GoogleMapsViewState(user);
 }
 
 class _GoogleMapsViewState extends State<GoogleMapsView> {
@@ -43,8 +43,8 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
   final GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: GOOGLE_DIRECTIONS_API_KEY);
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   final List<Driver> _drivers = List();
-  final ValueChanged<bool> isInitialized;
-  User me = User();
+  final FirebaseUser user;
+  bool isInitialized = false;
   int initCount = 0;
   int initDone = 0;
   Set<Polyline> _polyLines = Set();
@@ -64,10 +64,9 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
   Job job;
   Driver myDriver;
   bool isDestinationButtonChosen = false;
-  String uid;
 
-  _GoogleMapsViewState(this.isInitialized, this.uid) {
-    _mapsService = MapsService(uid);
+  _GoogleMapsViewState(this.user) {
+    _mapsService = MapsService(user.uid);
   }
 
   getRoute() async {
@@ -155,6 +154,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
       setState(() {
         Job j = Job.fromSnapshot(e.snapshot);
         _onJobsDataChanged(j);
+        print('set stattet');
       });
     });
 
@@ -165,7 +165,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
         return;
       switch (data["typ"]) {
         case "message":
-          showMessageToast(data["key"], data["name"], data["message"]);
+          _showMessageToast(data["key"], data["name"], data["message"]);
           break;
       }
 
@@ -183,12 +183,6 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
       nextInitializeDone()
     });
 
-    initCount++;
-    _mapsService.userRef.once().then((snapshot) => {
-      me = User.fromSnapshot(snapshot),
-      nextInitializeDone()
-    });
-
     var locationOptions = LocationOptions(accuracy: LocationAccuracy.high, distanceFilter: 10);
 
     Geolocator().getPositionStream(locationOptions).listen(onPositionChanged);
@@ -196,10 +190,17 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
   }
 
   nextInitializeDone() {
-    if (initCount == initDone++) {
+    initDone++;
+    if (initCount == initDone) {
       getMyPosition().then((value) => {
-        _mapsService.setNewCameraPosition(_mapController, new LatLng(value.latitude, value.longitude), null, true),
-        isInitialized.call(true)
+        _mapController.moveCamera(CameraUpdate.newCameraPosition(
+            CameraPosition(target: LatLng(value.latitude, value.longitude), zoom: 13)
+        )),
+        Future.delayed(Duration(milliseconds: 500), () =>
+          setState((){
+            isInitialized = true;
+          })
+        )
       });
     }
   }
@@ -218,8 +219,11 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
     }
   }
 
-  void _onJobsDataChanged(Job j) async {
-    if (j == job) {
+  _onJobsDataChanged(Job j) {
+    print('aaaaa: ' + j.status.toString());
+    print('aaaaa2: ' + j.isJobForMe(user.uid).toString());
+    print('aaaaa3: ' + (j.startTime == null).toString());
+    if (j == job || (j.isJobForMe(user.uid) && j.finishTime == null)) {
       print(j.status);
       job = j;
       switch (job.status) {
@@ -239,9 +243,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
           menuTyp = MenuTyp.PACKAGE_PICKED;
           break;
         case Status.FINISHED:
-          setState(() {
-            menuTyp = MenuTyp.COMPLETED;
-          });
+          menuTyp = MenuTyp.COMPLETED;
           break;
         case Status.CANCELLED:
           _polyLines.clear();
@@ -283,7 +285,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
       return;
     }
 
-    PaymentService().openPayMenu(price, uid).then((result) => {
+    PaymentService().openPayMenu(price, user.uid).then((result) => {
       setState(() {
         if (result != null) {
           addJobToPool(result);
@@ -297,57 +299,64 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: AppBar(
-        title: Text(("APP_NAME".tr()), style: TextStyle(color: Colors.white)),
-        brightness: Brightness.dark,
-        iconTheme:  IconThemeData(color: Colors.white),
-      ),
-      body:Stack(
-          children: <Widget> [
-            googleMapsWidget(),
-            getTopMenu(),
-            getBottomMenu(),
-          ]
-      ),
-      drawer: Drawer(
-        child: ListView(
-          children: <Widget>[
-            DrawerHeader(
-              child: Stack(
-                children: <Widget>[
-                  Text("SETTINGS".tr(), style: TextStyle(fontSize: 20, color: Colors.white)),
-                  Positioned(
-                    bottom: 0,
-                    child: Text(me.getName(), style: TextStyle(fontSize: 22, color: Colors.white)),
-                  )
-                ],
-              ),
-              decoration: BoxDecoration(
-                color: Colors.blue,
-              ),
-            ),
-            ListTile(
-              title: Text('MAPS.SIDE_MENU.MY_ORDERS'.tr()),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => AllOrders(uid)),
-                );
-              },
-            ),
-            ListTile(
-              title: Text('MAPS.SIDE_MENU.SIGN_OUT'.tr()),
-              onTap: () {
-                FirebaseService().signOut();
-              },
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: getFloatingActionButton(),
+    return Stack(
+      children: [
+        _content(),
+        isInitialized ? Container() : SplashScreen(),
+      ],
     );
   }
+
+  Widget _content() => new Scaffold(
+    appBar: AppBar(
+      title: Text(("APP_NAME".tr()), style: TextStyle(color: Colors.white)),
+      brightness: Brightness.dark,
+      iconTheme:  IconThemeData(color: Colors.white),
+    ),
+    body:Stack(
+        children: <Widget> [
+          googleMapsWidget(),
+          getTopMenu(),
+          getBottomMenu(),
+        ]
+    ),
+    drawer: Drawer(
+      child: ListView(
+        children: <Widget>[
+          DrawerHeader(
+            child: Stack(
+              children: <Widget>[
+                Text("SETTINGS".tr(), style: TextStyle(fontSize: 20, color: Colors.white)),
+                Positioned(
+                  bottom: 0,
+                  child: Text(user.displayName, style: TextStyle(fontSize: 22, color: Colors.white)),
+                )
+              ],
+            ),
+            decoration: BoxDecoration(
+              color: Colors.blue,
+            ),
+          ),
+          ListTile(
+            title: Text('MAPS.SIDE_MENU.MY_ORDERS'.tr()),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => AllOrders(user.uid)),
+              );
+            },
+          ),
+          ListTile(
+            title: Text('MAPS.SIDE_MENU.SIGN_OUT'.tr()),
+            onTap: () {
+              AuthService().signOut();
+            },
+          ),
+        ],
+      ),
+    ),
+    floatingActionButton: getFloatingActionButton(),
+  );
 
   Set<Marker> _createMarker() {
     Set markers = Set<Marker>();
@@ -532,7 +541,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                       children: <Widget>[
                         ListTile(
                           leading: Icon(Icons.directions_car),
-                          title: Text("MAPS.BOTTOM_MENUS.YOUR_DRIVER".tr(namedArgs: {'name': myDriver.name})),
+                          title: Text("MAPS.BOTTOM_MENUS.YOUR_DRIVER".tr(namedArgs: {'name': myDriver.getName()})),
                           subtitle: Text("MAPS.BOTTOM_MENUS.PACKAGE_PICKED.STATUS".tr()),
                         ),
                         ButtonBar(
@@ -540,7 +549,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                             FlatButton(
                               child: Text('SEND_MESSAGE'.tr()),
                               onPressed: () {
-                                openMessageScreen(job.key, myDriver.name);
+                                openMessageScreen(job.key, myDriver.getName());
                               },
                             ),
                           ],
@@ -567,7 +576,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                       children: <Widget>[
                         ListTile(
                           leading: Icon(Icons.directions_car),
-                          title: Text("MAPS.BOTTOM_MENUS.YOUR_DRIVER".tr(namedArgs: {'name': myDriver.name})),
+                          title: Text("MAPS.BOTTOM_MENUS.YOUR_DRIVER".tr(namedArgs: {'name': myDriver.getName()})),
                           subtitle: Text("MAPS.BOTTOM_MENUS.JOB_ACCEPTED.STATUS".tr()),
                         ),
                         ButtonBar(
@@ -575,7 +584,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                             FlatButton(
                               child: Text('SEND_MESSAGE'.tr()),
                               onPressed: () {
-                                openMessageScreen(job.key, myDriver.name);
+                                openMessageScreen(job.key, myDriver.getName());
                               },
                             ),
                           ],
@@ -805,7 +814,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
     void addJobToPool(transactionId) async {
       job = Job(
           name: "Robot",
-          userId: uid,
+          userId: user.uid,
           transactionId: transactionId,
           vehicle: Vehicle.CAR,
           price: price,
@@ -1092,6 +1101,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                     onTap: () async {
                       onTapButton();
                       Prediction p = await PlacesAutocomplete.show(
+                        startText: isDestinationButtonChosen? destinationAddress : originAddress,
                         hint: "MAPS.TYPE_ADDRESS".tr(),
                         // startText: isDestination ? destinationTextController.text : originTextController.text,
                         context: context,
@@ -1099,7 +1109,8 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                         logo: Image.asset("assets/none.png"),
                         mode: Mode.overlay, // Mode.fullscreen
                         language: 'de',
-                        components: [new Component(Component.country, "at")]);
+                        components: [new Component(Component.country, "at")]
+                      );
                       LatLng wrotePlace = await predictionToLatLng(p);
                       setMarker(wrotePlace, address: predictionToString(p));
                     },
@@ -1315,7 +1326,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
     );
   }
 
-  showMessageToast(key, name, message) {
+  _showMessageToast(key, name, message) {
     showToastWidget(
         MessageToast(
           message: message,
@@ -1331,6 +1342,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
   }
 
   Future<void> setJobIfExist() async {
+    initCount++;
     return _mapsService.userRef.child("currentJob").once().then((DataSnapshot snapshot){
       final jobId = snapshot.value;
       if (jobId != null) {
@@ -1339,7 +1351,10 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
           print(j.status);
           job = j;
           _onJobsDataChanged(j);
+          nextInitializeDone();
         });
+      } else {
+        nextInitializeDone();
       }
     });
   }

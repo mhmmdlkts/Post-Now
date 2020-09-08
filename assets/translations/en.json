@@ -14,6 +14,12 @@
     "SMS_CODE_FIELD_HINT": "Example: 123456",
     "SMS_CODE_FIELD_VALIDATOR_ENTER_NAME": "Enter your validation code."
   },
+  "SIGN_UP": {
+    "NAME_FIELD_HINT": "Your name",
+    "NAME_FIELD_VALIDATOR_ENTER_NAME": "Please enter your name.",
+    "EMAIL_FIELD_HINT": "Example. mhmmdlkts@gmail.com",
+    "EMAIL_FIELD_VALIDATOR_ENTER_NAME": "Please enter your email address."
+  },
   "ALL_ORDERS": {
     "ORDER_HISTORY": "Order History"
   },
