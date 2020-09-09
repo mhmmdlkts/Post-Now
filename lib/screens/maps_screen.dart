@@ -70,15 +70,31 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
     _mapsService = MapsService(user.uid);
   }
 
+  goToPayButtonPressed() {
+    setState(() {
+      if (!isOnlineDriverAvailable()) {
+        menuTyp = MenuTyp.NO_DRIVER_AVAILABLE;
+        return;
+      }
+      menuTyp = MenuTyp.CALCULATING_DISTANCE;
+      getRoute();
+    });
+  }
+
   getRoute() async {
     _polyLines.clear();
-
-    _mapsService.setNewCameraPosition(_mapController, origin, destination, false);
-
+    _mapsService.setNewCameraPosition(
+        _mapController, origin, destination, false);
     await setRoutePolyline(origin, destination, RouteMode.driving);
-    menuTyp = MenuTyp.CONFIRM;
-    calculatePrice();
 
+    calculatePrice().then((value) => {
+        setState(() {
+          if (value)
+            menuTyp = MenuTyp.CONFIRM;
+          else
+            menuTyp = MenuTyp.TRY_AGAIN;
+        })
+    });
   }
 
   void onPositionChanged(Position position) {
@@ -98,14 +114,18 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
     return totalDistance;
   }
 
-  void calculatePrice () async {
+  Future<bool> calculatePrice () async {
     final RemoteConfig remoteConfig = await RemoteConfig.instance;
+    await remoteConfig.fetch();
+    await remoteConfig.activateFetched();
     totalDistance = calculateDistance(_routeCoordinate);
     double calcPrice = remoteConfig.getDouble(EURO_START_KEY);
     calcPrice += totalDistance * remoteConfig.getDouble(EURO_PER_KM_KEY);
-    setState(() {
-      price = num.parse(calcPrice.toStringAsFixed(2));
-    });
+    print(calcPrice);
+    if (calcPrice == 0)
+      return false;
+    price = num.parse(calcPrice.toStringAsFixed(2));
+    return true;
   }
 
   @override
@@ -472,6 +492,8 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
           return fromOrToMenu();
         case MenuTyp.NO_DRIVER_AVAILABLE:
           return noDriverAvailableMenu();
+        case MenuTyp.TRY_AGAIN:
+          return tryAgainMenu();
         case MenuTyp.CALCULATING_DISTANCE:
           return calcDistanceMenu();
         case MenuTyp.CONFIRM:
@@ -631,6 +653,37 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                               onPressed: () {
                                 clearJob();
                               },
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ]
+            )
+        )
+    );
+
+    Widget tryAgainMenu() => Positioned(
+        bottom: 0,
+        child: SizedBox(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height/4,
+            child: Column(
+                children: <Widget>[
+                  Card(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      children: <Widget>[
+                        ListTile(
+                          leading: Icon(Icons.directions_car),
+                          title: Text('MAPS.BOTTOM_MENUS.TRY_AGAIN.MESSAGE'.tr()),
+                        ),
+                        ButtonBar(
+                          children: <Widget>[
+                            FlatButton(
+                              child: Text('TRY_AGAIN'.tr()),
+                              onPressed: goToPayButtonPressed,
                             ),
                           ],
                         ),
@@ -1253,16 +1306,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
     }
 
   void goToPayFloatingActionButton() => FloatingActionButton(
-    onPressed: () {
-      setState(() {
-        if (!isOnlineDriverAvailable()) {
-          menuTyp = MenuTyp.NO_DRIVER_AVAILABLE;
-          return;
-        }
-        menuTyp = MenuTyp.CALCULATING_DISTANCE;
-        getRoute();
-      });
-    },
+    onPressed: goToPayButtonPressed,
     child: Icon(Icons.arrow_forward, color: Colors.white,),
     backgroundColor: Colors.redAccent,
   );

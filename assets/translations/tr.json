@@ -6,6 +6,7 @@
   "CLOSE": "Kapat",
   "SETTINGS": "Ayarlar",
   "SEND_MESSAGE": "Mesaj Gönder",
+  "TRY_AGAIN": "Tekrar dene",
   "LOGIN": {
     "NAME_FIELD_HINT": "İsminizi giriniz",
     "NAME_FIELD_VALIDATOR_ENTER_NAME": "Lütfen isminizi giriniz.",
@@ -53,6 +54,9 @@
       },
       "CALCULATING_DISTANCE": {
         "CALCULATING_DISTANCE": "Mesafe hesaplanıyor."
+      },
+      "TRY_AGAIN": {
+        "MESSAGE": "Lütfen tekrar deneyiniz."
       }
     }
   },

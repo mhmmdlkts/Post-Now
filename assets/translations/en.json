@@ -6,6 +6,7 @@
   "CLOSE": "Close",
   "SETTINGS": "Settings",
   "SEND_MESSAGE": "Send a message",
+  "TRY_AGAIN": "Tekrar dene",
   "LOGIN": {
     "NAME_FIELD_HINT": "Your name",
     "NAME_FIELD_VALIDATOR_ENTER_NAME": "Please enter your name.",
@@ -59,6 +60,9 @@
       },
       "CALCULATING_DISTANCE": {
         "CALCULATING_DISTANCE": "Distance is being calculating."
+      },
+      "TRY_AGAIN": {
+        "MESSAGE": "Lütfen tekrar deneyiniz."
       }
     }
   },

@@ -6,6 +6,7 @@
   "CLOSE": "Schließen",
   "SETTINGS": "Einstellungen",
   "SEND_MESSAGE": "Nachricht senden",
+  "TRY_AGAIN": "Tekrar dene",
   "LOGIN": {
     "NAME_FIELD_HINT": "Ihr Name",
     "NAME_FIELD_VALIDATOR_ENTER_NAME": "Bitte geben Sie Ihren Namen ein.",
@@ -53,6 +54,9 @@
       },
       "CALCULATING_DISTANCE": {
         "CALCULATING_DISTANCE": "Entfernung wird berechnet."
+      },
+      "TRY_AGAIN": {
+        "MESSAGE": "Lütfen tekrar deneyiniz."
       }
     }
   },
