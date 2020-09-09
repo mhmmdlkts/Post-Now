@@ -37,7 +37,7 @@ class _AuthScreenState extends State<AuthScreen> {
       AuthService().signIn(authResult);
     };
 
-    final PhoneVerificationFailed verificationFailed = (AuthException authException) {
+    final PhoneVerificationFailed verificationFailed = (FirebaseAuthException authException) {
       print('${authException.message}');
     };
 

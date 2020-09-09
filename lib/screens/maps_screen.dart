@@ -19,7 +19,6 @@ import 'package:postnow/environment/api-keys.dart';
 import 'package:postnow/enums/menu_typ_enum.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:postnow/models/driver.dart';
-import 'package:postnow/models/user.dart';
 import 'package:postnow/models/job.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -31,7 +30,7 @@ import 'dart:async';
 
 
 class GoogleMapsView extends StatefulWidget {
-  final FirebaseUser user;
+  final User user;
   GoogleMapsView(this.user);
 
   @override
@@ -43,7 +42,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
   final GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: GOOGLE_DIRECTIONS_API_KEY);
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   final List<Driver> _drivers = List();
-  final FirebaseUser user;
+  final User user;
   bool isInitialized = false;
   int initCount = 0;
   int initDone = 0;

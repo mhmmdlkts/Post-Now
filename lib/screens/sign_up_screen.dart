@@ -42,15 +42,11 @@ class _SignUpScreen extends State<SignUpScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          final UserUpdateInfo updatedInfo = UserUpdateInfo();
-          updatedInfo.displayName = _name;
-          await _user.updateProfile(updatedInfo);
+          await _user.updateProfile(displayName: _name);
           _user.reload();
-          FirebaseAuth.instance.currentUser().then((newUser) => {
-            _signUpService.sendUserInfo(newUser, _email),
-            setState(() {
-              _user = newUser;
-            })
+          setState(() {
+            _user = FirebaseAuth.instance.currentUser;
+            _signUpService.sendUserInfo(_user, _email);
           });
         },
         child: Icon(Icons.arrow_forward, color: Colors.white,),

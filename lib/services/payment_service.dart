@@ -76,7 +76,7 @@ class PaymentService {
     print("createCustomerId");
     if (prefs == null)
       prefs = await SharedPreferences.getInstance();
-    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    User user = FirebaseAuth.instance.currentUser;
     var url = "https://europe-west1-post-now-f3c53.cloudfunctions.net/braintree_createCustomerId?uid=" + user.uid;
     print(url);
     try {
@@ -91,7 +91,6 @@ class PaymentService {
       print(e.message);
       return null;
     }
-    return null;
   }
 
   Future<bool> checkTransaction(String uid, double price, String transactionId) async {
