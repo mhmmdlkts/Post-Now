@@ -5,7 +5,9 @@ import 'package:postnow/screens/sign_up_screen.dart';
 import 'package:postnow/screens/splash_screen.dart';
 import 'package:package_info/package_info.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'auth_screen.dart';
+import 'intro_screen.dart';
 import 'maps_screen.dart';
 
 
@@ -19,17 +21,26 @@ class FirstScreen extends StatefulWidget {
 
 class _FirstScreen extends State<FirstScreen> {
   final FirstScreenService _firstScreenService = FirstScreenService();
+  SharedPreferences prefs;
   bool needsUpdate;
 
   @override
   void initState() {
     super.initState();
-
+    SharedPreferences.getInstance().then((value) => prefs = value);
     checkUpdates();
   }
 
   @override
   Widget build(BuildContext context) {
+    if (prefs == null)
+      return SplashScreen();
+    if (_isFirstTimeOpen())
+      return IntroScreen(() {
+        setState((){
+          prefs.setBool(IS_FIRST_TIME_OPEN_KEY, false);
+        });
+      });
     if (needsUpdate == null)
       return SplashScreen();
     if (needsUpdate)
@@ -60,4 +71,11 @@ class _FirstScreen extends State<FirstScreen> {
       _firstScreenService.showUpdateAvailableDialog(context);
   }
 
+  bool _isFirstTimeOpen() {
+    bool isFirstTimeOpen = prefs.getBool(IS_FIRST_TIME_OPEN_KEY);
+    if (isFirstTimeOpen == null) {
+      isFirstTimeOpen = true;
+    }
+    return isFirstTimeOpen;
+  }
 }

@@ -119,8 +119,8 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
     await remoteConfig.fetch();
     await remoteConfig.activateFetched();
     totalDistance = calculateDistance(_routeCoordinate);
-    double calcPrice = remoteConfig.getDouble(EURO_START_KEY);
-    calcPrice += totalDistance * remoteConfig.getDouble(EURO_PER_KM_KEY);
+    double calcPrice = remoteConfig.getDouble(FIREBASE_REMOTE_CONFIG_EURO_START_KEY);
+    calcPrice += totalDistance * remoteConfig.getDouble(FIREBASE_REMOTE_CONFIG_EURO_PER_KM_KEY);
     print(calcPrice);
     if (calcPrice == 0)
       return false;
@@ -198,7 +198,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
     });
 
     initCount++;
-    setJobIfExist().then((value) => {
+    _setJobIfExist().then((value) => {
       nextInitializeDone()
     });
 
@@ -239,9 +239,6 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
   }
 
   _onJobsDataChanged(Job j) {
-    print('aaaaa: ' + j.status.toString());
-    print('aaaaa2: ' + j.isJobForMe(user.uid).toString());
-    print('aaaaa3: ' + (j.startTime == null).toString());
     if (j == job || (j.isJobForMe(user.uid) && j.finishTime == null)) {
       print(j.status);
       job = j;
@@ -1384,7 +1381,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
     );
   }
 
-  Future<void> setJobIfExist() async {
+  Future<void> _setJobIfExist() async {
     initCount++;
     return _mapsService.userRef.child("currentJob").once().then((DataSnapshot snapshot){
       final jobId = snapshot.value;

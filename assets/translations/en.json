@@ -7,6 +7,20 @@
   "SETTINGS": "Settings",
   "SEND_MESSAGE": "Send a message",
   "TRY_AGAIN": "Tekrar dene",
+  "INTRO": {
+    "PAGE1": {
+      "TITLE": "Başlıyoruz",
+      "DESCRIPTION": "Şoförünüzün ilk hedefi olan adresi girin. Bu sizin ya da bi arkadaşınızın adresi olabileceği gibi herhangi bir marketin adresi de olabilir."
+    },
+    "PAGE2": {
+      "TITLE": "Bir adım daha",
+      "DESCRIPTION": "Ardından hedef adresi girin. Eğer paketin size ulaşmasını istiyorsanız bu kısıma kendi adrsinizi gireceğiniz anlamına geliyor."
+    },
+    "PAGE3": {
+      "TITLE": "Takip edin",
+      "DESCRIPTION": "Mesafeye bağlı bir şekilde hesaplanan ücreti onayladıktan sonra en uygun kuryecimiz paketi varış noktasına ulaştıracaktır. Bu süreçte siz paketinizin nerde olduğunu canlı olarak görebileceksiniz."
+    }
+  },
   "LOGIN": {
     "NAME_FIELD_HINT": "Your name",
     "NAME_FIELD_VALIDATOR_ENTER_NAME": "Please enter your name.",
