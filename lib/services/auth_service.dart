@@ -1,10 +1,10 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/material.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:postnow/screens/splash_screen.dart';
 import 'package:postnow/models/user.dart' as myUser;
 import 'package:postnow/screens/first_screen.dart';
-import 'package:postnow/screens/splash_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
 
 class AuthService {

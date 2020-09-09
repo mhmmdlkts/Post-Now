@@ -8,10 +8,6 @@ import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:ui' as ui;
 
-const double EURO_PER_KM = 0.96;
-const double EURO_START  = 5.00;
-const bool TEST = false;
-
 class MapsService with WidgetsBindingObserver {
   final DatabaseReference jobsChatRef = FirebaseDatabase.instance.reference().child('jobs_chat');
   final DatabaseReference driverRef = FirebaseDatabase.instance.reference().child('drivers');

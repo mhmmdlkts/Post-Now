@@ -1,16 +1,13 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
-import 'package:flutter/material.dart';
-import 'package:package_info/package_info.dart';
-import 'package:postnow/environment/api_keys.dart';
+import 'package:postnow/services/first_screen_service.dart';
 import 'package:postnow/environment/global_variables.dart';
 import 'package:postnow/screens/sign_up_screen.dart';
 import 'package:postnow/screens/splash_screen.dart';
-import 'package:postnow/services/first_screen_service.dart';
-import 'package:store_redirect/store_redirect.dart';
-
+import 'package:package_info/package_info.dart';
+import 'package:flutter/material.dart';
 import 'auth_screen.dart';
 import 'maps_screen.dart';
+
 
 class FirstScreen extends StatefulWidget {
   final AsyncSnapshot snapshot;
@@ -52,7 +49,7 @@ class _FirstScreen extends State<FirstScreen> {
     await remoteConfig.fetch();
     await remoteConfig.activateFetched();
 
-    final onlineVersion = int.parse(remoteConfig.getString(FIREBASE_REMOTE_CONFIG_VERSION_KEY));
+    final onlineVersion = remoteConfig.getInt(FIREBASE_REMOTE_CONFIG_VERSION_KEY);
     final int localVersion = int.parse((await PackageInfo.fromPlatform()).buildNumber);
 
     setState(() {

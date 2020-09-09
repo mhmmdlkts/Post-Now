@@ -1,21 +1,23 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:google_map_polyline/google_map_polyline.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:postnow/environment/global_variables.dart';
 import 'package:postnow/screens/orders_overview_screen.dart';
-import 'package:postnow/screens/splash_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:postnow/services/payment_service.dart';
 import 'package:postnow/enums/job_vehicle_enum.dart';
+import 'package:postnow/screens/splash_screen.dart';
 import 'package:postnow/services/maps_service.dart';
 import 'package:google_maps_webservice/places.dart';
 import 'package:postnow/Dialogs/message_toast.dart';
 import 'package:postnow/services/auth_service.dart';
 import 'package:postnow/enums/job_status_enum.dart';
 import 'package:postnow/environment/api_keys.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:postnow/enums/menu_typ_enum.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:postnow/models/driver.dart';
@@ -75,10 +77,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
 
     await setRoutePolyline(origin, destination, RouteMode.driving);
     menuTyp = MenuTyp.CONFIRM;
-
-    setState(() {
-      calculatePrice();
-    });
+    calculatePrice();
 
   }
 
@@ -99,10 +98,11 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
     return totalDistance;
   }
 
-  void calculatePrice () {
+  void calculatePrice () async {
+    final RemoteConfig remoteConfig = await RemoteConfig.instance;
     totalDistance = calculateDistance(_routeCoordinate);
-    double calcPrice = EURO_START;
-    calcPrice += totalDistance * EURO_PER_KM;
+    double calcPrice = remoteConfig.getDouble(EURO_START_KEY);
+    calcPrice += totalDistance * remoteConfig.getDouble(EURO_PER_KM_KEY);
     setState(() {
       price = num.parse(calcPrice.toStringAsFixed(2));
     });
@@ -276,7 +276,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
       menuTyp = MenuTyp.PAYMENT_WAITING;
     });
 
-    if (TEST) {
+    if (IS_TEST) {
       setState(() {
         addJobToPool('test_transaction_id');
         menuTyp = MenuTyp.SEARCH_DRIVER;
@@ -832,7 +832,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
 
     Future<void> setRoutePolyline(LatLng origin, LatLng destination, RouteMode mode) async {
       _routeCoordinate = List();
-      if (TEST) {
+      if (IS_TEST) {
         _routeCoordinate.add(origin);
         _routeCoordinate.add(destination);
       } else {
@@ -967,7 +967,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
     Future<void> addToRoutePolyline(LatLng origin, LatLng destination, RouteMode mode) async {
       List<LatLng> newRouteCoords = List();
 
-      if (TEST) {
+      if (IS_TEST) {
         newRouteCoords.add(origin);
         newRouteCoords.add(destination);
       } else {
