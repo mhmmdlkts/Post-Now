@@ -67,5 +67,12 @@
       "FINISHED": "Ihr Paket wurde geliefert.",
       "CANCELLED": "Bestellung wurde storniert."
     }
+  },
+  "DIALOGS": {
+    "UPDATE_AVAILABLE": {
+      "TITLE": "Yeni Güncelleme Mevcut",
+      "BODY": "Uyulamayi kullanabilmek icin en güncel sürümü kullaniyor olmaniz gerek.",
+      "BUTTON": "Güncelle"
+    }
   }
 }

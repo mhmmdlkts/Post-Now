@@ -73,5 +73,12 @@
       "FINISHED": "Your package has been delivered.",
       "CANCELLED": "Order has been cancelled."
     }
+  },
+  "DIALOGS": {
+    "UPDATE_AVAILABLE": {
+      "TITLE": "Yeni Güncelleme Mevcut",
+      "BODY": "Uyulamayi kullanabilmek icin en güncel sürümü kullaniyor olmaniz gerek.",
+      "BUTTON": "Güncelle"
+    }
   }
 }

@@ -58,6 +58,7 @@ dependencies:
   oktoast: ^2.3.2
   screen: ^0.0.5
   package_info: ^0.4.3
+  store_redirect: ^1.0.2
 
 dev_dependencies:
   flutter_test:

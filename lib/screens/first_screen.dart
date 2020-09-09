@@ -1,16 +1,28 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info/package_info.dart';
-import 'package:postnow/services/auth_service.dart';
+import 'package:postnow/environment/api_keys.dart';
+import 'package:postnow/environment/global_variables.dart';
+import 'package:postnow/screens/sign_up_screen.dart';
+import 'package:postnow/screens/splash_screen.dart';
+import 'package:postnow/services/first_screen_service.dart';
+import 'package:store_redirect/store_redirect.dart';
+
+import 'auth_screen.dart';
+import 'maps_screen.dart';
 
 class FirstScreen extends StatefulWidget {
-  FirstScreen();
+  final AsyncSnapshot snapshot;
+  FirstScreen(this.snapshot);
 
   @override
   _FirstScreen createState() => _FirstScreen();
 }
 
 class _FirstScreen extends State<FirstScreen> {
+  final FirstScreenService _firstScreenService = FirstScreenService();
+  bool needsUpdate;
 
   @override
   void initState() {
@@ -21,25 +33,34 @@ class _FirstScreen extends State<FirstScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    if (needsUpdate == null)
+      return SplashScreen();
+    if (needsUpdate)
+      return SplashScreen();
+
+    if (widget.snapshot.hasData) {
+      if (widget.snapshot.data.displayName == null)
+        return SignUpScreen(widget.snapshot.data);
+      return GoogleMapsView(widget.snapshot.data);
+    } else {
+      return AuthScreen();
+    }
   }
 
-  Future<bool> checkUpdates() async {
-    print('aa');
-    print('aa');
-    await Future.delayed(Duration(seconds: 4));
-    print('aa');
+  checkUpdates() async {
     final RemoteConfig remoteConfig = await RemoteConfig.instance;
-    print('aa');
     await remoteConfig.fetch();
     await remoteConfig.activateFetched();
 
-    final requiredBuildNumber = remoteConfig.getInt('build_version');
-    print(':' + requiredBuildNumber.toString());
+    final onlineVersion = int.parse(remoteConfig.getString(FIREBASE_REMOTE_CONFIG_VERSION_KEY));
+    final int localVersion = int.parse((await PackageInfo.fromPlatform()).buildNumber);
 
-    PackageInfo.fromPlatform().then((packageInfo) => {
-      print(packageInfo.toString())
+    setState(() {
+      needsUpdate = localVersion < onlineVersion;
     });
-    return true;
+
+    if (needsUpdate)
+      _firstScreenService.showUpdateAvailableDialog(context);
   }
+
 }

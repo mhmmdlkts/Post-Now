@@ -3,10 +3,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:postnow/models/user.dart' as myUser;
-import 'package:postnow/screens/auth_screen.dart';
 import 'package:postnow/screens/first_screen.dart';
-import 'package:postnow/screens/maps_screen.dart';
-import 'package:postnow/screens/sign_up_screen.dart';
 import 'package:postnow/screens/splash_screen.dart';
 import 'dart:ui' as ui;
 
@@ -22,15 +19,7 @@ class AuthService {
           print(snapshot.connectionState);
           if (snapshot.connectionState == ConnectionState.waiting)
             return SplashScreen();
-          if (snapshot.hasData) {
-            User u = snapshot.data;
-            print(u.displayName);
-            if (snapshot.data.displayName == null)
-              return SignUpScreen(snapshot.data);
-            return GoogleMapsView(snapshot.data);
-          } else {
-            return AuthScreen();
-          }
+          return FirstScreen(snapshot);
         },
       );
     }
@@ -48,7 +37,7 @@ class AuthService {
     }
 
     Future<UserCredential> signInWithOTP(smsCode, verId) async {
-      AuthCredential authCredential = PhoneAuthProvider.getCredential(
+      AuthCredential authCredential = PhoneAuthProvider.credential(
           verificationId: verId, smsCode: smsCode);
       return await signIn(authCredential);
     }
