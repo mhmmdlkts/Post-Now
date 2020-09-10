@@ -10,10 +10,15 @@
   "LOGIN": {
     "NAME_FIELD_HINT": "İsminizi giriniz",
     "NAME_FIELD_VALIDATOR_ENTER_NAME": "Lütfen isminizi giriniz.",
-    "PHONE_FIELD_HINT": "Örnek: +436601231212",
+    "PHONE_FIELD_HINT": "6601231212",
     "PHONE_FIELD_VALIDATOR_ENTER_NAME": "Lütfen telefon numaranızı giriniz",
     "SMS_CODE_FIELD_HINT": "Örnek: 123456",
-    "SMS_CODE_FIELD_VALIDATOR_ENTER_NAME": "Lütfen gelen doğrulama kodunu giriniz"
+    "SMS_CODE_FIELD_VALIDATOR_ENTER_NAME": "Lütfen gelen doğrulama kodunu giriniz",
+    "AGREE_TERMS_AND_POLICY": "By signing up, you agree to our Terms & Privacy Policy",
+    "COUNTRY_NAME_EXAMPLE": "Avusturya"
+  },
+  "PRIVACY_POLICY": {
+    "TITLE": "Privacy Policy"
   },
   "ALL_ORDERS": {
     "ORDER_HISTORY": "Sipariş Geçmişi"

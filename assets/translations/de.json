@@ -10,10 +10,15 @@
   "LOGIN": {
     "NAME_FIELD_HINT": "Ihr Name",
     "NAME_FIELD_VALIDATOR_ENTER_NAME": "Bitte geben Sie Ihren Namen ein.",
-    "PHONE_FIELD_HINT": "zB: +436601231212",
+    "PHONE_FIELD_HINT": "6601231212",
     "PHONE_FIELD_VALIDATOR_ENTER_NAME": "Bitte geben Sie Ihre Telefonnummer ein.",
     "SMS_CODE_FIELD_HINT": "zB: 123456",
-    "SMS_CODE_FIELD_VALIDATOR_ENTER_NAME": "Geben Sie Ihren Validierungscode ein."
+    "SMS_CODE_FIELD_VALIDATOR_ENTER_NAME": "Geben Sie Ihren Validierungscode ein.",
+    "AGREE_TERMS_AND_POLICY": "By signing up, you agree to our Terms & Privacy Policy",
+    "COUNTRY_NAME_EXAMPLE": "Österreich"
+  },
+  "PRIVACY_POLICY": {
+    "TITLE": "Privacy Policy"
   },
   "ALL_ORDERS": {
     "ORDER_HISTORY": "Bestellverlauf"

@@ -60,6 +60,8 @@ dependencies:
   package_info: ^0.4.3
   store_redirect: ^1.0.2
   intro_slider: ^2.3.2
+  country_code_picker: ^1.4.0
+  flutter_html: ^1.0.2
 
 dev_dependencies:
   flutter_test:

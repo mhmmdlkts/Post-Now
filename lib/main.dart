@@ -1,7 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:postnow/screens/intro_screen.dart';
 import 'package:postnow/services/auth_service.dart';
 import 'package:postnow/widgets/stateful_wrapper.dart';
 

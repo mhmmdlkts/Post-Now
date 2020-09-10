@@ -24,16 +24,21 @@
   "LOGIN": {
     "NAME_FIELD_HINT": "Your name",
     "NAME_FIELD_VALIDATOR_ENTER_NAME": "Please enter your name.",
-    "PHONE_FIELD_HINT": "Example. +436601231212",
+    "PHONE_FIELD_HINT": "6601231212",
     "PHONE_FIELD_VALIDATOR_ENTER_NAME": "Please enter your phone number.",
     "SMS_CODE_FIELD_HINT": "Example: 123456",
-    "SMS_CODE_FIELD_VALIDATOR_ENTER_NAME": "Enter your validation code."
+    "SMS_CODE_FIELD_VALIDATOR_ENTER_NAME": "Enter your validation code.",
+    "AGREE_TERMS_AND_POLICY": "By signing up, you agree to our Terms & Privacy Policy",
+    "COUNTRY_NAME_EXAMPLE": "Austria"
   },
   "SIGN_UP": {
     "NAME_FIELD_HINT": "Your name",
     "NAME_FIELD_VALIDATOR_ENTER_NAME": "Please enter your name.",
     "EMAIL_FIELD_HINT": "Example. mhmmdlkts@gmail.com",
     "EMAIL_FIELD_VALIDATOR_ENTER_NAME": "Please enter your email address."
+  },
+  "PRIVACY_POLICY": {
+    "TITLE": "Privacy Policy"
   },
   "ALL_ORDERS": {
     "ORDER_HISTORY": "Order History"
