@@ -2,7 +2,9 @@ import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:google_map_polyline/google_map_polyline.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:postnow/dialogs/address_manager_dialog.dart';
 import 'package:postnow/environment/global_variables.dart';
+import 'package:postnow/models/address.dart';
 import 'package:postnow/screens/orders_overview_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -44,39 +46,38 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
   final GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: GOOGLE_DIRECTIONS_API_KEY);
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   final List<Driver> _drivers = List();
-  final User user;
-  bool isInitialized = false;
-  int initCount = 0;
-  int initDone = 0;
+  final User _user;
+  bool _isInitialized = false;
+  int _initCount = 0;
+  int _initDone = 0;
   Set<Polyline> _polyLines = Set();
   List<String> _orders = List();
   BitmapDescriptor _packageLocationIcon, _driverLocationIcon, _homeLocationIcon;
-  TextEditingController originTextController, destinationTextController;
+  TextEditingController _originTextController, _destinationTextController;
   Marker _packageMarker, _destinationMarker;
   GoogleMapController _mapController;
   List<LatLng> _routeCoordinate;
   MapsService _mapsService;
-  double totalDistance = 0.0;
-  double price = 0.0;
-  MenuTyp menuTyp;
-  String originAddress, destinationAddress;
-  Position myPosition;
-  LatLng origin, destination;
-  Job job;
-  Driver myDriver;
-  bool isDestinationButtonChosen = false;
+  double _totalDistance = 0.0;
+  double _price = 0.0;
+  MenuTyp _menuTyp;
+  Address _originAddress, _destinationAddress;
+  Position _myPosition;
+  Job _job;
+  Driver _myDriver;
+  bool _isDestinationButtonChosen = false;
 
-  _GoogleMapsViewState(this.user) {
-    _mapsService = MapsService(user.uid);
+  _GoogleMapsViewState(this._user) {
+    _mapsService = MapsService(_user.uid);
   }
 
   goToPayButtonPressed() {
     setState(() {
       if (!isOnlineDriverAvailable()) {
-        menuTyp = MenuTyp.NO_DRIVER_AVAILABLE;
+        _menuTyp = MenuTyp.NO_DRIVER_AVAILABLE;
         return;
       }
-      menuTyp = MenuTyp.CALCULATING_DISTANCE;
+      _menuTyp = MenuTyp.CALCULATING_DISTANCE;
       getRoute();
     });
   }
@@ -84,15 +85,15 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
   getRoute() async {
     _polyLines.clear();
     _mapsService.setNewCameraPosition(
-        _mapController, origin, destination, false);
-    await setRoutePolyline(origin, destination, RouteMode.driving);
+        _mapController, _getOrigin(), _getDestination(), false);
+    await setRoutePolyline(_getOrigin(), _getDestination(), RouteMode.driving);
 
     calculatePrice().then((value) => {
         setState(() {
           if (value)
-            menuTyp = MenuTyp.CONFIRM;
+            _menuTyp = MenuTyp.CONFIRM;
           else
-            menuTyp = MenuTyp.TRY_AGAIN;
+            _menuTyp = MenuTyp.TRY_AGAIN;
         })
     });
   }
@@ -118,50 +119,50 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
     final RemoteConfig remoteConfig = await RemoteConfig.instance;
     await remoteConfig.fetch();
     await remoteConfig.activateFetched();
-    totalDistance = calculateDistance(_routeCoordinate);
+    _totalDistance = calculateDistance(_routeCoordinate);
     double calcPrice = remoteConfig.getDouble(FIREBASE_REMOTE_CONFIG_EURO_START_KEY);
-    calcPrice += totalDistance * remoteConfig.getDouble(FIREBASE_REMOTE_CONFIG_EURO_PER_KM_KEY);
+    calcPrice += _totalDistance * remoteConfig.getDouble(FIREBASE_REMOTE_CONFIG_EURO_PER_KM_KEY);
     print(calcPrice);
     if (calcPrice == 0)
       return false;
-    price = num.parse(calcPrice.toStringAsFixed(2));
+    _price = num.parse(calcPrice.toStringAsFixed(2));
     return true;
   }
 
   @override
   void initState() {
-    initCount++;
+    _initCount++;
     super.initState();
     Screen.keepOn(true);
 
-    initCount++;
+    _initCount++;
     _mapsService.getBytesFromAsset('assets/package_map_marker.png', 130).then((value) => { setState((){
       _packageLocationIcon = BitmapDescriptor.fromBytes(value);
-      nextInitializeDone();
+      nextInitializeDone('1');
     })});
 
-    initCount++;
+    _initCount++;
     _mapsService.getBytesFromAsset('assets/driver_map_marker.png', 150).then((value) => { setState((){
       _driverLocationIcon = BitmapDescriptor.fromBytes(value);
-      nextInitializeDone();
+      nextInitializeDone('2');
     })});
 
-    initCount++;
+    _initCount++;
     _mapsService.getBytesFromAsset('assets/home_map_marker.png', 130).then((value) => { setState((){
       _homeLocationIcon = BitmapDescriptor.fromBytes(value);
-      nextInitializeDone();
+      nextInitializeDone('3');
     })});
 
-    initCount++;
+    _initCount++;
     SharedPreferences.getInstance().then((value) => {
         if (value.containsKey('orders'))
           _orders = value.getStringList('orders'),
-        nextInitializeDone()
+        nextInitializeDone('4')
       }
     );
 
-    originTextController = new TextEditingController(text: '');
-    destinationTextController = new TextEditingController(text: '');
+    _originTextController = new TextEditingController(text: '');
+    _destinationTextController = new TextEditingController(text: '');
 
     _mapsService.driverRef.onChildAdded.listen(_onDriversDataAdded);
     _mapsService.driverRef.onChildChanged.listen(_onDriversDataChanged);
@@ -173,7 +174,6 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
       setState(() {
         Job j = Job.fromSnapshot(e.snapshot);
         _onJobsDataChanged(j);
-        print('set stattet');
       });
     });
 
@@ -197,27 +197,28 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
       return;
     });
 
-    initCount++;
+    _initCount++;
     _setJobIfExist().then((value) => {
-      nextInitializeDone()
+      nextInitializeDone('5')
     });
 
     var locationOptions = LocationOptions(accuracy: LocationAccuracy.high, distanceFilter: 10);
 
     Geolocator().getPositionStream(locationOptions).listen(onPositionChanged);
-    nextInitializeDone();
+    nextInitializeDone('6');
   }
 
-  nextInitializeDone() {
-    initDone++;
-    if (initCount == initDone) {
+  nextInitializeDone(String code) {
+    // print(code);
+    _initDone++;
+    if (_initCount == _initDone) {
       getMyPosition().then((value) => {
         _mapController.moveCamera(CameraUpdate.newCameraPosition(
             CameraPosition(target: LatLng(value.latitude, value.longitude), zoom: 13)
         )),
         Future.delayed(Duration(milliseconds: 500), () =>
           setState((){
-            isInitialized = true;
+            _isInitialized = true;
           })
         )
       });
@@ -233,39 +234,40 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
 
   void _onJobsDataAdded(Event event) async {
     Job snapshot = Job.fromSnapshot(event.snapshot);
-    if (snapshot == job) {
+    if (snapshot == _job) {
       _mapsService.userRef.child("orders").child(snapshot.key).set(snapshot.key);
     }
   }
 
   _onJobsDataChanged(Job j) {
-    if (j == job || (j.isJobForMe(user.uid) && j.finishTime == null)) {
+    print(j.toMap());
+    if (j == _job || (j.isJobForMe(_user.uid) && j.finishTime == null)) {
       print(j.status);
-      job = j;
-      switch (job.status) {
+      _job = j;
+      switch (_job.status) {
         case Status.ON_ROAD:
-          menuTyp = MenuTyp.ACCEPTED;
-          if (job.driverId != null) {
+          _menuTyp = MenuTyp.ACCEPTED;
+          if (_job.driverId != null) {
             for (Driver d in _drivers) {
-              if (d.key == job.driverId) {
-                myDriver = d;
-                myDriver.isMyDriver = true;
+              if (d.key == _job.driverId) {
+                _myDriver = d;
+                _myDriver.isMyDriver = true;
                 _polyLines.clear();
               }
             }
           }
           break;
         case Status.PACKAGE_PICKED:
-          menuTyp = MenuTyp.PACKAGE_PICKED;
+          _menuTyp = MenuTyp.PACKAGE_PICKED;
           break;
         case Status.FINISHED:
-          menuTyp = MenuTyp.COMPLETED;
+          _menuTyp = MenuTyp.COMPLETED;
           break;
         case Status.CANCELLED:
           _polyLines.clear();
           _packageMarker = null;
-          _mapsService.setNewCameraPosition(_mapController, LatLng(myPosition.latitude, myPosition.longitude), null, true);
-          clearJob();
+          _mapsService.setNewCameraPosition(_mapController, LatLng(_myPosition.latitude, _myPosition.longitude), null, true);
+          _clearJob();
           break;
       }
     }
@@ -290,24 +292,24 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
 
   _navigateToPaymentsAndGetResult(BuildContext context, double price) async {
     setState(() {
-      menuTyp = MenuTyp.PAYMENT_WAITING;
+      _menuTyp = MenuTyp.PAYMENT_WAITING;
     });
 
     if (IS_TEST) {
       setState(() {
         addJobToPool('test_transaction_id');
-        menuTyp = MenuTyp.SEARCH_DRIVER;
+        _menuTyp = MenuTyp.SEARCH_DRIVER;
       });
       return;
     }
 
-    PaymentService().openPayMenu(price, user.uid).then((result) => {
+    PaymentService().openPayMenu(price, _user.uid).then((result) => {
       setState(() {
         if (result != null) {
           addJobToPool(result);
-          menuTyp = MenuTyp.SEARCH_DRIVER;
+          _menuTyp = MenuTyp.SEARCH_DRIVER;
         } else
-          menuTyp = MenuTyp.PAYMENT_DECLINED;
+          _menuTyp = MenuTyp.PAYMENT_DECLINED;
       })
     });
   }
@@ -318,7 +320,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
     return Stack(
       children: [
         _content(),
-        isInitialized ? Container() : SplashScreen(),
+        _isInitialized ? Container() : SplashScreen(),
       ],
     );
   }
@@ -345,7 +347,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                 Text("SETTINGS".tr(), style: TextStyle(fontSize: 20, color: Colors.white)),
                 Positioned(
                   bottom: 0,
-                  child: Text(user.displayName, style: TextStyle(fontSize: 22, color: Colors.white)),
+                  child: Text(_user.displayName, style: TextStyle(fontSize: 22, color: Colors.white)),
                 )
               ],
             ),
@@ -358,7 +360,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => AllOrders(user.uid)),
+                MaterialPageRoute(builder: (context) => AllOrders(_user.uid)),
               );
             },
           ),
@@ -371,13 +373,13 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
         ],
       ),
     ),
-    floatingActionButton: getFloatingActionButton(),
+    floatingActionButton: _getFloatingActionButton(),
   );
 
   Set<Marker> _createMarker() {
     Set markers = Set<Marker>();
     for (Driver driver in _drivers) {
-      if (menuTyp != MenuTyp.ACCEPTED) {
+      if (_menuTyp != MenuTyp.ACCEPTED) {
         if (driver.isOnline) {
           markers.add(driver.getMarker(_driverLocationIcon));
         }
@@ -410,53 +412,53 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
       polylines: _polyLines,
       markers: _createMarker(),
       onTap: (t) {
-        setMarker(t);
+        _setMarker(t);
       },
     ),
   );
 
-  setMarker(t, {String address}) {
-    if (menuTyp != MenuTyp.FROM_OR_TO && menuTyp != null)
+  _setMarker(pos, {Address address, String houseNumber}) async {
+    if (_menuTyp != MenuTyp.FROM_OR_TO && _menuTyp != null)
       return;
-    if (t is Position)
-      t = LatLng(t.latitude, t.longitude);
+    if (pos is Position)
+      pos = LatLng(pos.latitude, pos.longitude);
     setState(() {
       _polyLines.clear();
-      LatLng chosen = t;
-      if (isDestinationButtonChosen) {
-        destination = chosen;
+      LatLng chosen = pos;
+      if (_isDestinationButtonChosen) {
+        _destinationAddress = Address.fromLatLng(chosen);
         _destinationMarker = Marker(
             markerId: MarkerId("package"),
             position: chosen,
             icon: _homeLocationIcon,
             onTap: () => {
               setState(() {
-                isDestinationButtonChosen = true;
+                _isDestinationButtonChosen = true;
               })
             }
         );
-        setPlaceForDestination(address: address);
+        _setPlaceForDestination(address: address, houseNumber: houseNumber);
       } else {
-        origin = chosen;
+        _originAddress = Address.fromLatLng(chosen);
         _packageMarker = Marker(
             markerId: MarkerId("destination"),
             position: chosen,
             icon: _packageLocationIcon,
             onTap: () => {
               setState(() {
-                isDestinationButtonChosen = false;
+                _isDestinationButtonChosen = false;
               })
             }
         );
-        setPlaceForOrigin(address: address);
+        _setPlaceForOrigin(address: address, houseNumber: houseNumber);
       }
-      if (isDestinationButtonChosen? origin == null : destination == null)
-        isDestinationButtonChosen = !isDestinationButtonChosen;
+      if (_isDestinationButtonChosen? _originAddress == null : _destinationAddress == null)
+        _isDestinationButtonChosen = !_isDestinationButtonChosen;
     });
   }
 
   Widget getTopMenu() {
-    if (menuTyp != null && menuTyp != MenuTyp.FROM_OR_TO)
+    if (_menuTyp != null && _menuTyp != MenuTyp.FROM_OR_TO)
       return Container();
     return Positioned(
       top: 0,
@@ -468,23 +470,21 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          getDesOrOriginButton("assets/marker_buttons/package_selected.png",
+          _getDesOrOriginButton("assets/marker_buttons/package_selected.png",
               "assets/marker_buttons/package_not_selected.png",
               "assets/marker_buttons/package_selected_onPressed.png",
-              "assets/marker_buttons/package_not_selected_onPressed.png",
-              originAddress, false),
-          getDesOrOriginButton("assets/marker_buttons/home_selected.png",
+              "assets/marker_buttons/package_not_selected_onPressed.png", false),
+          _getDesOrOriginButton("assets/marker_buttons/home_selected.png",
               "assets/marker_buttons/home_not_selected.png",
               "assets/marker_buttons/home_selected_onPressed.png",
-              "assets/marker_buttons/home_not_selected_onPressed.png",
-              destinationAddress, true),
+              "assets/marker_buttons/home_not_selected_onPressed.png", true),
         ],
       ),
     );
   }
 
     Widget getBottomMenu() {
-      switch (menuTyp) {
+      switch (_menuTyp) {
         case MenuTyp.FROM_OR_TO:
           return fromOrToMenu();
         case MenuTyp.NO_DRIVER_AVAILABLE:
@@ -532,7 +532,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                             FlatButton(
                               child: Text('OK'.tr()),
                               onPressed: () {
-                                clearJob();
+                                _clearJob();
                               },
                             ),
                           ],
@@ -559,7 +559,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                       children: <Widget>[
                         ListTile(
                           leading: Icon(Icons.directions_car),
-                          title: Text("MAPS.BOTTOM_MENUS.YOUR_DRIVER".tr(namedArgs: {'name': myDriver.getName()})),
+                          title: Text("MAPS.BOTTOM_MENUS.YOUR_DRIVER".tr(namedArgs: {'name': _myDriver.getName()})),
                           subtitle: Text("MAPS.BOTTOM_MENUS.PACKAGE_PICKED.STATUS".tr()),
                         ),
                         ButtonBar(
@@ -567,7 +567,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                             FlatButton(
                               child: Text('SEND_MESSAGE'.tr()),
                               onPressed: () {
-                                openMessageScreen(job.key, myDriver.getName());
+                                openMessageScreen(_job.key, _myDriver.getName());
                               },
                             ),
                           ],
@@ -594,7 +594,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                       children: <Widget>[
                         ListTile(
                           leading: Icon(Icons.directions_car),
-                          title: Text("MAPS.BOTTOM_MENUS.YOUR_DRIVER".tr(namedArgs: {'name': myDriver.getName()})),
+                          title: Text("MAPS.BOTTOM_MENUS.YOUR_DRIVER".tr(namedArgs: {'name': _myDriver.getName()})),
                           subtitle: Text("MAPS.BOTTOM_MENUS.JOB_ACCEPTED.STATUS".tr()),
                         ),
                         ButtonBar(
@@ -602,7 +602,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                             FlatButton(
                               child: Text('SEND_MESSAGE'.tr()),
                               onPressed: () {
-                                openMessageScreen(job.key, myDriver.getName());
+                                openMessageScreen(_job.key, _myDriver.getName());
                               },
                             ),
                           ],
@@ -648,7 +648,9 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                             FlatButton(
                               child: Text('OK'.tr()),
                               onPressed: () {
-                                clearJob();
+                                setState(() {
+                                  _menuTyp = MenuTyp.FROM_OR_TO;
+                                });
                               },
                             ),
                           ],
@@ -705,8 +707,8 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                       children: <Widget>[
                         ListTile(
                           leading: Icon(Icons.payment),
-                          title: Text('MAPS.PRICE'.tr(namedArgs: {'price': price.toString()})),
-                          subtitle: Text('MAPS.BOTTOM_MENUS.CONFIRM.FROM_TO'.tr(namedArgs: {'from': originAddress, 'to': destinationAddress})),
+                          title: Text('MAPS.PRICE'.tr(namedArgs: {'price': _price.toString()})),
+                          subtitle: Text('MAPS.BOTTOM_MENUS.CONFIRM.FROM_TO'.tr(namedArgs: {'from': _originAddress.getAddress(), 'to': _destinationAddress.getAddress()})),
                         ),
                         ButtonBar(
                           children: <Widget>[
@@ -715,8 +717,8 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                               onPressed: () {
                                 setState(() {
                                   _polyLines.clear();
-                                  if (destination != null && origin != null)
-                                    menuTyp = MenuTyp.FROM_OR_TO;
+                                  if (_destinationAddress != null && _originAddress != null)
+                                    _menuTyp = MenuTyp.FROM_OR_TO;
                                 });
                               },
                             ),
@@ -725,9 +727,9 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                               onPressed: () {
                                 setState(() {
                                   //menuTyp = MenuTyp.PAY;
-                                  if (price == 0)
+                                  if (_price == 0)
                                     return;
-                                  _navigateToPaymentsAndGetResult(context, price);
+                                  _navigateToPaymentsAndGetResult(context, _price);
                                 });
                               },
                             ),
@@ -757,7 +759,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                           title: Text("MAPS.BOTTOM_MENUS.SEARCH_DRIVER.ORDER_ACCEPTED".tr()),
                           subtitle: Text("MAPS.BOTTOM_MENUS.SEARCH_DRIVER.STATUS".tr()),
                         ),
-                        menuTyp != MenuTyp.ACCEPTED ? Padding (
+                        _menuTyp != MenuTyp.ACCEPTED ? Padding (
                           padding: EdgeInsets.all(10.0),
                           child: CircularProgressIndicator(
                             valueColor: new AlwaysStoppedAnimation<Color>(Colors.deepPurple),
@@ -786,7 +788,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                           leading: Icon(Icons.payment),
                           title: Text('MAPS.BOTTOM_MENUS.PAYMENT_WAITING.PAYMENT_WAITING'.tr()),
                         ),
-                        menuTyp != MenuTyp.ACCEPTED ? Padding (
+                        _menuTyp != MenuTyp.ACCEPTED ? Padding (
                           padding: EdgeInsets.all(10.0),
                           child: CircularProgressIndicator(
                             valueColor: new AlwaysStoppedAnimation<Color>(Colors.deepPurple),
@@ -846,7 +848,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                               child: Text('CLOSE'.tr()),
                               onPressed: () {
                                 setState(() {
-                                  menuTyp = MenuTyp.CONFIRM;
+                                  _menuTyp = MenuTyp.CONFIRM;
                                 });
                               },
                             ),
@@ -861,23 +863,23 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
     );
 
     void addJobToPool(transactionId) async {
-      job = Job(
-          name: "Robot",
-          userId: user.uid,
+      print('addJobToPool');
+      _job = Job(
+          name: _user.displayName,
+          userId: _user.uid,
           transactionId: transactionId,
           vehicle: Vehicle.CAR,
-          price: price,
-          origin: origin,
-          destination: destination,
-          originAddress: originAddress,
-          destinationAddress: destinationAddress
+          price: _price,
+          originAddress: _originAddress,
+          destinationAddress: _destinationAddress
       );
-      _orders.add(json.encode(job.toJson()));
+      _orders.add(json.encode(_job.toJson()));
       SharedPreferences.getInstance().then((value) => {
           value.setStringList('orders', _orders)
         }
       );
-      _mapsService.jobsRef.push().set(job.toMap());
+      print(_job.toMap());
+      _mapsService.jobsRef.push().set(_job.toMap());
     }
 
     Future<void> setRoutePolyline(LatLng origin, LatLng destination, RouteMode mode) async {
@@ -921,7 +923,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
       _polyLines.clear();
     }
 
-    bool isDrawableRoute() => menuTyp == MenuTyp.CONFIRM || menuTyp == MenuTyp.CALCULATING_DISTANCE;
+    bool isDrawableRoute() => _menuTyp == MenuTyp.CONFIRM || _menuTyp == MenuTyp.CALCULATING_DISTANCE;
 
     drawPolylineHelper(int id, Color firstColor, Color color, List<LatLng> routeCoords) async {
 
@@ -1043,23 +1045,23 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
     }
 
     Future<Position> getMyPosition() async {
-      if (myPosition != null)
-        return myPosition;
+      if (_myPosition != null)
+        return _myPosition;
 
       setMyPosition(await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.low));
 
       Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high).then((value) => {
-        myPosition = value,
+        _myPosition = value,
       });
 
-      return myPosition;
+      return _myPosition;
     }
 
     void setMyPosition(Position pos) {
-      if (myPosition == null) { // first time
+      if (_myPosition == null) { // first time
         _mapsService.setNewCameraPosition(_mapController, new LatLng(pos.latitude, pos.longitude), null, true);
       }
-      myPosition = pos;
+      _myPosition = pos;
     }
 
     void openMessageScreen(key, name) async {
@@ -1068,14 +1070,38 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
           MaterialPageRoute(builder: (context) => ChatScreen(key, name, false))
       );
     }
+    
+    String _getDestinationAddress() {
+      if (_destinationAddress == null)
+        return null;
+      return _destinationAddress.getAddress();
+    }
 
-    getDesOrOriginButton(String activePath, String notActivePath, String activePathPressed, String notActivePathPressed, String label, bool isDestination) {
+    String _getOriginAddress() {
+      if (_originAddress == null)
+        return null;
+      return _originAddress.getAddress();
+    }
+
+    LatLng _getDestination() {
+      if (_destinationAddress == null)
+        return null;
+      return _destinationAddress.coordinates;
+    }
+
+    LatLng _getOrigin() {
+      if (_originAddress == null)
+        return null;
+      return _originAddress.coordinates;
+    }
+
+    _getDesOrOriginButton(String activePath, String notActivePath, String activePathPressed, String notActivePathPressed, bool isDestination) {
 
       onTapButton() {
-        _mapsService.setNewCameraPosition(_mapController, isDestination? destination : origin, null, true);
-        if (isDestinationButtonChosen != isDestination) {
+        _mapsService.setNewCameraPosition(_mapController, isDestination? _getDestination() : _getOrigin(), null, true);
+        if (_isDestinationButtonChosen != isDestination) {
           setState(() {
-            isDestinationButtonChosen = isDestination;
+            _isDestinationButtonChosen = isDestination;
           });
         }
       }
@@ -1102,8 +1128,8 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                       }, // handle your image tap here
                       child: Image.asset(
                         (isDestination
-                            ? isDestinationButtonChosen
-                            : !isDestinationButtonChosen)
+                            ? _isDestinationButtonChosen
+                            : !_isDestinationButtonChosen)
                             ? activePath
                             : notActivePath,
                         width: MediaQuery.of(context).size.width * (0.4),
@@ -1115,19 +1141,19 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                   Container(
                     height: 30.0,
                     width: 30.0,
-                    child: (isDestination? destination != null : origin != null) ? FittedBox(
+                    child: (isDestination? _destinationAddress != null : _originAddress != null) ? FittedBox(
                       child: FloatingActionButton(
                         backgroundColor: Colors.blue,
                         onPressed: () {
                           setState(() {
                             if (isDestination) {
-                              destination = null;
-                              setPlaceForDestination();
+                              _destinationAddress = null;
+                              _setPlaceForDestination();
                             } else {
-                              origin = null;
-                              setPlaceForOrigin();
+                              _originAddress = null;
+                              _setPlaceForOrigin();
                             }
-                            isDestinationButtonChosen = isDestination;
+                            _isDestinationButtonChosen = isDestination;
                           });
                         },
                         child: Icon(Icons.clear, color: Colors.white),
@@ -1150,7 +1176,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                     onTap: () async {
                       onTapButton();
                       Prediction p = await PlacesAutocomplete.show(
-                        startText: isDestinationButtonChosen? destinationAddress : originAddress,
+                        startText: _isDestinationButtonChosen? _getDestinationAddress() : _getOriginAddress(),
                         hint: "MAPS.TYPE_ADDRESS".tr(),
                         // startText: isDestination ? destinationTextController.text : originTextController.text,
                         context: context,
@@ -1160,13 +1186,15 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                         language: 'de',
                         components: [new Component(Component.country, "at")]
                       );
-                      LatLng wrotePlace = await predictionToLatLng(p);
-                      setMarker(wrotePlace, address: predictionToString(p));
+                      if (p == null)
+                        return;
+                      Address address = await _predictionToAddress(p);
+                      _setMarker(address.coordinates, address: address);
                     },
                     maxLines: null,
                     controller: isDestination
-                        ? destinationTextController
-                        : originTextController,
+                        ? _destinationTextController
+                        : _originTextController,
                     cursorColor: Colors.white,
                     keyboardType: TextInputType.multiline,
                     style: TextStyle(color: Colors.white, fontSize: 14),
@@ -1190,7 +1218,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                   ),
                 )
               ),
-              (isDestination == isDestinationButtonChosen && myPosition != null) ?
+              (isDestination == _isDestinationButtonChosen && _myPosition != null) ?
               Container(
                     width: (MediaQuery
                         .of(context)
@@ -1201,7 +1229,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                       borderRadius: BorderRadius.circular(18.0),
                   ),
                   onPressed: (){
-                    setMarker(LatLng(myPosition.latitude, myPosition.longitude));
+                    _setMarker(LatLng(_myPosition.latitude, _myPosition.longitude));
                   },
                   color: Colors.blue,
                   child: Container(
@@ -1210,84 +1238,124 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                   )
                 )
               ) : Container(),
-              (isDestination == isDestinationButtonChosen) ?
-              getLastAddress(1) : Container(),
-              (isDestination == isDestinationButtonChosen) ?
-              getLastAddress(2) : Container(),
+              (isDestination == _isDestinationButtonChosen) ?
+              _getLastAddress(1) : Container(),
+              (isDestination == _isDestinationButtonChosen) ?
+              _getLastAddress(2) : Container(),
             ],
           )
       );
     }
 
-    String predictionToString(Prediction p) => p.description ;
-
-    Future<LatLng> predictionToLatLng(Prediction p) async {
+    Future<Address> _predictionToAddress(Prediction p) async {
       if (p == null)
         return null;
       PlacesDetailsResponse detail = await _places.getDetailsByPlaceId(p.placeId);
       final double lat = detail.result.geometry.location.lat;
       final double lng = detail.result.geometry.location.lng;
-      return LatLng(lat, lng);
+      print(_predictionToHouseNumber(p));
+      return Address.fromAddressComponents(detail.result.addressComponents, coordinates: LatLng(lat, lng), doorNumber: _predictionToHouseNumber(p));
     }
 
-    void setPlaceForOrigin({String address}) async {
-      commonPiece();
-      if (origin == null) {
-        originTextController.clear();
+    String _predictionToHouseNumber(Prediction p) {
+      if (p == null)
+        return null;
+      List<String> list = p.description.split(" ");
+      final RegExp regex = RegExp(r"^[0-9]+([-]?[a-zA-Z])?");
+      for (int i = list.length-1; 0 <= i; i--) {
+        String houseNumber = list[i].replaceAll(",", "");
+        if (regex.hasMatch(houseNumber))
+          if (houseNumber.contains("/"))
+            return houseNumber.split("/")[1];
+          else
+            return houseNumber;
+      }
+      return null;
+    }
+
+    void _setPlaceForOrigin({Address address, String houseNumber}) async {
+      _commonPiece();
+      if (_originAddress == null) {
+        _clearOriginAddress();
         return;
       }
       if (address == null) {
-        List<Placemark> originPlaceMarks = await Geolocator().placemarkFromCoordinates(origin.latitude, origin.longitude);
-        originAddress = placeMarkToString(originPlaceMarks[0]);
+        print(_getOrigin());
+        List<Placemark> originPlaceMarks = await Geolocator()
+            .placemarkFromCoordinates(_getOrigin().latitude, _getOrigin().longitude);
+        print(originPlaceMarks[0].position);
+        _originAddress.updateWithPlaceMark(originPlaceMarks[0]);
       } else {
-        originAddress = address;
+        _originAddress = address;
       }
-      originTextController.text = originAddress;
+      if (houseNumber != null) {
+        if (houseNumber.contains("/")) {
+          _originAddress.houseNumber = houseNumber.split("/")[0];
+          _originAddress.doorNumber = houseNumber.split("/")[1];
+        } else {
+          _originAddress.houseNumber = houseNumber;
+        }
+      }
+      _originTextController.text = _originAddress.getAddress();
+      _originAddress = await _showAddressManagerDialog(_originAddress);
+      if (_originAddress != null)
+        _originTextController.text = _originAddress.getAddress();
+      else
+        _clearOriginAddress();
     }
 
-    void setPlaceForDestination({String address}) async {
-      commonPiece();
-      if (destination == null) {
-        destinationTextController.clear();
+    void _setPlaceForDestination({Address address, String houseNumber}) async {
+      _commonPiece();
+      if (_getDestination() == null) {
+        _clearDestinationAddress();
         return;
       }
       if (address == null) {
         List<Placemark> destinationPlaceMarks = await Geolocator()
-            .placemarkFromCoordinates(
-            destination.latitude, destination.longitude);
-        destinationAddress = placeMarkToString(destinationPlaceMarks[0]);
+            .placemarkFromCoordinates(_getDestination().latitude, _getDestination().longitude);
+        _destinationAddress.updateWithPlaceMark(destinationPlaceMarks[0]);
       } else {
-        destinationAddress = address;
+        _destinationAddress = address;
       }
-      destinationTextController.text = destinationAddress;
+      if (houseNumber != null) {
+        if (houseNumber.contains("/")) {
+          _destinationAddress.houseNumber = houseNumber.split("/")[0];
+          _destinationAddress.doorNumber = houseNumber.split("/")[1];
+        } else {
+          _destinationAddress.houseNumber = houseNumber;
+        }
+      }
+      _destinationTextController.text = _destinationAddress.getAddress();
+      _destinationAddress = await _showAddressManagerDialog(_destinationAddress);
+      if (_destinationAddress != null)
+        _destinationTextController.text = _destinationAddress.getAddress();
+      else
+        _clearDestinationAddress();
     }
 
-    void commonPiece() {
+    void _commonPiece() {
       setState(() {
-        menuTyp = destination != null && origin != null ? MenuTyp.FROM_OR_TO : null;
-        menuTyp = destination != null && origin != null ? MenuTyp.FROM_OR_TO : null;
+        _menuTyp = _destinationAddress != null && _originAddress != null ? MenuTyp.FROM_OR_TO : null;
       });
     }
 
-    String placeMarkToString(Placemark p) {
-      return p.name + " " + p.subAdministrativeArea + "/" + p.country;
-    }
-
-  getFloatingActionButton() {
-      if (menuTyp == null)
-        return positionFloatingActionButton();
-      switch (menuTyp) {
+  FloatingActionButton _getFloatingActionButton() {
+      if (_menuTyp == null)
+        return _positionFloatingActionButton();
+      switch (_menuTyp) {
         case MenuTyp.FROM_OR_TO:
-          return goToPayFloatingActionButton();
+          return _goToPayFloatingActionButton();
       }
       return null;
   }
 
-  positionFloatingActionButton() => FloatingActionButton(
+  _positionFloatingActionButton() => FloatingActionButton(
     onPressed: () {
-      if (myPosition == null)
+      print(_originAddress.toMap());
+      return;
+      if (_myPosition == null)
         return;
-      LatLng pos = LatLng(myPosition.latitude, myPosition.longitude);
+      LatLng pos = LatLng(_myPosition.latitude, _myPosition.longitude);
       _mapsService.setNewCameraPosition(_mapController, pos, null, true);
     },
     child: Icon(Icons.my_location, color: Colors.white,),
@@ -1302,34 +1370,42 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
       return false;
     }
 
-  void goToPayFloatingActionButton() => FloatingActionButton(
+  FloatingActionButton _goToPayFloatingActionButton() => FloatingActionButton(
     onPressed: goToPayButtonPressed,
     child: Icon(Icons.arrow_forward, color: Colors.white,),
     backgroundColor: Colors.redAccent,
   );
 
-  void clearJob() {
+  void _clearJob() {
     setState(() {
-      originTextController.clear();
-      destinationTextController.clear();
+      _clearDestinationAddress();
+      _clearOriginAddress();
       _polyLines = Set();
-      isDestinationButtonChosen = false;
-      totalDistance = 0.0;
-      price = 0.0;
-      _packageMarker = null;
-      _destinationMarker = null;
+      _isDestinationButtonChosen = false;
+      _totalDistance = 0.0;
+      _price = 0.0;
       _routeCoordinate = null;
-      myDriver = null;
-      originAddress = null;
-      destinationAddress = null;
-      destination = null;
-      origin = null;
-      job = null;
-      menuTyp = null;
+      _myDriver = null;
+      _job = null;
+      _menuTyp = null;
     });
   }
 
-  getLastAddress(int i) {
+  _clearDestinationAddress() {
+    _destinationTextController.clear();
+    _destinationAddress = null;
+    _destinationMarker = null;
+    _isDestinationButtonChosen = true;
+  }
+
+  _clearOriginAddress() {
+    _originTextController.clear();
+    _originAddress = null;
+    _packageMarker = null;
+    _isDestinationButtonChosen = false;
+  }
+
+  _getLastAddress(int i) {
     if (0 >= i || _orders.length < i)
       return Container();
     Job order = Job.fromJson(json.decode(_orders[_orders.length-i]));
@@ -1344,8 +1420,8 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
               borderRadius: BorderRadius.circular(18.0),
             ),
             onPressed: () {
-              setMarker(isDestinationButtonChosen ? order.destination : order.origin,
-                  address: isDestinationButtonChosen ? order.destinationAddress : order.originAddress);
+              _setMarker(_isDestinationButtonChosen ? order.destinationAddress.coordinates : order.originAddress.coordinates,
+                  address: _isDestinationButtonChosen ? order.destinationAddress : order.originAddress);
             },
             color: Colors.redAccent,
             child: Column(
@@ -1354,9 +1430,9 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                 children: <Widget>[
                   Padding(
                     padding: EdgeInsets.symmetric(vertical: 5),
-                    child: Text(isDestinationButtonChosen
-                        ? order.destinationAddress
-                        : order.originAddress,
+                    child: Text(_isDestinationButtonChosen
+                        ? order.destinationAddress.getAddress()
+                        : order.originAddress.getAddress(),
                       style: TextStyle(color: Colors.white),
                       textAlign: TextAlign.center,),
                   )
@@ -1382,20 +1458,38 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
   }
 
   Future<void> _setJobIfExist() async {
-    initCount++;
+    _initCount++;
     return _mapsService.userRef.child("currentJob").once().then((DataSnapshot snapshot){
       final jobId = snapshot.value;
+      print(jobId);
       if (jobId != null) {
         _mapsService.jobsRef.child(jobId.toString()).once().then((DataSnapshot snapshot){
           Job j = Job.fromJson(snapshot.value, key: snapshot.key);
           print(j.status);
-          job = j;
+          _job = j;
           _onJobsDataChanged(j);
-          nextInitializeDone();
+          nextInitializeDone('7');
+        }).catchError((error) {
+          nextInitializeDone('11');
+        }).timeout(Duration(seconds: FUTURE_TIMEOUT_SEC), onTimeout: () {
+          nextInitializeDone('10');
         });
       } else {
-        nextInitializeDone();
+        nextInitializeDone('8');
       }
+    }).catchError((error) {
+      nextInitializeDone('12');
+    }).timeout(Duration(seconds: FUTURE_TIMEOUT_SEC), onTimeout: () {
+      nextInitializeDone('9');
     });
+  }
+
+  Future<Address> _showAddressManagerDialog(Address address) async {
+    return await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AddressManager(address);
+      }
+    );
   }
 }

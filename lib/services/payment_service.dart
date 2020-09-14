@@ -8,16 +8,9 @@ class PaymentService {
   static const String PREFS_CUSTOMER_ID = "Braintree_CustomerId";
 
   Future<String> openPayMenu(double amount, String uid) async {
-    print("openPayMenu");
     String customerId = await getCustomerId();
-    if (customerId == null)
-      print("customerId null");
-    else
-      print("customerId not null");
-    print("customerId: " + customerId);
     var url = "https://europe-west1-post-now-f3c53.cloudfunctions.net/braintree_getToken" + (customerId == null ? "" : "?customerId=" + customerId);
     String token;
-    print(url);
     try {
       http.Response response = await http.get(url);
       token = response.body;
@@ -61,7 +54,7 @@ class PaymentService {
     } catch (e) {
       print(e.message);
     }
-    if (await checkTransaction(uid, amount, transactionId))
+    if (await checkTransaction(uid, "-MH-6ZxXi7wWHHnHsLv7", transactionId)) // TODO GIVE JOB ID
       return transactionId;
     else
       return null;
@@ -78,12 +71,10 @@ class PaymentService {
       prefs = await SharedPreferences.getInstance();
     User user = FirebaseAuth.instance.currentUser;
     var url = "https://europe-west1-post-now-f3c53.cloudfunctions.net/braintree_createCustomerId?uid=" + user.uid;
-    print(url);
     try {
       http.Response response = await http.get(url);
       String customerId = response.body;
       await prefs.setString(PREFS_CUSTOMER_ID, customerId);
-      print(customerId);
       if (customerId.toLowerCase() == 'false')
         return null;
       else return customerId;
@@ -93,11 +84,10 @@ class PaymentService {
     }
   }
 
-  Future<bool> checkTransaction(String uid, double price, String transactionId) async {
+  Future<bool> checkTransaction(String uid, String jobId, String transactionId) async {
     if (transactionId.toLowerCase() == 'false')
       return false;
-    print(uid);
-    var url = "https://europe-west1-post-now-f3c53.cloudfunctions.net/braintree_checkTransaction?transactionId=" + transactionId + "&uid=" + uid  + "&price=" + price.toString();
+    var url = "https://europe-west1-post-now-f3c53.cloudfunctions.net/braintree_checkTransaction?transactionId=" + transactionId + "&uid=" + uid  + "&jobId=" + jobId;
     try {
       http.Response response = await http.get(url);
       print(response.body);

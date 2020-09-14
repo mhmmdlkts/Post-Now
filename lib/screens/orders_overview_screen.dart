@@ -78,7 +78,7 @@ class _AllOrders extends State<AllOrders> {
                   Icon(Icons.home, color: Colors.black54,),
                   Container(width: padding),
                   Expanded(
-                    child: Text(job.originAddress),
+                    child: Text(job.originAddress.getAddress()),
                   )
                 ],
               ),
@@ -87,7 +87,7 @@ class _AllOrders extends State<AllOrders> {
                   Icon(Icons.directions, color: Colors.black54,),
                   Container(width: padding),
                   Expanded(
-                    child: Text(job.destinationAddress),
+                    child: Text(job.destinationAddress.getAddress()),
                   )
                 ],
               ),

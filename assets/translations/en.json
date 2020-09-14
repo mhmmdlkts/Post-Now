@@ -102,6 +102,18 @@
       "TITLE": "Yeni Güncelleme Mevcut",
       "BODY": "Uyulamayi kullanabilmek icin en güncel sürümü kullaniyor olmaniz gerek.",
       "BUTTON": "Güncelle"
+    },
+    "ADDRESS_MANAGER": {
+      "TITLE": "Address details",
+      "I_WILL_COME": "Ich möchte, dass der Fahrer zu meiner Tür kommt. (muss nicht 'meiner tür' sein)",
+      "HOUSE_NUMBER": "Hausnummer",
+      "DOOR_NUMBER": "Türnummer",
+      "DOOR_NAME": "Ansprechperson",
+      "ERROR_MESSAGES": {
+        "HOUSE_NUMBER_IS_NEEDED": "Daire numarasi girilmesi zorunludur.",
+        "DOOR_NUMBER_IS_NEEDED": "Eger paketinizi kapiniza getirilsin istiyorsaniz kapi numarasi girmek zorundasiniz.",
+        "DOOR_NAME_IS_NEEDED": "Paketinizi teslim alacak kisinin ismini girmek zorundasiniz."
+      }
     }
   }
 }

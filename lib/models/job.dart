@@ -4,25 +4,25 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:postnow/enums/job_status_enum.dart';
 import 'package:postnow/enums/job_vehicle_enum.dart';
 
+import 'address.dart';
+
 class Job {
-  String destinationAddress;
+  Address destinationAddress;
+  Address originAddress;
   String transactionId;
-  String originAddress;
   DateTime acceptTime;
   DateTime finishTime;
   DateTime startTime;
-  LatLng destination;
   Vehicle vehicle;
   String driverId;
   String userId;
   Status status;
-  LatLng origin;
   double price;
   String name;
   String sign;
   String key;
 
-  Job({this.name, this.userId, this.price, this.driverId, this.vehicle, this.transactionId, this.origin, this.destination, this.originAddress, this.destinationAddress}) {
+  Job({this.name, this.userId, this.price, this.driverId, this.vehicle, this.transactionId, this.originAddress, this.destinationAddress}) {
     setStartTime();
     status = Status.WAITING;
   }
@@ -49,10 +49,8 @@ class Job {
     price = snapshot.value["price"] + 0.0;
     status = stringToStatus(snapshot.value["status"]);
     vehicle = stringToVehicle(snapshot.value["vehicle"]);
-    origin = stringToLatLng(snapshot.value["origin"]);
-    destination = stringToLatLng(snapshot.value["destination"]);
-    originAddress = snapshot.value["origin-address"];
-    destinationAddress = snapshot.value["destination-address"];
+    originAddress = Address.fromJson(snapshot.value["origin-address"]);
+    destinationAddress = Address.fromJson(snapshot.value["destination-address"]);
     startTime = stringToDateTime(snapshot.value["start-time"]);
     acceptTime = stringToDateTime(snapshot.value["accept-time"]);
     finishTime = stringToDateTime(snapshot.value["finish-time"]);
@@ -157,20 +155,16 @@ class Job {
     'price': price,
     'status': statusToString(status),
     'vehicle': vehicleToString(vehicle),
-    'origin': latLngToString(origin),
-    'destination': latLngToString(destination),
-    'origin-address': originAddress,
-    'destination-address': destinationAddress,
+    'origin-address': originAddress.toMap(),
+    'destination-address': destinationAddress.toMap(),
     'start-time': dateTimeToString(startTime),
     'accept-time': dateTimeToString(acceptTime),
     'finish-time': dateTimeToString(finishTime),
   };
 
-  Job.fromJson(Map json, {key}) {
+  Job.fromJson(Map json, {this.key}) {
     if (key == null)
       this.key = json["key"];
-    else
-      this.key = key;
     name = json["name"];
     driverId = json["driver-id"];
     userId = json["user-id"];
@@ -179,10 +173,8 @@ class Job {
     price = json["price"] + 0.0;
     status = stringToStatus(json["status"]);
     vehicle = stringToVehicle(json["vehicle"]);
-    origin = stringToLatLng(json["origin"]);
-    destination = stringToLatLng(json["destination"]);
-    originAddress = json["origin-address"];
-    destinationAddress = json["destination-address"];
+    originAddress = Address.fromJson(json["origin-address"]);
+    destinationAddress = Address.fromJson(json["destination-address"]);
     startTime = stringToDateTime(json["start-time"]);
     acceptTime = stringToDateTime(json["accept-time"]);
     finishTime = stringToDateTime(json["finish-time"]);
@@ -198,10 +190,8 @@ class Job {
     if (transactionId != null) toReturn['transactionId'] = transactionId;
     if (status != null) toReturn['status'] = statusToString(status);
     if (vehicle != null) toReturn['vehicle'] = vehicleToString(vehicle);
-    if (origin != null) toReturn['origin'] = latLngToString(origin);
-    if (destination != null) toReturn['destination'] = latLngToString(destination);
-    if (originAddress != null) toReturn['origin-address'] = originAddress;
-    if (destinationAddress != null) toReturn['destination-address'] = destinationAddress;
+    if (originAddress != null) toReturn['origin-address'] = originAddress.toMap();
+    if (destinationAddress != null) toReturn['destination-address'] = destinationAddress.toMap();
     if (startTime != null) toReturn['start-time'] = dateTimeToString(startTime);
     if (acceptTime != null) toReturn['accept-time'] = dateTimeToString(acceptTime);
     if (finishTime != null) toReturn['finish-time'] = dateTimeToString(finishTime);
@@ -216,7 +206,7 @@ class Job {
     return this.acceptTime != null;
   }
 
-  getDriverId() {
+  String getDriverId() {
     return driverId == null ? "No Driver" : driverId;
   }
 
@@ -224,12 +214,36 @@ class Job {
     return "MODELS.JOB." + Status.WAITING.toString().split('.')[1];
   }
 
+  LatLng getOrigin() {
+    if (originAddress == null)
+      return null;
+    return originAddress.coordinates;
+  }
+
+  LatLng getDestination() {
+    if (destinationAddress == null)
+      return null;
+    return destinationAddress.coordinates;
+  }
+
+  String getOriginAddress() {
+    if (originAddress == null)
+      return null;
+    return originAddress.getAddress();
+  }
+
+  String getDestinationAddress() {
+    if (destinationAddress == null)
+      return null;
+    return destinationAddress.getAddress();
+  }
+
   @override
   bool operator == (covariant Job other) {
     if (key != null)
       return key == other.key;
     if (originAddress != null && destinationAddress != null) {
-      return originAddress.compareTo(originAddress) == 0 && destinationAddress.compareTo(destinationAddress) == 0;
+      return originAddress == originAddress && destinationAddress == destinationAddress;
     }
     return false;
   }
