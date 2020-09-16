@@ -5,7 +5,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:postnow/dialogs/address_manager_dialog.dart';
 import 'package:postnow/environment/global_variables.dart';
 import 'package:postnow/models/address.dart';
-import 'package:postnow/screens/orders_overview_screen.dart';
+import 'package:postnow/screens/legal_menu_screen.dart';
+import 'package:postnow/screens/overview_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -365,7 +366,16 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
             },
           ),
           ListTile(
-            title: Text('MAPS.SIDE_MENU.SIGN_OUT'.tr()),
+            title: Text('MAPS.SIDE_MENU.LEGAL'.tr()),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => LegalMenu()),
+              );
+            },
+          ),
+          ListTile(
+            title: Text('MAPS.SIDE_MENU.SIGN_OUT'.tr(), style: TextStyle(color: Colors.redAccent),),
             onTap: () {
               AuthService().signOut();
             },

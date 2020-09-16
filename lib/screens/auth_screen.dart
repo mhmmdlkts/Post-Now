@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:postnow/enums/legacity_enum.dart';
-import 'package:postnow/screens/privacy_policy.dart';
+import 'package:postnow/screens/legal_screen.dart';
 import 'package:postnow/screens/splash_screen.dart';
 import 'package:postnow/services/auth_service.dart';
 
@@ -77,7 +77,7 @@ class _AuthScreenState extends State<AuthScreen> {
     return Scaffold(
       body: Container(
         color: Color.fromARGB(255, 41, 171, 226),
-          padding: EdgeInsets.all(20),
+        padding: EdgeInsets.all(20),
         child: _content()
       ),
       floatingActionButton: !_isInitialized || !_isInputValid ? null : FloatingActionButton(
@@ -202,7 +202,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => PrivacyPolicy(LegalTyp.PRIVACY_POLICY)),
+                      MaterialPageRoute(builder: (context) => LegalScreen(LegalTyp.PRIVACY_POLICY)),
                     );
                   },
                   padding: EdgeInsets.symmetric(vertical: 8, horizontal: 50),

@@ -37,8 +37,12 @@
     "EMAIL_FIELD_HINT": "Example. mhmmdlkts@gmail.com",
     "EMAIL_FIELD_VALIDATOR_ENTER_NAME": "Please enter your email address."
   },
-  "PRIVACY_POLICY": {
-    "TITLE": "Privacy Policy"
+  "LEGAL": {
+    "TITLE": "Legal",
+    "LegalTyp": {
+      "PRIVACY_POLICY": "Privacy Policy",
+      "SOFTWARE_LICENCES": "Software Licences"
+    }
   },
   "ALL_ORDERS": {
     "ORDER_HISTORY": "Order History"
@@ -52,6 +56,7 @@
     "TYPE_ADDRESS": "Enter the adress",
     "SIDE_MENU": {
       "MY_ORDERS": "My Orders",
+      "LEGAL": "Legal",
       "SIGN_OUT": "Logout"
     },
     "BOTTOM_MENUS": {

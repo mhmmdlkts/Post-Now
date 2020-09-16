@@ -5,7 +5,7 @@ import 'package:postnow/enums/legacity_enum.dart';
 const String POST_NOW_PRIVACY_POLICY_URL = "https://legal.postnow.at/postnow_privacy_policy.html";
 const String POST_NOW_SOFTWARE_LICENCES_URL = "https://legal.postnow.at/postnow_software_licences.html";
 
-class PrivacyPolicyService {
+class LegalService {
   Future<Widget> getPrivacyPolicyWidget(LegalTyp legalTyp) async {
     return ListView(
       children: [
@@ -27,6 +27,7 @@ class PrivacyPolicyService {
       case LegalTyp.SOFTWARE_LICENCES:
         return POST_NOW_SOFTWARE_LICENCES_URL;
     }
+    return null;
   }
 
   Future<String> _getPrivacyPolicyContent(LegalTyp legalTyp) async {

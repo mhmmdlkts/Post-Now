@@ -1,18 +1,18 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:postnow/enums/legacity_enum.dart';
-import 'package:postnow/services/privacy_policy_service.dart';
+import 'package:postnow/services/legal_service.dart';
 
-class PrivacyPolicy extends StatefulWidget {
+class LegalScreen extends StatefulWidget {
   final LegalTyp legalTyp;
-  PrivacyPolicy(this.legalTyp, {Key key}) : super(key: key);
+  LegalScreen(this.legalTyp, {Key key}) : super(key: key);
 
   @override
   _PrivacyPolicy createState() => _PrivacyPolicy(legalTyp);
 }
 
-class _PrivacyPolicy extends State<PrivacyPolicy> {
-  final PrivacyPolicyService _policyService = PrivacyPolicyService();
+class _PrivacyPolicy extends State<LegalScreen> {
+  final LegalService _policyService = LegalService();
   final LegalTyp legalTyp;
   Widget _content;
 
@@ -33,7 +33,7 @@ class _PrivacyPolicy extends State<PrivacyPolicy> {
     return Scaffold(
       appBar: AppBar(
         iconTheme:  IconThemeData(color: Colors.white),
-        title: Text('PRIVACY_POLICY.TITLE'.tr()),
+        title: Text(('LEGAL.' + legalTyp.toString()).tr()),
       ),
       body: Center(
         child: _content == null? CircularProgressIndicator() : _content,

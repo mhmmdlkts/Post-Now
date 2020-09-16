@@ -17,8 +17,12 @@
     "AGREE_TERMS_AND_POLICY": "By signing up, you agree to our Terms & Privacy Policy",
     "COUNTRY_NAME_EXAMPLE": "Avusturya"
   },
-  "PRIVACY_POLICY": {
-    "TITLE": "Privacy Policy"
+  "LEGAL": {
+    "TITLE": "Legal",
+    "LegalTyp": {
+      "PRIVACY_POLICY": "Privacy Policy",
+      "SOFTWARE_LICENCES": "Software Licences"
+    }
   },
   "ALL_ORDERS": {
     "ORDER_HISTORY": "Sipariş Geçmişi"
@@ -32,6 +36,7 @@
     "TYPE_ADDRESS": "Adresi Giriniz",
     "SIDE_MENU": {
       "MY_ORDERS": "Siparişlerim",
+      "LEGAL": "Legal",
       "SIGN_OUT": "Çıkış yap"
     },
     "BOTTOM_MENUS": {
