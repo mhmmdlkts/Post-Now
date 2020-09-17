@@ -91,6 +91,10 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
 
     calculatePrice().then((value) => {
         setState(() {
+          if (value == null) {
+            _menuTyp = MenuTyp.NO_ROUTE;
+            return;
+          }
           if (value)
             _menuTyp = MenuTyp.CONFIRM;
           else
@@ -121,9 +125,10 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
     await remoteConfig.fetch();
     await remoteConfig.activateFetched();
     _totalDistance = calculateDistance(_routeCoordinate);
+    if (_totalDistance == 0)
+      return null;
     double calcPrice = remoteConfig.getDouble(FIREBASE_REMOTE_CONFIG_EURO_START_KEY);
     calcPrice += _totalDistance * remoteConfig.getDouble(FIREBASE_REMOTE_CONFIG_EURO_PER_KM_KEY);
-    print(calcPrice);
     if (calcPrice == 0)
       return false;
     _price = num.parse(calcPrice.toStringAsFixed(2));
@@ -241,9 +246,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
   }
 
   _onJobsDataChanged(Job j) {
-    print(j.toMap());
     if (j == _job || (j.isJobForMe(_user.uid) && j.finishTime == null)) {
-      print(j.status);
       _job = j;
       switch (_job.status) {
         case Status.ON_ROAD:
@@ -341,6 +344,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
     ),
     drawer: Drawer(
       child: ListView(
+        padding: EdgeInsets.zero,
         children: <Widget>[
           DrawerHeader(
             child: Stack(
@@ -359,15 +363,17 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
           ListTile(
             title: Text('MAPS.SIDE_MENU.MY_ORDERS'.tr()),
             onTap: () {
+              _thisMethodFixABugButIStillAlwaysABugFixMeDude();
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => AllOrders(_user.uid)),
+                MaterialPageRoute(builder: (context) => OverviewScreen(_user)),
               );
             },
           ),
           ListTile(
             title: Text('MAPS.SIDE_MENU.LEGAL'.tr()),
             onTap: () {
+              _thisMethodFixABugButIStillAlwaysABugFixMeDude();
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => LegalMenu()),
@@ -377,6 +383,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
           ListTile(
             title: Text('MAPS.SIDE_MENU.SIGN_OUT'.tr(), style: TextStyle(color: Colors.redAccent),),
             onTap: () {
+              _thisMethodFixABugButIStillAlwaysABugFixMeDude();
               AuthService().signOut();
             },
           ),
@@ -501,6 +508,8 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
           return noDriverAvailableMenu();
         case MenuTyp.TRY_AGAIN:
           return tryAgainMenu();
+        case MenuTyp.NO_ROUTE:
+          return noRouteMenu();
         case MenuTyp.CALCULATING_DISTANCE:
           return calcDistanceMenu();
         case MenuTyp.CONFIRM:
@@ -672,6 +681,42 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
             )
         )
     );
+
+  Widget noRouteMenu() => Positioned(
+      bottom: 0,
+      child: SizedBox(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height/4,
+          child: Column(
+              children: <Widget>[
+                Card(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    children: <Widget>[
+                      ListTile(
+                        leading: Icon(Icons.directions_car),
+                        title: Text('MAPS.BOTTOM_MENUS.NO_ROUTE.MESSAGE'.tr()),
+                      ),
+                      ButtonBar(
+                        children: <Widget>[
+                          FlatButton(
+                            child: Text('OK'.tr()),
+                            onPressed: () {
+                              setState(() {
+                                _menuTyp = null;
+                                _clearJob();
+                              });
+                            },
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ]
+          )
+      )
+  );
 
     Widget tryAgainMenu() => Positioned(
         bottom: 0,
@@ -873,7 +918,6 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
     );
 
     void addJobToPool(transactionId) async {
-      print('addJobToPool');
       _job = Job(
           name: _user.displayName,
           userId: _user.uid,
@@ -888,7 +932,6 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
           value.setStringList('orders', _orders)
         }
       );
-      print(_job.toMap());
       _mapsService.jobsRef.push().set(_job.toMap());
     }
 
@@ -1153,6 +1196,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                     width: 30.0,
                     child: (isDestination? _destinationAddress != null : _originAddress != null) ? FittedBox(
                       child: FloatingActionButton(
+                        heroTag: "btn",
                         backgroundColor: Colors.blue,
                         onPressed: () {
                           setState(() {
@@ -1263,7 +1307,6 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
       PlacesDetailsResponse detail = await _places.getDetailsByPlaceId(p.placeId);
       final double lat = detail.result.geometry.location.lat;
       final double lng = detail.result.geometry.location.lng;
-      print(_predictionToHouseNumber(p));
       return Address.fromAddressComponents(detail.result.addressComponents, coordinates: LatLng(lat, lng), doorNumber: _predictionToHouseNumber(p));
     }
 
@@ -1290,10 +1333,8 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
         return;
       }
       if (address == null) {
-        print(_getOrigin());
         List<Placemark> originPlaceMarks = await Geolocator()
             .placemarkFromCoordinates(_getOrigin().latitude, _getOrigin().longitude);
-        print(originPlaceMarks[0].position);
         _originAddress.updateWithPlaceMark(originPlaceMarks[0]);
       } else {
         _originAddress = address;
@@ -1360,9 +1401,8 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
   }
 
   _positionFloatingActionButton() => FloatingActionButton(
+    heroTag: "btn",
     onPressed: () {
-      print(_originAddress.toMap());
-      return;
       if (_myPosition == null)
         return;
       LatLng pos = LatLng(_myPosition.latitude, _myPosition.longitude);
@@ -1381,6 +1421,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
     }
 
   FloatingActionButton _goToPayFloatingActionButton() => FloatingActionButton(
+    heroTag: "btn",
     onPressed: goToPayButtonPressed,
     child: Icon(Icons.arrow_forward, color: Colors.white,),
     backgroundColor: Colors.redAccent,
@@ -1471,11 +1512,9 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
     _initCount++;
     return _mapsService.userRef.child("currentJob").once().then((DataSnapshot snapshot){
       final jobId = snapshot.value;
-      print(jobId);
       if (jobId != null) {
         _mapsService.jobsRef.child(jobId.toString()).once().then((DataSnapshot snapshot){
           Job j = Job.fromJson(snapshot.value, key: snapshot.key);
-          print(j.status);
           _job = j;
           _onJobsDataChanged(j);
           nextInitializeDone('7');
@@ -1502,4 +1541,9 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
       }
     );
   }
+
+  void _thisMethodFixABugButIStillAlwaysABugFixMeDude() {
+    if (_originAddress != null || _destinationAddress != null)
+      _clearJob(); // TODO
+    }
 }

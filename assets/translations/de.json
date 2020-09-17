@@ -24,9 +24,6 @@
       "SOFTWARE_LICENCES": "Software Licences"
     }
   },
-  "ALL_ORDERS": {
-    "ORDER_HISTORY": "Bestellverlauf"
-  },
   "MAPS": {
     "NO_AVAILABLE_DRIVER_MESSAGE": "Kein verfügbarer Lieferant in Ihrer Nähe.",
     "CURRENT_LOCATION": "Aktueller Standort",
@@ -67,11 +64,17 @@
       },
       "TRY_AGAIN": {
         "MESSAGE": "Lütfen tekrar deneyiniz."
+      },
+      "NO_ROUTE": {
+        "MESSAGE": "Rota hesaplanamadi."
       }
     }
   },
   "CHAT": {
     "TYPE_MESSAGE_HERE": "Geben Sie Ihre Nachricht ein..."
+  },
+  "OVERVIEW": {
+    "TITLE": "Gecmis auftraglar"
   },
   "MODELS": {
     "JOB": {

@@ -24,9 +24,6 @@
       "SOFTWARE_LICENCES": "Software Licences"
     }
   },
-  "ALL_ORDERS": {
-    "ORDER_HISTORY": "Sipariş Geçmişi"
-  },
   "MAPS": {
     "NO_AVAILABLE_DRIVER_MESSAGE": "Yakınınızda çevrim içi kurye bulunmamaktadır.",
     "CURRENT_LOCATION": "Anlık Konum",
@@ -67,11 +64,17 @@
       },
       "TRY_AGAIN": {
         "MESSAGE": "Lütfen tekrar deneyiniz."
+      },
+      "NO_ROUTE": {
+        "MESSAGE": "Rota hesaplanamadi."
       }
     }
   },
   "CHAT": {
     "TYPE_MESSAGE_HERE": "Mesajınızı buraya giriniz..."
+  },
+  "OVERVIEW": {
+    "TITLE": "Gecmis siparisler"
   },
   "MODELS": {
     "JOB": {

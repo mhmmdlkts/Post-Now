@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
               title: 'APP_NAME'.tr(),
               theme: ThemeData(
                   primarySwatch: Colors.lightBlue,
-                  brightness: Brightness.dark,
+                  // brightness: Brightness.dark,
                   visualDensity: VisualDensity.adaptivePlatformDensity,
                   primaryTextTheme: TextTheme(
                       headline6: TextStyle(

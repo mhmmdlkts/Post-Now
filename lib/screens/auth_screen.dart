@@ -51,7 +51,6 @@ class _AuthScreenState extends State<AuthScreen> {
     final PhoneCodeSent smsSent = (String verId, [int forceResend]) {
       this._verificationId = verId;
       setState(() {
-        print('_codeSent = true');
         this._codeSent = true;
       });
     };
@@ -85,7 +84,6 @@ class _AuthScreenState extends State<AuthScreen> {
         onPressed: () async {
           FocusScope.of(context).unfocus();
           if (_formKey.currentState.validate()) {
-            print(_codeSent);
             if(_codeSent) {
               AuthService().signInWithOTP(_smsCode, _verificationId);
             } else {
@@ -220,7 +218,6 @@ class _AuthScreenState extends State<AuthScreen> {
   );
 
   _clearCode() {
-    print('clear');
     _codeSent = false;
     _smsCode = null;
     _verificationId = null;

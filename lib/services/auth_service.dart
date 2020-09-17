@@ -16,7 +16,6 @@ class AuthService {
       return StreamBuilder(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (BuildContext context, snapshot) {
-          print(snapshot.connectionState);
           if (snapshot.connectionState == ConnectionState.waiting)
             return SplashScreen();
           return FirstScreen(snapshot);

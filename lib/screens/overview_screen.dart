@@ -1,30 +1,29 @@
-import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:postnow/models/job.dart';
+import 'package:postnow/services/overview_service.dart';
 
-class AllOrders extends StatefulWidget {
-  final String uid;
-  AllOrders(this.uid);
+class OverviewScreen extends StatefulWidget {
+  final User _user;
+  OverviewScreen(this._user);
 
   @override
-  _AllOrders createState() => _AllOrders(uid);
+  _OverviewScreen createState() => _OverviewScreen(_user);
 }
 
-class _AllOrders extends State<AllOrders> {
-  DatabaseReference driversRef, jobsRef, userRef;
-  String uid;
-  List<Job> orders = List();
+class _OverviewScreen extends State<OverviewScreen> {
+  OverviewService _overviewService;
+  User _user;
 
-  _AllOrders(this.uid);
+  _OverviewScreen(this._user) {
+    _overviewService = OverviewService(_user.uid);
+  }
 
   @override
   void initState() {
     super.initState();
-    driversRef = FirebaseDatabase.instance.reference().child('drivers');
-    jobsRef = FirebaseDatabase.instance.reference().child('jobs');
-    userRef = FirebaseDatabase.instance.reference().child('users').child(uid);
-    initOrderList();
+    _overviewService.initOrderList().then((val) => setState((){}));
   }
 
   @override
@@ -34,13 +33,14 @@ class _AllOrders extends State<AllOrders> {
           iconTheme: IconThemeData(
             color: Colors.white, //change your color here
           ),
-          title: Text("ALL_ORDERS.ORDER_HISTORY"),
+          title: Text("OVERVIEW.TITLE".tr()),
           centerTitle: false,
           brightness: Brightness.dark,
         ),
         body: ListView.builder(
-          itemCount: orders.length,
-          itemBuilder: (BuildContext ctxt, int index) => getOrderWidget(orders[index]),
+          shrinkWrap: true,
+          itemCount: _overviewService.orders.length,
+          itemBuilder: (BuildContext ctxt, int index) => getOrderWidget(_overviewService.orders[index]),
         )
     );
   }
@@ -113,34 +113,5 @@ class _AllOrders extends State<AllOrders> {
           )
         )
     );
-  }
-
-  void initOrderList() async {
-    await userRef.child("orders").once().then((snapshot) => {
-      snapshot.value.forEach((k, v) {
-        findJob(k);
-      })
-    });
-  }
-
-  void findJob(String key) async {
-    jobsRef.child(key).once().then((snapshot) => {
-      addOrderToList(Job.fromSnapshot(snapshot)),
-    });
-  }
-
-  void addOrderToList(Job job) async {
-    if (job.driverId == null) {
-      setState(() {
-        orders.add(job);
-      });
-      return;
-    }
-    driversRef.child(job.driverId).once().then((snapshot) => {
-      setState(() {
-        orders.add(job);
-        orders.last.driverId = snapshot.value["name"];
-      })
-    });
   }
 }
