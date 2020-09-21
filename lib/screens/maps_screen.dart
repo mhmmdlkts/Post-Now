@@ -29,25 +29,29 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:screen/screen.dart';
+import '../bottom_card.dart';
 import 'chat_screen.dart';
 import 'dart:convert';
 import 'dart:async';
 
 
-class GoogleMapsView extends StatefulWidget {
+class MapsScreen extends StatefulWidget {
   final User user;
-  GoogleMapsView(this.user);
+  MapsScreen(this.user);
 
   @override
-  _GoogleMapsViewState createState() => _GoogleMapsViewState(user);
+  _MapsScreenState createState() => _MapsScreenState(user);
 }
 
-class _GoogleMapsViewState extends State<GoogleMapsView> {
+class _MapsScreenState extends State<MapsScreen> {
   final GoogleMapPolyline _googleMapPolyline = new GoogleMapPolyline(apiKey: GOOGLE_DIRECTIONS_API_KEY);
   final GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: GOOGLE_DIRECTIONS_API_KEY);
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+  final GlobalKey _mapKey = GlobalKey();
   final List<Driver> _drivers = List();
   final User _user;
+  String _driverPhone;
+  String _driverName = "ddddd";
   bool _isInitialized = false;
   int _initCount = 0;
   int _initDone = 0;
@@ -62,23 +66,24 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
   double _totalDistance = 0.0;
   double _price = 0.0;
   MenuTyp _menuTyp;
+  BottomCard _bottomCard;
   Address _originAddress, _destinationAddress;
   Position _myPosition;
   Job _job;
   Driver _myDriver;
   bool _isDestinationButtonChosen = false;
 
-  _GoogleMapsViewState(this._user) {
+  _MapsScreenState(this._user) {
     _mapsService = MapsService(_user.uid);
   }
 
   goToPayButtonPressed() {
     setState(() {
       if (!isOnlineDriverAvailable()) {
-        _menuTyp = MenuTyp.NO_DRIVER_AVAILABLE;
+        _changeMenuTyp(MenuTyp.NO_DRIVER_AVAILABLE);
         return;
       }
-      _menuTyp = MenuTyp.CALCULATING_DISTANCE;
+      _changeMenuTyp(MenuTyp.CALCULATING_DISTANCE);
       getRoute();
     });
   }
@@ -92,13 +97,13 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
     calculatePrice().then((value) => {
         setState(() {
           if (value == null) {
-            _menuTyp = MenuTyp.NO_ROUTE;
+            _changeMenuTyp(MenuTyp.NO_ROUTE);
             return;
           }
           if (value)
-            _menuTyp = MenuTyp.CONFIRM;
+            _changeMenuTyp(MenuTyp.CONFIRM);
           else
-            _menuTyp = MenuTyp.TRY_AGAIN;
+            _changeMenuTyp(MenuTyp.TRY_AGAIN);
         })
     });
   }
@@ -140,6 +145,15 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
     _initCount++;
     super.initState();
     Screen.keepOn(true);
+
+    Future.delayed(const Duration(milliseconds: 2500)).then((value) {
+      if (_isInitialized)
+        return;
+      print('Force init');
+      setState((){
+        _isInitialized = true;
+      });
+    });
 
     _initCount++;
     _mapsService.getBytesFromAsset('assets/package_map_marker.png', 130).then((value) => { setState((){
@@ -248,12 +262,13 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
   _onJobsDataChanged(Job j) {
     if (j == _job || (j.isJobForMe(_user.uid) && j.finishTime == null)) {
       _job = j;
+      _getDriverInfo();
       switch (_job.status) {
         case Status.ON_ROAD:
-          _menuTyp = MenuTyp.ACCEPTED;
+          _changeMenuTyp(MenuTyp.ACCEPTED);
           if (_job.driverId != null) {
             for (Driver d in _drivers) {
-              if (d.key == _job.driverId) {
+              if (d.key == _job.driverId) { // TODO delete foreach
                 _myDriver = d;
                 _myDriver.isMyDriver = true;
                 _polyLines.clear();
@@ -262,10 +277,10 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
           }
           break;
         case Status.PACKAGE_PICKED:
-          _menuTyp = MenuTyp.PACKAGE_PICKED;
+          _changeMenuTyp(MenuTyp.PACKAGE_PICKED);
           break;
         case Status.FINISHED:
-          _menuTyp = MenuTyp.COMPLETED;
+          _changeMenuTyp(MenuTyp.COMPLETED);
           break;
         case Status.CANCELLED:
           _polyLines.clear();
@@ -296,13 +311,13 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
 
   _navigateToPaymentsAndGetResult(BuildContext context, double price) async {
     setState(() {
-      _menuTyp = MenuTyp.PAYMENT_WAITING;
+      _changeMenuTyp(MenuTyp.PAYMENT_WAITING);
     });
 
     if (IS_TEST) {
       setState(() {
         addJobToPool('test_transaction_id');
-        _menuTyp = MenuTyp.SEARCH_DRIVER;
+        _changeMenuTyp(MenuTyp.SEARCH_DRIVER);
       });
       return;
     }
@@ -311,9 +326,9 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
       setState(() {
         if (result != null) {
           addJobToPool(result);
-          _menuTyp = MenuTyp.SEARCH_DRIVER;
+          _changeMenuTyp(MenuTyp.SEARCH_DRIVER);
         } else
-          _menuTyp = MenuTyp.PAYMENT_DECLINED;
+          _changeMenuTyp(MenuTyp.PAYMENT_DECLINED);
       })
     });
   }
@@ -339,7 +354,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
         children: <Widget> [
           googleMapsWidget(),
           getTopMenu(),
-          getBottomMenu(),
+          getBottomMenu() == null? Container() : getBottomMenu(), // TODO
         ]
     ),
     drawer: Drawer(
@@ -390,7 +405,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
         ],
       ),
     ),
-    floatingActionButton: _getFloatingActionButton(),
+    floatingActionButton: _getFloatingButton(),
   );
 
   Set<Marker> _createMarker() {
@@ -414,6 +429,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
   }
 
   Widget googleMapsWidget() => SizedBox(
+    key: _mapKey,
     width: MediaQuery.of(context).size.width,  // or use fixed size like 200
     height: MediaQuery.of(context).size.height,
     child: GoogleMap(
@@ -504,30 +520,11 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
       switch (_menuTyp) {
         case MenuTyp.FROM_OR_TO:
           return fromOrToMenu();
-        case MenuTyp.NO_DRIVER_AVAILABLE:
-          return noDriverAvailableMenu();
-        case MenuTyp.TRY_AGAIN:
-          return tryAgainMenu();
-        case MenuTyp.NO_ROUTE:
-          return noRouteMenu();
-        case MenuTyp.CALCULATING_DISTANCE:
-          return calcDistanceMenu();
-        case MenuTyp.CONFIRM:
-          return confirmMenu();
-        case MenuTyp.SEARCH_DRIVER:
-          return searchDriverMenu();
-        case MenuTyp.PAYMENT_WAITING:
-          return paymentWaiting();
-        case MenuTyp.PAYMENT_DECLINED:
-          return paymentDeclined();
-        case MenuTyp.ACCEPTED:
-          return jobAcceptedMenu();
-        case MenuTyp.PACKAGE_PICKED:
-          return packagePicked();
-        case MenuTyp.COMPLETED:
-          return jobCompleted();
       }
-      return Container();
+      if (_bottomCard == null)
+        return Container();
+      else
+        return _bottomCard;
     }
 
     Widget jobCompleted() => Positioned(
@@ -614,7 +611,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                         ListTile(
                           leading: Icon(Icons.directions_car),
                           title: Text("MAPS.BOTTOM_MENUS.YOUR_DRIVER".tr(namedArgs: {'name': _myDriver.getName()})),
-                          subtitle: Text("MAPS.BOTTOM_MENUS.JOB_ACCEPTED.STATUS".tr()),
+                          subtitle: Text("MAPS.BOTTOM_MENUS.ON_JOB.STATUS".tr()),
                         ),
                         ButtonBar(
                           children: <Widget>[
@@ -667,9 +664,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                             FlatButton(
                               child: Text('OK'.tr()),
                               onPressed: () {
-                                setState(() {
-                                  _menuTyp = MenuTyp.FROM_OR_TO;
-                                });
+                                _changeMenuTyp(MenuTyp.FROM_OR_TO);
                               },
                             ),
                           ],
@@ -703,7 +698,6 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                             child: Text('OK'.tr()),
                             onPressed: () {
                               setState(() {
-                                _menuTyp = null;
                                 _clearJob();
                               });
                             },
@@ -773,7 +767,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                                 setState(() {
                                   _polyLines.clear();
                                   if (_destinationAddress != null && _originAddress != null)
-                                    _menuTyp = MenuTyp.FROM_OR_TO;
+                                    _changeMenuTyp(MenuTyp.FROM_OR_TO);
                                 });
                               },
                             ),
@@ -902,9 +896,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
                             FlatButton(
                               child: Text('CLOSE'.tr()),
                               onPressed: () {
-                                setState(() {
-                                  _menuTyp = MenuTyp.CONFIRM;
-                                });
+                                _changeMenuTyp(MenuTyp.CONFIRM);
                               },
                             ),
                           ],
@@ -1386,11 +1378,11 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
 
     void _commonPiece() {
       setState(() {
-        _menuTyp = _destinationAddress != null && _originAddress != null ? MenuTyp.FROM_OR_TO : null;
+        _changeMenuTyp(_destinationAddress != null && _originAddress != null ? MenuTyp.FROM_OR_TO : null);
       });
     }
 
-  FloatingActionButton _getFloatingActionButton() {
+  FloatingActionButton _getFloatingButton() {
       if (_menuTyp == null)
         return _positionFloatingActionButton();
       switch (_menuTyp) {
@@ -1398,6 +1390,199 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
           return _goToPayFloatingActionButton();
       }
       return null;
+  }
+
+  void _changeMenuTyp(menuTyp) async {
+    setState(() {
+      _menuTyp = menuTyp;
+      _changeBottomCard(_menuTyp);
+    });
+  }
+
+  void _refreshBottomCard() {
+    _changeBottomCard(_menuTyp);
+  }
+
+  void _changeBottomCard(menuTyp) {
+    switch (menuTyp)
+    {
+      case MenuTyp.FROM_OR_TO:
+      case MenuTyp.NO_DRIVER_AVAILABLE:
+        _bottomCard = new BottomCard(
+          key: GlobalKey(),
+          maxHeight: _mapKey.currentContext.size.height,
+          floatingActionButton: _positionFloatingActionButton(),
+          showDestinationAddress: false,
+          showOriginAddress: false,
+          messageSendable: false,
+          headerText: 'MAPS.NO_AVAILABLE_DRIVER_MESSAGE'.tr(),
+          mainButtonText: 'OK'.tr(),
+          onMainButtonPressed: _clearJob,
+          shrinkWrap: false,
+          isSwipeButton: false,
+        );
+        break;
+      case MenuTyp.TRY_AGAIN:
+        _bottomCard = new BottomCard(
+          key: GlobalKey(),
+          maxHeight: _mapKey.currentContext.size.height,
+          floatingActionButton: _positionFloatingActionButton(),
+          showDestinationAddress: false,
+          showOriginAddress: false,
+          messageSendable: false,
+          headerText: 'MAPS.BOTTOM_MENUS.TRY_AGAIN.MESSAGE'.tr(),
+          mainButtonText: 'TRY_AGAIN'.tr(),
+          onMainButtonPressed: goToPayButtonPressed,
+          shrinkWrap: false,
+          isSwipeButton: false,
+        );
+        break;
+      case MenuTyp.NO_ROUTE:
+        _bottomCard = new BottomCard(
+          key: GlobalKey(),
+          maxHeight: _mapKey.currentContext.size.height,
+          floatingActionButton: _positionFloatingActionButton(),
+          showDestinationAddress: false,
+          showOriginAddress: false,
+          messageSendable: false,
+          headerText: 'MAPS.BOTTOM_MENUS.NO_ROUTE.MESSAGE'.tr(),
+          mainButtonText: 'OK'.tr(),
+          onMainButtonPressed: _clearJob,
+          shrinkWrap: false,
+          isSwipeButton: false,
+        );
+        break;
+      case MenuTyp.CALCULATING_DISTANCE:
+        _bottomCard = new BottomCard(
+          key: GlobalKey(),
+          maxHeight: _mapKey.currentContext.size.height,
+          floatingActionButton: _positionFloatingActionButton(),
+          messageSendable: false,
+          isLoading: true,
+          headerText: 'MAPS.BOTTOM_MENUS.CALCULATING_DISTANCE.CALCULATING_DISTANCE'.tr(),
+          shrinkWrap: false,
+          showFooter: false,
+        );
+        break;
+      case MenuTyp.CONFIRM:
+        _bottomCard = new BottomCard(
+          key: GlobalKey(),
+          maxHeight: _mapKey.currentContext.size.height,
+          floatingActionButton: _positionFloatingActionButton(),
+          messageSendable: false,
+          headerText: 'MAPS.PRICE'.tr(namedArgs: {'price': _price.toString()}),
+          onCancelButtonPressed: () {
+            setState(() {
+              _polyLines.clear();
+              if (_destinationAddress != null && _originAddress != null)
+                _changeMenuTyp(MenuTyp.FROM_OR_TO);
+            });
+          },
+          mainButtonText: 'ACCEPT'.tr(),
+          onMainButtonPressed: () {
+            setState(() {
+              //menuTyp = MenuTyp.PAY;
+              if (_price == 0)
+                return;
+              _navigateToPaymentsAndGetResult(context, _price);
+            });
+          },
+          shrinkWrap: false,
+          showFooter: false,
+        );
+        break;
+        // return confirmMenu(); TODO SHOW destination addresses
+      case MenuTyp.SEARCH_DRIVER:
+        _bottomCard = new BottomCard(
+          key: GlobalKey(),
+          maxHeight: _mapKey.currentContext.size.height,
+          floatingActionButton: _positionFloatingActionButton(),
+          messageSendable: false,
+          isLoading: true,
+          headerText: 'MAPS.BOTTOM_MENUS.SEARCH_DRIVER.STATUS'.tr(),
+          shrinkWrap: false,
+          showFooter: false,
+        );
+        break;
+      case MenuTyp.PAYMENT_WAITING:
+        _bottomCard = new BottomCard(
+          key: GlobalKey(),
+          maxHeight: _mapKey.currentContext.size.height,
+          floatingActionButton: _positionFloatingActionButton(),
+          messageSendable: false,
+          isLoading: true,
+          headerText: 'MAPS.BOTTOM_MENUS.PAYMENT_WAITING.PAYMENT_WAITING'.tr(),
+          shrinkWrap: false,
+          showFooter: false,
+        );
+        break;
+      case MenuTyp.PAYMENT_DECLINED:
+        _bottomCard = new BottomCard(
+          key: GlobalKey(),
+          maxHeight: _mapKey.currentContext.size.height,
+          floatingActionButton: _positionFloatingActionButton(),
+          showDestinationAddress: false,
+          showOriginAddress: false,
+          messageSendable: false,
+          headerText: 'MAPS.BOTTOM_MENUS.PAYMENT_DECLINED.PAYMENT_DECLINED'.tr(),
+          mainButtonText: 'CLOSE'.tr(),
+          onMainButtonPressed: () {
+            _changeMenuTyp(MenuTyp.CONFIRM);
+          },
+          shrinkWrap: false,
+          isSwipeButton: false,
+        );
+        break;
+      case MenuTyp.ACCEPTED:
+        _bottomCard = new BottomCard(
+          key: GlobalKey(),
+          job: _job,
+          maxHeight: _mapKey.currentContext.size.height,
+          floatingActionButton: _positionFloatingActionButton(),
+          showDestinationAddress: true,
+          showOriginAddress: true,
+          messageSendable: true,
+          phone: _driverPhone,
+          headerText: _driverName,
+          defaultOpen: true,
+          shrinkWrap: true,
+          showFooter: false,
+        );
+        break;
+      case MenuTyp.PACKAGE_PICKED:
+        _bottomCard = new BottomCard(
+          key: GlobalKey(),
+          job: _job,
+          maxHeight: _mapKey.currentContext.size.height,
+          floatingActionButton: _positionFloatingActionButton(),
+          showDestinationAddress: true,
+          showOriginAddress: false,
+          messageSendable: true,
+          phone: _driverPhone,
+          headerText: _driverName,
+          defaultOpen: true,
+          shrinkWrap: true,
+          showFooter: false,
+        );
+        break;
+      case MenuTyp.COMPLETED:
+        _bottomCard = new BottomCard(
+          key: GlobalKey(),
+          maxHeight: _mapKey.currentContext.size.height,
+          floatingActionButton: _positionFloatingActionButton(),
+          showDestinationAddress: false,
+          showOriginAddress: false,
+          messageSendable: false,
+          headerText: 'THANKS'.tr(),
+          mainButtonText: 'OK'.tr(),
+          onMainButtonPressed: _clearJob,
+          shrinkWrap: false,
+          isSwipeButton: false,
+        );
+        break;
+      default:
+        _bottomCard = null;
+    }
   }
 
   _positionFloatingActionButton() => FloatingActionButton(
@@ -1438,7 +1623,7 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
       _routeCoordinate = null;
       _myDriver = null;
       _job = null;
-      _menuTyp = null;
+      _changeMenuTyp(null);
     });
   }
 
@@ -1506,6 +1691,15 @@ class _GoogleMapsViewState extends State<GoogleMapsView> {
         position: ToastPosition.top,
         handleTouch: true
     );
+  }
+
+  _getDriverInfo() async {
+    List<Future> todo = [
+      _mapsService.getPhoneNumberFromDriver(_job).then((value) => { _driverPhone = value }),
+      _mapsService.getNameFromDriver(_job).then((value) => { _driverName = value })
+    ];
+    await Future.wait(todo);
+    _refreshBottomCard();
   }
 
   Future<void> _setJobIfExist() async {

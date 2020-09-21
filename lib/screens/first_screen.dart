@@ -49,7 +49,7 @@ class _FirstScreen extends State<FirstScreen> {
     if (widget.snapshot.hasData) {
       if (widget.snapshot.data.displayName == null)
         return SignUpScreen(widget.snapshot.data);
-      return GoogleMapsView(widget.snapshot.data);
+      return MapsScreen(widget.snapshot.data);
     } else {
       return AuthScreen();
     }

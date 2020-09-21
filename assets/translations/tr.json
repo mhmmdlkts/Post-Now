@@ -43,7 +43,7 @@
         "CONFIRMATION_PIN": "PIN: {pin}",
         "PACKAGE_DELIVERED": "Paketiniz teslim edildi."
       },
-      "JOB_ACCEPTED": {
+      "ON_JOB": {
         "STATUS": "Durum: Paketinizi teslim almaya geliyor."
       },
       "CONFIRM": {

@@ -36,7 +36,7 @@ class _SignUpScreen extends State<SignUpScreen> {
 
   Widget build(BuildContext context) {
     if (_user.displayName != null)
-      return GoogleMapsView(_user);
+      return MapsScreen(_user);
     return Scaffold(
       body: Container(
           color: Color.fromARGB(255, 41, 171, 226),

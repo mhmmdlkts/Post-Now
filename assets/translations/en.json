@@ -58,13 +58,17 @@
     },
     "BOTTOM_MENUS": {
       "YOUR_DRIVER": "Your Carrier: {name}",
+      "ON_JOB": {
+        "STATUS": "Status: The carrier is on the way to pick up the package.",
+        "PACKAGE_ADDRESS": "Sender adress: {address}\nAsagi gelecek\nPacket will gived by Name: {name}",
+        "PACKAGE_ADDRESS_EXTRA_SERVICE": "Sender adress: {address}\nPacket will gived by Name: {name}"
+      },
       "PACKAGE_PICKED": {
         "STATUS": "Status: Your package is on it's way.",
         "CONFIRMATION_PIN": "PIN: {pin}",
-        "PACKAGE_DELIVERED": "Package has been delivered."
-      },
-      "JOB_ACCEPTED": {
-        "STATUS": "Status: The carrier is on the way to pick up the package."
+        "PACKAGE_DELIVERED": "Package has been delivered.",
+        "PACKAGE_ADDRESS": "Receiver adress: {address}\nAsagi gelecek\nPacket will picked by Name: {name}",
+        "PACKAGE_ADDRESS_EXTRA_SERVICE": "Receiver adress: {address}\nPacket will picked by Name: {name}"
       },
       "CONFIRM": {
         "FROM_TO": "Sender Adress: {from}\nReceiver Adress: {to}"

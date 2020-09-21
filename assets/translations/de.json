@@ -43,7 +43,7 @@
         "CONFIRMATION_PIN": "PIN: {pin}",
         "PACKAGE_DELIVERED": "Paket wurde geliefert."
       },
-      "JOB_ACCEPTED": {
+      "ON_JOB": {
         "STATUS": "Status: Der Lieferant ist auf dem Weg, das Paket ab zu holen."
       },
       "CONFIRM": {

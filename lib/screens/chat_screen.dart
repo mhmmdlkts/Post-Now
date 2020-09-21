@@ -1,5 +1,4 @@
 import 'package:camera/camera.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as path_package;
@@ -9,6 +8,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'dart:io' as i;
 
 import 'package:postnow/services/chat_service.dart';
+
 
 
 class ChatScreen extends StatefulWidget {
@@ -27,8 +27,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   final bool _isDriverApp;
   ChatService _chatService;
   // Future<void> _initializeControllerFuture;
-  DatabaseReference _chatRef;
-  List<Message> _messages = [];
   List<CameraDescription> _cameras;
   CameraController _cameraController;
   String _inputMessage = "";
@@ -39,7 +37,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   bool _isBackCamera = true;
 
   _ChatScreenState(this._jobId, this._name, this._isDriverApp) {
-    _chatService = new ChatService(_jobId);
+    _chatService = new ChatService(_jobId, _onNewMessage);
   }
 
   @override
@@ -48,8 +46,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     _isCameraOpen = false;
     _showCapturedPhoto = false;
 
-    _chatRef = FirebaseDatabase.instance.reference().child('jobs_chat').child(_jobId);
-    _chatRef.onChildAdded.listen(_onNewMessage);
     _getNextCamera();
   }
 
@@ -75,16 +71,13 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       return;
   }
 
-  _onNewMessage(event) {
-    Message message = Message.fromSnapshot(event.snapshot);
-    _listViewController.animateTo(
-      _listViewController.position.maxScrollExtent + 20,
-      curve: Curves.easeOut,
-      duration: const Duration(milliseconds: 300),
-    );
-
+  _onNewMessage() { // TODO belki yeni gelen mesaj daha listede yok ayar cekmen gerekebilir
     setState(() {
-      _messages.add(message);
+      _listViewController.animateTo(
+        _listViewController.position.maxScrollExtent + 20,
+        curve: Curves.easeOut,
+        duration: const Duration(milliseconds: 300),
+      );
     });
   }
 
@@ -124,12 +117,12 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       height: MediaQuery.of(context).size.height,
       child: new ListView.builder (
           controller: _listViewController,
-          itemCount: _messages.length,
+          itemCount: _chatService.messages.length,
           itemBuilder: (BuildContext ctxt, int index) {
             return Stack(
                 children: <Widget>[
-                  _conversationBubble(_messages[index].message, _messages[index].img, _messages[index].send_time.toString(), _messages[index].from_driver),
-                  Container(height: _messages.length-1 == index?160:null,)
+                  _conversationBubble(_chatService.messages[index].message, _chatService.messages[index].img, _chatService.messages[index].send_time.toString(), _chatService.messages[index].from_driver),
+                  Container(height: _chatService.messages.length-1 == index?160:null,)
                 ]
             );
           }
@@ -323,7 +316,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       });
     }
     Message message = new Message(from_driver: _isDriverApp, message: _inputMessage, img: dbImagePath);
-    _chatRef.push().set(message.toMap());
+    _chatService.sendMessage(message);
     _clearField();
   }
 
