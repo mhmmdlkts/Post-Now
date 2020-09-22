@@ -21,7 +21,8 @@
     "TITLE": "Legal",
     "LegalTyp": {
       "PRIVACY_POLICY": "Privacy Policy",
-      "SOFTWARE_LICENCES": "Software Licences"
+      "SOFTWARE_LICENCES": "Software Licences",
+      "CONTACT": "Contact"
     }
   },
   "MAPS": {
@@ -34,6 +35,7 @@
     "SIDE_MENU": {
       "MY_ORDERS": "Meine Bestellungen",
       "LEGAL": "Legal",
+      "CONTACT": "Contact",
       "SIGN_OUT": "Abmelden"
     },
     "BOTTOM_MENUS": {

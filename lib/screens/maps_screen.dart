@@ -3,9 +3,11 @@ import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:google_map_polyline/google_map_polyline.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:postnow/dialogs/address_manager_dialog.dart';
+import 'package:postnow/enums/legacity_enum.dart';
 import 'package:postnow/environment/global_variables.dart';
 import 'package:postnow/models/address.dart';
 import 'package:postnow/screens/legal_menu_screen.dart';
+import 'package:postnow/screens/legal_screen.dart';
 import 'package:postnow/screens/overview_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -409,6 +411,15 @@ class _MapsScreenState extends State<MapsScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => LegalMenu()),
+              );
+            },
+          ),
+          ListTile(
+            title: Text('MAPS.SIDE_MENU.CONTACT'.tr()),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => LegalScreen(LegalTyp.CONTACT)),
               );
             },
           ),
