@@ -47,7 +47,8 @@
         "STATUS": "Durum: Paketinizi teslim almaya geliyor."
       },
       "CONFIRM": {
-        "FROM_TO": "Gönderici Adresi: {from}\nAlıcı adresi: {to}"
+        "FROM_TO": "Gönderici Adresi: {from}\nAlıcı adresi: {to}",
+        "USE_CREDITS": "{money} € degerindeki kredimi kullan."
       },
       "SEARCH_DRIVER": {
         "STATUS": "Durum: Paketinizi için kurye aranıyor.",

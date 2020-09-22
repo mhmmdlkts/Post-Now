@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:circular_check_box/circular_check_box.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:postnow/enums/job_status_enum.dart';
@@ -22,6 +23,7 @@ class BottomCard extends StatefulWidget {
   final bool shrinkWrap;
   final bool showFooter;
   final String headerText;
+  final String checkboxText;
   final String phone;
   final String mainButtonText;
   final bool isSwipeButton;
@@ -42,6 +44,7 @@ class BottomCard extends StatefulWidget {
     this.shrinkWrap = true,
     this.headerText,
     this.showDestinationAddress = false,
+    this.checkboxText,
     this.phone,
     this.mainButtonText,
     this.isSwipeButton = false,
@@ -137,6 +140,7 @@ class BottomState extends State<BottomCard> {
                   widget.showOriginAddress ? Container(height: 10) : Container(),
                   _addressWidget(true),
                   (widget.showOriginAddress || widget.showDestinationAddress) && widget.onMainButtonPressed != null ? Divider(thickness: 1, height: 25,) : Container(),
+                  _getCheckBox(),
                   _getMainButton(widget.isSwipeButton),
                   widget.job != null && widget.showFooter ? Divider(thickness: 1, height: 25,) : Container(),
                   _getCustomerName(),
@@ -319,6 +323,19 @@ class BottomState extends State<BottomCard> {
       widget.headerText,
       style: TextStyle(fontSize: 24,),
       textAlign: TextAlign.center,
+    );
+  }
+
+  Widget _getCheckBox() {
+    return widget.checkboxText == null ? Container() : Row (
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        CircularCheckBox(
+          disabledColor: Colors.blueAccent,
+          value: true,
+        ),
+        Text(widget.checkboxText)
+      ],
     );
   }
 

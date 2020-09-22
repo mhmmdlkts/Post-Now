@@ -85,4 +85,12 @@ class MapsService with WidgetsBindingObserver {
     });
     return name;
   }
+
+  Future<double> getCredit() async {
+    double credit;
+    await userRef.child("credit").once().then((value) => {
+      credit = value.value + 0.0,
+    });
+    return credit;
+  }
 }

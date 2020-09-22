@@ -1,13 +1,17 @@
+import 'dart:convert';
+
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_braintree/flutter_braintree.dart';
 import 'package:http/http.dart' as http;
+import 'package:postnow/environment/api_keys.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PaymentService {
   SharedPreferences prefs;
   static const String PREFS_CUSTOMER_ID = "Braintree_CustomerId";
 
-  Future<String> openPayMenu(double amount, String uid) async {
+  Future<Map<String, dynamic>> openPayMenu(double amount, String uid, bool useCredits, double credits) async {
     String customerId = await getCustomerId();
     var url = "https://europe-west1-post-now-f3c53.cloudfunctions.net/braintree_getToken" + (customerId == null ? "" : "?customerId=" + customerId);
     String token;
@@ -20,20 +24,25 @@ class PaymentService {
 
     assert (token != null);
 
+    double fakeAmount = 0.1;
+
+    if (credits < amount)
+      fakeAmount = amount - credits;
+
     final request = BraintreeDropInRequest(
-      amount: amount.toString(),
+      amount: fakeAmount.toString(),
       clientToken: token,
       collectDeviceData: true,
       cardEnabled: true,
-      tokenizationKey: "sandbox_v26s63jp_rdjzd3ff9xx4j5sc",
+      tokenizationKey: BRAINTREE_TOKENIZATION_KEY,
       googlePaymentRequest: BraintreeGooglePaymentRequest(
         totalPrice: amount.toString(),
         currencyCode: 'EUR',
         billingAddressRequired: false,
       ),
       paypalRequest: BraintreePayPalRequest(
-        amount: amount.toString(),
-        displayName: 'Post Now',
+        amount: fakeAmount.toString(),
+        displayName: 'APP_NAME'.tr(),
         currencyCode: 'EUR',
       ),
     );
@@ -45,19 +54,17 @@ class PaymentService {
     }
 
     String nonce = result.paymentMethodNonce.nonce;
-    url = "https://europe-west1-post-now-f3c53.cloudfunctions.net/braintree_sendNonce?nonce=" + nonce + "&amount=" + amount.toString();
+    url = "https://europe-west1-post-now-f3c53.cloudfunctions.net/braintree_sendNonce?nonce=" + nonce + "&amount=" + amount.toString() + "&userId=" + uid + "&useCredits=" + useCredits.toString();
 
-    String transactionId;
+    Map<String, dynamic> transactionIds;
     try {
       http.Response response = await http.get(url);
-      transactionId = response.body;
+      transactionIds = json.decode(response.body);
     } catch (e) {
-      print(e.message);
-    }
-    if (await checkTransaction(uid, "-MH-6ZxXi7wWHHnHsLv7", transactionId)) // TODO GIVE JOB ID
-      return transactionId;
-    else
+      print('Error 45: ' + e.message);
       return null;
+    }
+    return transactionIds;
   }
 
   Future<String> getCustomerId() async {
@@ -84,10 +91,10 @@ class PaymentService {
     }
   }
 
-  Future<bool> checkTransaction(String uid, String jobId, String transactionId) async {
+  Future<bool> checkTransaction(String transactionId) async {
     if (transactionId.toLowerCase() == 'false')
       return false;
-    var url = "https://europe-west1-post-now-f3c53.cloudfunctions.net/braintree_checkTransaction?transactionId=" + transactionId + "&uid=" + uid  + "&jobId=" + jobId;
+    var url = "https://europe-west1-post-now-f3c53.cloudfunctions.net/braintree_checkTransaction?transactionId=" + transactionId;
     try {
       http.Response response = await http.get(url);
       print(response.body);

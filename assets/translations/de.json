@@ -47,7 +47,8 @@
         "STATUS": "Status: Der Lieferant ist auf dem Weg, das Paket ab zu holen."
       },
       "CONFIRM": {
-        "FROM_TO": "Absenderadresse: {from}\nEmpfängeradresse: {to}"
+        "FROM_TO": "Absenderadresse: {from}\nEmpfängeradresse: {to}",
+        "USE_CREDITS": "{money} € degerindeki kredimi kullan."
       },
       "SEARCH_DRIVER": {
         "STATUS": "Status: Warten auf Lieferant für Ihre Bestellung.",

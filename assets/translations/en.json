@@ -71,7 +71,8 @@
         "PACKAGE_ADDRESS_EXTRA_SERVICE": "Receiver adress: {address}\nPacket will picked by Name: {name}"
       },
       "CONFIRM": {
-        "FROM_TO": "Sender Adress: {from}\nReceiver Adress: {to}"
+        "FROM_TO": "Sender Adress: {from}\nReceiver Adress: {to}",
+        "USE_CREDITS": "{money} € degerindeki kredimi kullan."
       },
       "SEARCH_DRIVER": {
         "STATUS": "Status: Waiting for carrier for your order.",

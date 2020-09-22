@@ -8,7 +8,8 @@ import 'address.dart';
 class Job {
   Address destinationAddress;
   Address originAddress;
-  String transactionId;
+  String brainTreeTransactionId;
+  String customTransactionId;
   DateTime acceptTime;
   DateTime finishTime;
   DateTime startTime;
@@ -21,7 +22,7 @@ class Job {
   String sign;
   String key;
 
-  Job({this.name, this.userId, this.price, this.driverId, this.vehicle, this.transactionId, this.originAddress, this.destinationAddress}) {
+  Job({this.name, this.userId, this.price, this.driverId, this.vehicle, this.customTransactionId, this.brainTreeTransactionId, this.originAddress, this.destinationAddress}) {
     setStartTime();
     status = Status.WAITING;
   }
@@ -44,7 +45,8 @@ class Job {
     driverId = snapshot.value["driver-id"];
     userId = snapshot.value["user-id"];
     sign = snapshot.value["sign"];
-    transactionId = snapshot.value["transactionId"];
+    brainTreeTransactionId = snapshot.value["brainTreeTransactionId"];
+    customTransactionId = snapshot.value["customTransactionId"];
     price = snapshot.value["price"] + 0.0;
     status = stringToStatus(snapshot.value["status"]);
     vehicle = stringToVehicle(snapshot.value["vehicle"]);
@@ -150,7 +152,8 @@ class Job {
     'driver-id': driverId,
     'user-id': userId,
     'sign': sign,
-    'transactionId': transactionId,
+    'customTransactionId': customTransactionId,
+    'brainTreeTransactionId': brainTreeTransactionId,
     'price': price,
     'status': statusToString(status),
     'vehicle': vehicleToString(vehicle),
@@ -168,7 +171,8 @@ class Job {
     driverId = json["driver-id"];
     userId = json["user-id"];
     sign = json["sign"];
-    transactionId = json["transactionId"];
+    customTransactionId = json["customTransactionId"];
+    brainTreeTransactionId = json["brainTreeTransactionId"];
     price = json["price"] + 0.0;
     status = stringToStatus(json["status"]);
     vehicle = stringToVehicle(json["vehicle"]);
@@ -186,7 +190,8 @@ class Job {
     if (userId != null) toReturn['user-id'] = userId;
     if (sign != null) toReturn['sign'] = sign;
     if (price != null) toReturn['price'] = price;
-    if (transactionId != null) toReturn['transactionId'] = transactionId;
+    if (customTransactionId != null) toReturn['customTransactionId'] = customTransactionId;
+    if (brainTreeTransactionId != null) toReturn['brainTreeTransactionId'] = brainTreeTransactionId;
     if (status != null) toReturn['status'] = statusToString(status);
     if (vehicle != null) toReturn['vehicle'] = vehicleToString(vehicle);
     if (originAddress != null) toReturn['origin-address'] = originAddress.toMap();
@@ -252,5 +257,4 @@ class Job {
     }
     return false;
   }
-
 }

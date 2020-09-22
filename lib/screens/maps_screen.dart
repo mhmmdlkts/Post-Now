@@ -51,7 +51,7 @@ class _MapsScreenState extends State<MapsScreen> {
   final List<Driver> _drivers = List();
   final User _user;
   String _driverPhone;
-  String _driverName = "ddddd";
+  String _driverName;
   bool _isInitialized = false;
   int _initCount = 0;
   int _initDone = 0;
@@ -71,6 +71,7 @@ class _MapsScreenState extends State<MapsScreen> {
   Position _myPosition;
   Job _job;
   Driver _myDriver;
+  double _credit;
   bool _isDestinationButtonChosen = false;
 
   _MapsScreenState(this._user) {
@@ -222,6 +223,14 @@ class _MapsScreenState extends State<MapsScreen> {
       nextInitializeDone('5')
     });
 
+    _initCount++;
+    _mapsService.getCredit().then((value) => {
+      setState(() {
+        _credit = value;
+      }),
+      nextInitializeDone('5')
+    });
+
     var locationOptions = LocationOptions(accuracy: LocationAccuracy.high, distanceFilter: 10);
 
     Geolocator().getPositionStream(locationOptions).listen(onPositionChanged);
@@ -309,20 +318,20 @@ class _MapsScreenState extends State<MapsScreen> {
     });
   }
 
-  _navigateToPaymentsAndGetResult(BuildContext context, double price) async {
+  _navigateToPaymentsAndGetResult(BuildContext context, double price, bool useCredits) async {
     setState(() {
       _changeMenuTyp(MenuTyp.PAYMENT_WAITING);
     });
 
-    if (IS_TEST) {
+    /*if (IS_TEST) {
       setState(() {
         addJobToPool('test_transaction_id');
         _changeMenuTyp(MenuTyp.SEARCH_DRIVER);
       });
       return;
-    }
+    }*/
 
-    PaymentService().openPayMenu(price, _user.uid).then((result) => {
+    PaymentService().openPayMenu(price, _user.uid, useCredits, _credit).then((result) => {
       setState(() {
         if (result != null) {
           addJobToPool(result);
@@ -367,7 +376,15 @@ class _MapsScreenState extends State<MapsScreen> {
                 Text("SETTINGS".tr(), style: TextStyle(fontSize: 20, color: Colors.white)),
                 Positioned(
                   bottom: 0,
-                  child: Text(_user.displayName, style: TextStyle(fontSize: 22, color: Colors.white)),
+                  left: 0,
+                  right: 0,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(_user.displayName, style: TextStyle(fontSize: 22, color: Colors.white)),
+                      _credit == null? Container() : Text(_credit.toStringAsFixed(2) + " €", style: TextStyle(fontSize: 18, color: Colors.white))
+                    ],
+                  ),
                 )
               ],
             ),
@@ -778,7 +795,7 @@ class _MapsScreenState extends State<MapsScreen> {
                                   //menuTyp = MenuTyp.PAY;
                                   if (_price == 0)
                                     return;
-                                  _navigateToPaymentsAndGetResult(context, _price);
+                                  _navigateToPaymentsAndGetResult(context, _price, true);
                                 });
                               },
                             ),
@@ -909,11 +926,12 @@ class _MapsScreenState extends State<MapsScreen> {
         )
     );
 
-    void addJobToPool(transactionId) async {
+    void addJobToPool(Map<String, dynamic> transactionIds) async {
       _job = Job(
           name: _user.displayName,
           userId: _user.uid,
-          transactionId: transactionId,
+          customTransactionId: transactionIds['customTransId'],
+          brainTreeTransactionId: transactionIds['brainTreeTransId'],
           vehicle: Vehicle.CAR,
           price: _price,
           originAddress: _originAddress,
@@ -1471,6 +1489,7 @@ class _MapsScreenState extends State<MapsScreen> {
           floatingActionButton: _positionFloatingActionButton(),
           messageSendable: false,
           headerText: 'MAPS.PRICE'.tr(namedArgs: {'price': _price.toString()}),
+          checkboxText: _credit == null? null: 'MAPS.BOTTOM_MENUS.CONFIRM.USE_CREDITS'.tr(namedArgs: {'money': _credit.toStringAsFixed(2)}),
           onCancelButtonPressed: () {
             setState(() {
               _polyLines.clear();
@@ -1484,7 +1503,7 @@ class _MapsScreenState extends State<MapsScreen> {
               //menuTyp = MenuTyp.PAY;
               if (_price == 0)
                 return;
-              _navigateToPaymentsAndGetResult(context, _price);
+              _navigateToPaymentsAndGetResult(context, _price, true);
             });
           },
           shrinkWrap: false,
