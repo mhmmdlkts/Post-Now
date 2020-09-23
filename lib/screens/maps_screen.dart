@@ -201,6 +201,19 @@ class _MapsScreenState extends State<MapsScreen> {
       });
     });
 
+    _mapsService.jobsRef.onChildChanged.listen((Event e) {
+      setState(() {
+        Job j = Job.fromSnapshot(e.snapshot);
+        _onJobsDataChanged(j);
+      });
+    });
+
+    _mapsService.userRef.child('credit').onValue.listen((Event e) {
+      setState(() {
+        _credit = e.snapshot.value + 0.0;
+      });
+    });
+
     _firebaseMessaging.configure(onMessage: (Map<String, dynamic> message) {
       print('onResume: $message');
       final data = message["data"];
@@ -223,14 +236,6 @@ class _MapsScreenState extends State<MapsScreen> {
 
     _initCount++;
     _setJobIfExist().then((value) => {
-      nextInitializeDone('5')
-    });
-
-    _initCount++;
-    _mapsService.getCredit().then((value) => {
-      setState(() {
-        _credit = value;
-      }),
       nextInitializeDone('5')
     });
 
