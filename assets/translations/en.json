@@ -54,6 +54,7 @@
     "TYPE_ADDRESS": "Enter the adress",
     "SIDE_MENU": {
       "MY_ORDERS": "My Orders",
+      "VOUCHER": "Voucher",
       "LEGAL": "Legal",
       "CONTACT": "Contact",
       "SIGN_OUT": "Logout"
@@ -102,6 +103,16 @@
   },
   "OVERVIEW": {
     "TITLE": "Gecmis orders"
+  },
+  "VOUCHER": {
+    "TITLE": "Voucher",
+    "SUCCESS_MESSAGE": "{value} € degerinde para fiskirtildi",
+    "ERROR": {
+      "NO_ERROR": "Hata yok",
+      "ALREADY_USED": "Bu gutschein daha önce kulanildi",
+      "NOT_EXIST": "Bu gutschein gecersiz",
+      "NOT_KNOWN": "Bilinmeyen hata"
+    }
   },
   "MODELS": {
     "JOB": {

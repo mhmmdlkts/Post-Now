@@ -201,6 +201,7 @@ PODS:
   - leveldb-library (1.22)
   - "location_permissions (3.0.0+1)":
     - Flutter
+  - MTBBarcodeScanner (5.0.11)
   - nanopb (1.30905.0):
     - nanopb/decode (= 1.30905.0)
     - nanopb/encode (= 1.30905.0)
@@ -214,6 +215,9 @@ PODS:
     - Flutter
   - PromisesObjC (1.2.10)
   - Protobuf (3.13.0)
+  - qr_code_scanner (0.0.2):
+    - Flutter
+    - MTBBarcodeScanner
   - screen (0.0.1):
     - Flutter
   - shared_preferences (0.0.1):
@@ -247,6 +251,7 @@ DEPENDENCIES:
   - package_info (from `.symlinks/plugins/package_info/ios`)
   - path_provider (from `.symlinks/plugins/path_provider/ios`)
   - permission_handler (from `.symlinks/plugins/permission_handler/ios`)
+  - qr_code_scanner (from `.symlinks/plugins/qr_code_scanner/ios`)
   - screen (from `.symlinks/plugins/screen/ios`)
   - shared_preferences (from `.symlinks/plugins/shared_preferences/ios`)
   - store_redirect (from `.symlinks/plugins/store_redirect/ios`)
@@ -280,6 +285,7 @@ SPEC REPOS:
     - GoogleUtilities
     - GTMSessionFetcher
     - leveldb-library
+    - MTBBarcodeScanner
     - nanopb
     - PromisesObjC
     - Protobuf
@@ -319,6 +325,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/path_provider/ios"
   permission_handler:
     :path: ".symlinks/plugins/permission_handler/ios"
+  qr_code_scanner:
+    :path: ".symlinks/plugins/qr_code_scanner/ios"
   screen:
     :path: ".symlinks/plugins/screen/ios"
   shared_preferences:
@@ -372,12 +380,14 @@ SPEC CHECKSUMS:
   image_picker: 9c3312491f862b28d21ecd8fdf0ee14e601b3f09
   leveldb-library: 55d93ee664b4007aac644a782d11da33fba316f7
   location_permissions: 7e0f9aa0f60deb8ff93ddf0e2a164c7e8197bc94
+  MTBBarcodeScanner: f453b33c4b7dfe545d8c6484ed744d55671788cb
   nanopb: c43f40fadfe79e8b8db116583945847910cbabc9
   package_info: 873975fc26034f0b863a300ad47e7f1ac6c7ec62
   path_provider: abfe2b5c733d04e238b0d8691db0cfd63a27a93c
   permission_handler: eac8e15b4a1a3fba55b761d19f3f4e6b005d15b6
   PromisesObjC: b14b1c6b68e306650688599de8a45e49fae81151
   Protobuf: 3dac39b34a08151c6d949560efe3f86134a3f748
+  qr_code_scanner: 16107718bdad7d708cdf6a5eacdca24b56cdf471
   screen: abd91ca7bf3426e1cc3646d27e9b2358d6bf07b0
   shared_preferences: af6bfa751691cdc24be3045c43ec037377ada40d
   store_redirect: 2977747cf81689a39bd62c248c2deacb7a0d131e

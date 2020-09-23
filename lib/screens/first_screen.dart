@@ -35,12 +35,6 @@ class _FirstScreen extends State<FirstScreen> {
   Widget build(BuildContext context) {
     if (prefs == null)
       return SplashScreen();
-    if (_isFirstTimeOpen())
-      return IntroScreen(() {
-        setState((){
-          prefs.setBool(IS_FIRST_TIME_OPEN_KEY, false);
-        });
-      });
     if (needsUpdate == null)
       return SplashScreen();
     if (needsUpdate)
@@ -49,6 +43,12 @@ class _FirstScreen extends State<FirstScreen> {
     if (widget.snapshot.hasData) {
       if (widget.snapshot.data.displayName == null)
         return SignUpScreen(widget.snapshot.data);
+      if (_isFirstTimeOpen())
+        return IntroScreen(() {
+          setState((){
+            prefs.setBool(IS_FIRST_TIME_OPEN_KEY, false);
+          });
+        });
       return MapsScreen(widget.snapshot.data);
     } else {
       return AuthScreen();

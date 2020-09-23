@@ -9,6 +9,7 @@ import 'package:postnow/models/address.dart';
 import 'package:postnow/screens/legal_menu_screen.dart';
 import 'package:postnow/screens/legal_screen.dart';
 import 'package:postnow/screens/overview_screen.dart';
+import 'package:postnow/screens/voucher_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -401,6 +402,16 @@ class _MapsScreenState extends State<MapsScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => OverviewScreen(_user)),
+              );
+            },
+          ),
+          ListTile(
+            title: Text('MAPS.SIDE_MENU.VOUCHER'.tr()),
+            onTap: () {
+              _thisMethodFixABugButIStillAlwaysABugFixMeDude();
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => VoucherScreen(_user.uid)),
               );
             },
           ),

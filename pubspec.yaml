@@ -60,6 +60,7 @@ dependencies:
   circular_check_box: ^1.0.4
   url_launcher: ^5.6.0
   swipebuttonflutter: ^0.1.2
+  qr_code_scanner: ^0.0.13
 
 dev_dependencies:
   flutter_test:

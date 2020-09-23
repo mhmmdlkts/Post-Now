@@ -32,6 +32,7 @@ class _PrivacyPolicy extends State<LegalScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        brightness: Brightness.dark,
         iconTheme:  IconThemeData(color: Colors.white),
         title: Text(('LEGAL.' + legalTyp.toString()).tr()),
       ),
