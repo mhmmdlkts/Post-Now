@@ -5,7 +5,8 @@ import 'package:postnow/models/address.dart';
 
 class AddressManager extends StatefulWidget {
   final Address address;
-  AddressManager(this.address, {Key key}) : super(key: key);
+  final double borderRadius;
+  AddressManager(this.address, {this.borderRadius = 15, Key key}) : super(key: key);
 
   @override
   _AddressManager createState() => _AddressManager(address);
@@ -30,9 +31,6 @@ class _AddressManager extends State<AddressManager> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(3),
-      ),
       elevation: 0.0,
       backgroundColor: Colors.transparent,
       child: dialogContent(context),
@@ -40,118 +38,126 @@ class _AddressManager extends State<AddressManager> {
   }
 
   dialogContent(BuildContext context) {
-    return Container(
-      width: 300,
-      padding: EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-      decoration: new BoxDecoration(
-        color: Colors.white,
-        shape: BoxShape.rectangle,
-        borderRadius: BorderRadius.circular(3),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black26,
-            blurRadius: 10.0,
-            offset: const Offset(0.0, 10.0),
-          ),
-        ],
-      ),
-      child: ListView(
-        shrinkWrap: true,
-        children: [
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Text("DIALOGS.ADDRESS_MANAGER.TITLE".tr(), style: TextStyle(fontSize: 24),),
-              Divider(thickness: 1),
-              Row(
-                children: [
-                  Flexible(
-                    child: Text("DIALOGS.ADDRESS_MANAGER.I_WILL_COME".tr()),
-                  ),
-                  CircularCheckBox(
-                    onChanged: (value) {
-                      setState(() {
-                        _extraService = value;
-                        if (!value) {
-                          _doorNumberController.clear();
-                          _address.doorNumber = null;
-                        }
-                      });
-                    },
-                    value: _extraService,
-                  ),
-                ],
-              ),
-              Divider(thickness: 1),
-              Row(
-                children: [
-                  Flexible(
-                    child: TextField(
-                      maxLength: 5,
-                      autofocus: !Address.isStringNotEmpty(_address.houseNumber),
-                      keyboardType: TextInputType.numberWithOptions(signed: true),
-                      controller: _houseNumberController,
-                      onChanged: (val) {
-                        setState(() {
-                          _address.houseNumber = val;
-                        });
-                      },
-                      decoration: InputDecoration(labelText: 'DIALOGS.ADDRESS_MANAGER.HOUSE_NUMBER'.tr(), hintText: 'DIALOGS.ADDRESS_MANAGER.HOUSE_NUMBER'.tr(), counterText: ""),
-                    ),
-                  ),
-                  Container(
-                    width: 10,
-                  ),
-                  Flexible(
-                    child: TextField(
-                      enabled: _extraService,
-                      maxLength: 5,
-                      autofocus: Address.isStringNotEmpty(_address.houseNumber) && !Address.isStringNotEmpty(_address.doorNumber),
-                      keyboardType: TextInputType.numberWithOptions(signed: true),
-                      controller: _doorNumberController,
-                      onChanged: (val) {
-                        setState(() {
-                          _address.doorNumber = val;
-                        });
-                      },
-                      decoration: InputDecoration(labelText: 'DIALOGS.ADDRESS_MANAGER.DOOR_NUMBER'.tr(), hintText: 'DIALOGS.ADDRESS_MANAGER.DOOR_NUMBER'.tr(), counterText: ""),
-                    ),
-                  ),
-                ],
-              ),
-              TextField(
-                maxLength: 25,
-                autofocus: Address.isStringNotEmpty(_address.houseNumber) && Address.isStringNotEmpty(_address.doorNumber) && !Address.isStringNotEmpty(_address.doorName),
-                controller: _doorNameController,
-                onChanged: (val) {
-                  setState(() {
-                    _address.doorName = val;
-                  });
-                },
-                decoration: InputDecoration(labelText: 'DIALOGS.ADDRESS_MANAGER.DOOR_NAME'.tr(), hintText: 'DIALOGS.ADDRESS_MANAGER.DOOR_NAME'.tr(), counterText: ""),
-              ),
-              Container(height: 14,),
-              Flexible(
-                child:Text(_errorMessage, style: TextStyle(color: Colors.redAccent)),
-              ),
-              Divider(thickness: 1),
-              Flexible(
-                child: Text(_address.getAddress(), style: TextStyle(fontSize: 16)),
-              ),
-              Divider(thickness: 1,
-                height: 24,),
-              ConstrainedBox(
-                constraints: const BoxConstraints(minWidth: double.infinity),
-                child: FlatButton(
-                  color: Colors.lightBlue,
-                  child: Text('ACCEPT'.tr(), style: TextStyle(fontSize: 16, color: Colors.white)),
-                  onPressed: _onAcceptButtonClick,
-                ),
+    return ClipRRect(
+      borderRadius: BorderRadius.all(Radius.circular(widget.borderRadius)),
+      child: Container(
+          padding: EdgeInsets.only(top: 8),
+          decoration: new BoxDecoration(
+            color: Colors.white,
+            shape: BoxShape.rectangle,
+            borderRadius: BorderRadius.circular(3),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black26,
+                blurRadius: 10.0,
+                offset: const Offset(0.0, 10.0),
               ),
             ],
           ),
-        ],
-      )
+          child: ListView(
+            physics: const NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            children: [
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text("DIALOGS.ADDRESS_MANAGER.I_WILL_COME".tr()),
+                        ),
+                        CircularCheckBox(
+                          onChanged: (value) {
+                            setState(() {
+                              _extraService = value;
+                              if (!value) {
+                                _doorNumberController.clear();
+                                _address.doorNumber = null;
+                              }
+                            });
+                          },
+                          value: _extraService,
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Flexible(
+                          child: TextField(
+                            maxLength: 5,
+                            autofocus: !Address.isStringNotEmpty(_address.houseNumber),
+                            keyboardType: TextInputType.numberWithOptions(signed: true),
+                            controller: _houseNumberController,
+                            onChanged: (val) {
+                              setState(() {
+                                _address.houseNumber = val;
+                              });
+                            },
+                            decoration: InputDecoration(border: InputBorder.none, labelText: 'DIALOGS.ADDRESS_MANAGER.HOUSE_NUMBER'.tr(), hintText: 'DIALOGS.ADDRESS_MANAGER.HOUSE_NUMBER'.tr(), counterText: ""),
+                          ),
+                        ),
+                        Container(
+                          width: 10,
+                        ),
+                        Flexible(
+                          child: TextField(
+                            enabled: _extraService,
+                            maxLength: 5,
+                            autofocus: Address.isStringNotEmpty(_address.houseNumber) && !Address.isStringNotEmpty(_address.doorNumber),
+                            keyboardType: TextInputType.numberWithOptions(signed: true),
+                            controller: _doorNumberController,
+                            onChanged: (val) {
+                              setState(() {
+                                _address.doorNumber = val;
+                              });
+                            },
+                            decoration: InputDecoration(border: InputBorder.none, labelText: 'DIALOGS.ADDRESS_MANAGER.DOOR_NUMBER'.tr(), hintText: 'DIALOGS.ADDRESS_MANAGER.DOOR_NUMBER'.tr(), counterText: ""),
+                          ),
+                        ),
+                      ],
+                    ),
+                    TextField(
+                      maxLength: 25,
+                      autofocus: Address.isStringNotEmpty(_address.houseNumber) && Address.isStringNotEmpty(_address.doorNumber) && !Address.isStringNotEmpty(_address.doorName),
+                      controller: _doorNameController,
+                      onChanged: (val) {
+                        setState(() {
+                          _address.doorName = val;
+                        });
+                      },
+                      decoration: InputDecoration(border: InputBorder.none, labelText: 'DIALOGS.ADDRESS_MANAGER.DOOR_NAME'.tr(), hintText: 'DIALOGS.ADDRESS_MANAGER.DOOR_NAME'.tr(), counterText: ""),
+                    ),
+                    Container(height: _errorMessage.length == 0? 0 : 10),
+                    Flexible(
+                      child:Text(_errorMessage, style: TextStyle(color: Colors.redAccent)),
+                    ),
+                    Container(height: _errorMessage.length == 0? 0 : 10),
+                    Flexible(
+                      child: Text(_address.getAddress(), style: TextStyle(fontSize: 16)),
+                    ),
+                    Container(height: 10,),
+                  ],
+                ),
+              ),
+              ConstrainedBox(
+                  constraints: const BoxConstraints(minWidth: double.infinity),
+                  child: Material(
+                    color: Colors.lightBlue,
+                    child: InkWell(
+                      child: Container(
+                        height: 50,
+                        alignment: Alignment.center,
+                        child: Text('ACCEPT'.tr(), style: TextStyle(fontSize: 16, color: Colors.white)),
+                      ),
+                      onTap: _onAcceptButtonClick,
+                    ),
+                  )
+              ),
+            ],
+          )
+      ),
     );
   }
 

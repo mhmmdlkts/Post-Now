@@ -968,7 +968,11 @@ class _MapsScreenState extends State<MapsScreen> {
           value.setStringList('orders', _orders)
         }
       );
-      _mapsService.jobsRef.push().set(_job.toMap());
+      String jobId = _mapsService.jobsRef.push().key;
+      _mapsService.jobsRef.child(jobId).set(_job.toMap());
+      _mapsService.jobsRef.child(jobId).onChildRemoved.listen((Event e) {
+        _clearJob();
+      });
     }
 
     Future<void> setRoutePolyline(LatLng origin, LatLng destination, RouteMode mode) async {
