@@ -140,6 +140,9 @@
         "DOOR_NUMBER_IS_NEEDED": "Eger paketinizi kapiniza getirilsin istiyorsaniz kapi numarasi girmek zorundasiniz.",
         "DOOR_NAME_IS_NEEDED": "Paketinizi teslim alacak kisinin ismini girmek zorundasiniz."
       }
+    },
+    "JOB_SETTINGS": {
+      "CANCEL_JOB" : "Yolculugu iptal et"
     }
   }
 }

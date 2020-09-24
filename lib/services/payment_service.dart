@@ -25,9 +25,8 @@ class PaymentService {
     assert (token != null);
 
     double fakeAmount = 0.1;
-
     if (credits < amount)
-      fakeAmount = amount - credits;
+      fakeAmount = num.parse((amount - credits).toStringAsFixed(2));
 
     final request = BraintreeDropInRequest(
       amount: fakeAmount.toString(),
@@ -54,11 +53,14 @@ class PaymentService {
     }
 
     String nonce = result.paymentMethodNonce.nonce;
-    url = "https://europe-west1-post-now-f3c53.cloudfunctions.net/braintree_sendNonce?nonce=" + nonce + "&amount=" + amount.toString() + "&userId=" + uid + "&useCredits=" + useCredits.toString();
+    url = "https://europe-west1-post-now-f3c53.cloudfunctions.net/braintree_sendNonce?nonce=" + nonce + "&amount=" + amount.toString() +  "&nonceAmount=" + fakeAmount.toString() + "&userId=" + uid + "&useCredits=" + useCredits.toString();
 
     Map<String, dynamic> transactionIds;
     try {
       http.Response response = await http.get(url);
+      if (response.body == 'false') {
+        return null;
+      }
       transactionIds = json.decode(response.body);
     } catch (e) {
       print('Error 45: ' + e.message);

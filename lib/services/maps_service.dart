@@ -1,12 +1,15 @@
 import 'dart:typed_data';
 
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'dart:math' show cos, sqrt, asin;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:postnow/environment/global_variables.dart';
 import 'dart:ui' as ui;
+import 'package:http/http.dart' as http;
 
 import 'package:postnow/models/job.dart';
 
@@ -92,5 +95,22 @@ class MapsService with WidgetsBindingObserver {
       credit = value.value + 0.0,
     });
     return credit;
+  }
+
+  Future<double> getCancelFeeAmount() async {
+    final RemoteConfig remoteConfig = await RemoteConfig.instance;
+    await remoteConfig.fetch();
+    await remoteConfig.activateFetched();
+    return remoteConfig.getDouble(FIREBASE_REMOTE_CANCEL_FEE_KEY);
+  }
+
+  void cancelJob(Job j) async {
+    String url = "https://europe-west1-post-now-f3c53.cloudfunctions.net/cancelJob?jobId=" + j.key + "&requesterId=" + uid;
+
+    try {
+      print(http.get(url));
+    } catch (e) {
+      print('Error 45: ' + e.message);
+    }
   }
 }

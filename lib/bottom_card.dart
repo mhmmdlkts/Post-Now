@@ -3,8 +3,10 @@ import 'dart:async';
 import 'package:circular_check_box/circular_check_box.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:postnow/dialogs/settings_dialog.dart';
 import 'package:postnow/enums/job_status_enum.dart';
 import 'package:postnow/models/job.dart';
+import 'package:postnow/models/settings_item.dart';
 import 'package:postnow/screens/chat_screen.dart';
 import 'package:postnow/services/chat_service.dart';
 import 'package:swipebuttonflutter/swipebuttonflutter.dart';
@@ -22,6 +24,7 @@ class BottomCard extends StatefulWidget {
   final bool showDestinationAddress;
   final bool shrinkWrap;
   final bool showFooter;
+  final SettingsDialog settingsDialog;
   final String headerText;
   final String checkboxText;
   final String phone;
@@ -52,6 +55,7 @@ class BottomCard extends StatefulWidget {
     this.onMainButtonPressed,
     this.onCancelButtonPressed,
     this.showFooter = true,
+    this.settingsDialog,
     this.isLoading = false
   }) : super(key: key);
 
@@ -60,6 +64,7 @@ class BottomCard extends StatefulWidget {
 }
 
 class BottomState extends State<BottomCard> {
+  final GlobalKey _settingsMenuKey = GlobalKey();
   final GlobalKey _containerKey = GlobalKey();
   final GlobalKey _contentKey = GlobalKey();
   final GlobalKey _headerKey = GlobalKey();
@@ -183,6 +188,32 @@ class BottomState extends State<BottomCard> {
                 right: 14,
                 bottom:  _offset.dy + 14,
                 child: widget.floatingActionButton
+            ),
+          ),
+          Visibility(
+            visible: widget.settingsDialog != null,
+            child: Positioned(
+                right: 10,
+                bottom:  _offset.dy - 45 - 10,
+                child: Material(
+                  child: InkWell(
+                    key: _settingsMenuKey,
+                    customBorder: CircleBorder(),
+                    onTap: () {
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return widget.settingsDialog;
+                          }
+                      );
+                    },
+                    child: Padding(
+                      padding: EdgeInsets.all(10),
+                      child: Icon(Icons.more_horiz, size: 35,),
+                    )
+                  ),
+                  color: Colors.transparent,
+                )
             ),
           ),
         ],

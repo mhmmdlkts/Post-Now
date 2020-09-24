@@ -3,9 +3,11 @@ import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:google_map_polyline/google_map_polyline.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:postnow/dialogs/address_manager_dialog.dart';
+import 'package:postnow/dialogs/settings_dialog.dart';
 import 'package:postnow/enums/legacity_enum.dart';
 import 'package:postnow/environment/global_variables.dart';
 import 'package:postnow/models/address.dart';
+import 'package:postnow/models/settings_item.dart';
 import 'package:postnow/screens/legal_menu_screen.dart';
 import 'package:postnow/screens/legal_screen.dart';
 import 'package:postnow/screens/overview_screen.dart';
@@ -234,10 +236,7 @@ class _MapsScreenState extends State<MapsScreen> {
       return;
     });
 
-    _initCount++;
-    _setJobIfExist().then((value) => {
-      nextInitializeDone('5')
-    });
+    _setJobIfExist();
 
     var locationOptions = LocationOptions(accuracy: LocationAccuracy.high, distanceFilter: 10);
 
@@ -1593,6 +1592,7 @@ class _MapsScreenState extends State<MapsScreen> {
           defaultOpen: true,
           shrinkWrap: true,
           showFooter: false,
+          settingsDialog: _getSettingsDialog(),
         );
         break;
       case MenuTyp.PACKAGE_PICKED:
@@ -1609,6 +1609,7 @@ class _MapsScreenState extends State<MapsScreen> {
           defaultOpen: true,
           shrinkWrap: true,
           showFooter: false,
+          settingsDialog: _getSettingsDialog(),
         );
         break;
       case MenuTyp.COMPLETED:
@@ -1749,27 +1750,19 @@ class _MapsScreenState extends State<MapsScreen> {
   }
 
   Future<void> _setJobIfExist() async {
-    _initCount++;
-    return _mapsService.userRef.child("currentJob").once().then((DataSnapshot snapshot){
-      final jobId = snapshot.value;
+    return _mapsService.userRef.child("currentJob").onValue.listen((Event e){
+      final jobId = e.snapshot.value;
       if (jobId != null) {
         _mapsService.jobsRef.child(jobId.toString()).once().then((DataSnapshot snapshot){
           Job j = Job.fromJson(snapshot.value, key: snapshot.key);
+          if (_job != null)
+            return;
           _job = j;
           _onJobsDataChanged(j);
-          nextInitializeDone('7');
-        }).catchError((error) {
-          nextInitializeDone('11');
-        }).timeout(Duration(seconds: FUTURE_TIMEOUT_SEC), onTimeout: () {
-          nextInitializeDone('10');
         });
       } else {
-        nextInitializeDone('8');
+        _clearJob();
       }
-    }).catchError((error) {
-      nextInitializeDone('12');
-    }).timeout(Duration(seconds: FUTURE_TIMEOUT_SEC), onTimeout: () {
-      nextInitializeDone('9');
     });
   }
 
@@ -1786,4 +1779,15 @@ class _MapsScreenState extends State<MapsScreen> {
     if (_originAddress != null || _destinationAddress != null)
       _clearJob(); // TODO
     }
+
+  _getSettingsDialog() => SettingsDialog(
+      [
+        SettingsItem(textKey: "DIALOGS.JOB_SETTINGS.CANCEL_JOB", onPressed: () async {
+          print ('there is ' + (await _mapsService.getCancelFeeAmount()).toString() + " € fee");
+          if (true) // TODO Are you sure?
+            _mapsService.cancelJob(_job);
+        }, icon: Icons.cancel, color: Colors.white),
+        SettingsItem(textKey: "CLOSE", onPressed: () {}, icon: Icons.close, color: Colors.redAccent),
+      ]
+  );
 }
