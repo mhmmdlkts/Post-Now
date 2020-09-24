@@ -69,6 +69,10 @@ class Job {
         return Status.FINISHED;
       case "no_driver_found":
         return Status.CANCELLED;
+      case "customer_canceled":
+        return Status.CUSTOMER_CANCELED;
+      case "driver_canceled":
+        return Status.DRIVER_CANCELED;
     }
     return null;
   }
@@ -85,6 +89,10 @@ class Job {
         return "finished";
       case Status.CANCELLED:
         return "no_driver_found";
+      case Status.CUSTOMER_CANCELED:
+        return "customer_canceled";
+      case Status.DRIVER_CANCELED:
+        return "driver_canceled";
     }
     return null;
   }
@@ -215,7 +223,7 @@ class Job {
   }
 
   String getStatusMessageKey() {
-    return "MODELS.JOB." + Status.WAITING.toString().split('.')[1];
+    return "MODELS.JOB." + status.toString().split('.')[1];
   }
 
   LatLng getOrigin() {

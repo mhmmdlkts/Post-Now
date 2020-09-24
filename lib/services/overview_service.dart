@@ -3,11 +3,11 @@ import 'package:postnow/models/job.dart';
 
 class OverviewService {
   final String uid;
-  DatabaseReference _jobsRef, _userRef;
+  final DatabaseReference _jobsRef = FirebaseDatabase.instance.reference().child('completed-jobs');
+  DatabaseReference _userRef;
   List<Job> orders = List();
 
   OverviewService(this.uid) {
-    _jobsRef = FirebaseDatabase.instance.reference().child('completed-jobs');
     _userRef = FirebaseDatabase.instance.reference().child('users').child(uid);
   }
 
@@ -16,7 +16,9 @@ class OverviewService {
     await _userRef.child("orders").once().then((snapshot) => {
       snapshot.value.forEach((k1, v1) {
         v1.forEach((k2, v2) {
-          futures.add(findJob(k1, k2, v2));
+          v2.forEach((k3, v3) {
+            futures.add(findJob(k1, k2, v3));
+          });
         });
       })
     });

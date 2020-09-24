@@ -120,7 +120,9 @@
       "ON_ROAD": "The carrier accepted your order.",
       "PACKAGE_PICKED": "The carrier picked up the package.",
       "FINISHED": "Your package has been delivered.",
-      "CANCELLED": "Order has been cancelled."
+      "CANCELLED": "Order has been cancelled.",
+      "DRIVER_CANCELED": "Driver Canceled",
+      "CUSTOMER_CANCELED": "Customer Canceled"
     }
   },
   "DIALOGS": {
