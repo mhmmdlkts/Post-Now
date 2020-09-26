@@ -45,6 +45,30 @@
       "CONTACT": "Contact"
     }
   },
+  "CONTACT_FORM": {
+    "TITLE": "Contact Form",
+    "NAME": {
+      "LABEL": "Name",
+      "HINT_LABEL": "Enter your name"
+    },
+    "EMAIL": {
+      "LABEL": "Email",
+      "HINT_LABEL": "Enter your email"
+    },
+    "PHONE": {
+      "LABEL": "Phone",
+      "HINT_LABEL": "Enter your phone"
+    },
+    "SUBJECT": {
+      "LABEL": "Subject",
+      "HINT_LABEL": "Enter the subject"
+    },
+    "CONTENT": {
+      "LABEL": "Content",
+      "HINT_LABEL": "Enter the content"
+    },
+    "SEND": "Send"
+  },
   "MAPS": {
     "NO_AVAILABLE_DRIVER_MESSAGE": "No available driver in your area.",
     "CURRENT_LOCATION": "Current Location",

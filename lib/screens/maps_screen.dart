@@ -3,11 +3,13 @@ import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:google_map_polyline/google_map_polyline.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:postnow/dialogs/address_manager_dialog.dart';
+import 'package:postnow/dialogs/custom_alert_dialog.dart';
 import 'package:postnow/dialogs/settings_dialog.dart';
 import 'package:postnow/enums/legacity_enum.dart';
 import 'package:postnow/environment/global_variables.dart';
 import 'package:postnow/models/address.dart';
 import 'package:postnow/models/settings_item.dart';
+import 'package:postnow/screens/contact_form_screen.dart';
 import 'package:postnow/screens/legal_menu_screen.dart';
 import 'package:postnow/screens/legal_screen.dart';
 import 'package:postnow/screens/overview_screen.dart';
@@ -434,7 +436,7 @@ class _MapsScreenState extends State<MapsScreen> {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => LegalScreen(LegalTyp.CONTACT)),
+                MaterialPageRoute(builder: (context) => ContactFormScreen(_user)),
               );
             },
           ),
@@ -1771,6 +1773,17 @@ class _MapsScreenState extends State<MapsScreen> {
   }
 
   Future<Address> _showAddressManagerDialog(Address address) async {
+    return await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return CustomAlertDialog(message: "Iptal etmek istedigineemin misin? Senden para kesersek aglama sonra.",
+          negativeButtonText: "Iptal et",
+          positiveButtonText: "Onayle",
+          onNegativeButtonPressed: () {print("Iptal et");},
+          onPositiveButtonPressed: () {print("Iptal");},
+        );
+      }
+    );
     return await showDialog(
       context: context,
       builder: (BuildContext context) {
