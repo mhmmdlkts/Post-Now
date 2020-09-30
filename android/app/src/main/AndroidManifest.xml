@@ -16,6 +16,9 @@
         <meta-data android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyApP0S1huhzumSkh4IoeNJUXWjmWbIirVM"/>
 
+        <meta-data android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/notification_icon" />
+
         <meta-data android:name="com.google.android.gms.wallet.api.enabled" android:value="true"/>
 
         <activity android:name="com.braintreepayments.api.BraintreeBrowserSwitchActivity"

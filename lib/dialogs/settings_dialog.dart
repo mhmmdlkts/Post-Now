@@ -41,9 +41,8 @@ class SettingsDialog extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: () async {
-          item.onPressed();
-          await Future.delayed(Duration(milliseconds: 400));
           Navigator.of(ctx).pop();
+          item.onPressed();
         },
         child: Container(
           padding: EdgeInsets.symmetric(vertical: 18, horizontal: 10),

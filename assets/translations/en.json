@@ -3,6 +3,7 @@
   "OK": "Ok",
   "CANCEL": "Cancel",
   "ACCEPT": "Accept",
+  "WARNING": "Dikkat",
   "CLOSE": "Close",
   "SETTINGS": "Settings",
   "SEND_MESSAGE": "Send a message",
@@ -165,6 +166,10 @@
         "HOUSE_NUMBER_IS_NEEDED": "Daire numarasi girilmesi zorunludur.",
         "DOOR_NUMBER_IS_NEEDED": "Eger paketinizi kapiniza getirilsin istiyorsaniz kapi numarasi girmek zorundasiniz.",
         "DOOR_NAME_IS_NEEDED": "Paketinizi teslim alacak kisinin ismini girmek zorundasiniz."
+      },
+      "ARE_YOU_SURE_CANCEL": {
+        "CONTENT_WITH_AMOUNT": "Iptal etmek istedigineemin misin? Senden {amount} para kesebiliriz aglama sonra.",
+        "CONTENT": "Iptal etmek istedigineemin misin?"
       }
     },
     "JOB_SETTINGS": {

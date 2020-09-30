@@ -1,5 +1,6 @@
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:google_map_polyline/google_map_polyline.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:postnow/dialogs/address_manager_dialog.dart';
@@ -321,9 +322,14 @@ class _MapsScreenState extends State<MapsScreen> {
 
 
 
-  void onMapCreated(GoogleMapController controller) {
+  void _onMapCreated(GoogleMapController controller) {
     setState(() {
       _mapController = controller;
+    });
+    _mapsService.getMapStyle().then((style) {
+      setState(() {
+        _mapController.setMapStyle(style);
+      });
     });
   }
 
@@ -340,10 +346,10 @@ class _MapsScreenState extends State<MapsScreen> {
       return;
     }*/
 
-    PaymentService().openPayMenu(price, _user.uid, useCredits, _credit).then((result) => {
+    PaymentService().openPayMenu(price, _user.uid, useCredits, _credit).then((transactionIds) => {
       setState(() {
-        if (result != null) {
-          addJobToPool(result);
+        if (transactionIds != null) {
+          addJobToPool(transactionIds);
           _changeMenuTyp(MenuTyp.SEARCH_DRIVER);
         } else
           _changeMenuTyp(MenuTyp.PAYMENT_DECLINED);
@@ -483,7 +489,7 @@ class _MapsScreenState extends State<MapsScreen> {
         target: LatLng(47.0, 13.0),
         zoom: 4
       ),
-      onMapCreated: onMapCreated,
+      onMapCreated: _onMapCreated,
       zoomControlsEnabled: false,
       myLocationEnabled: true,
       myLocationButtonEnabled: false,
@@ -1512,6 +1518,13 @@ class _MapsScreenState extends State<MapsScreen> {
           headerText: 'MAPS.BOTTOM_MENUS.CALCULATING_DISTANCE.CALCULATING_DISTANCE'.tr(),
           shrinkWrap: false,
           showFooter: false,
+          onCancelButtonPressed: () {
+            setState(() {
+              _polyLines.clear();
+              if (_destinationAddress != null && _originAddress != null)
+                _changeMenuTyp(MenuTyp.FROM_OR_TO);
+            });
+          },
         );
         break;
       case MenuTyp.CONFIRM:
@@ -1638,9 +1651,26 @@ class _MapsScreenState extends State<MapsScreen> {
     }
   }
 
+
+  showLocalNot() async {
+    FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+
+    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+        'your channel id', 'your channel name', 'your channel description',
+        importance: Importance.Max, priority: Priority.High, ticker: 'ticker');
+    var iOSPlatformChannelSpecifics = IOSNotificationDetails();
+    var platformChannelSpecifics = NotificationDetails(
+        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+    await flutterLocalNotificationsPlugin.show(
+        0, 'plain title', 'plain body', platformChannelSpecifics,
+        payload: 'item x');
+  }
+
   _positionFloatingActionButton() => FloatingActionButton(
     heroTag: "btn",
     onPressed: () {
+      showLocalNot();
+      return;
       if (_myPosition == null)
         return;
       LatLng pos = LatLng(_myPosition.latitude, _myPosition.longitude);
@@ -1772,18 +1802,25 @@ class _MapsScreenState extends State<MapsScreen> {
     });
   }
 
-  Future<Address> _showAddressManagerDialog(Address address) async {
-    return await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return CustomAlertDialog(message: "Iptal etmek istedigineemin misin? Senden para kesersek aglama sonra.",
-          negativeButtonText: "Iptal et",
-          positiveButtonText: "Onayle",
-          onNegativeButtonPressed: () {print("Iptal et");},
-          onPositiveButtonPressed: () {print("Iptal");},
-        );
-      }
+  Future<bool> _showAreYouSureDialog() async {
+    final String amount = (await _mapsService.getCancelFeeAmount()).toString();
+    final val = await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return CustomAlertDialog(
+            title: "WARNING".tr(),
+            message: "DIALOGS.ARE_YOU_SURE_CANCEL.CONTENT_WITH_AMOUNT".tr(namedArgs: {'amount': amount}),
+            negativeButtonText: "CANCEL".tr(),
+            positiveButtonText: "ACCEPT".tr(),
+          );
+        }
     );
+    if (val == null)
+      return false;
+    return val;
+  }
+
+  Future<Address> _showAddressManagerDialog(Address address) async {
     return await showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -1799,11 +1836,15 @@ class _MapsScreenState extends State<MapsScreen> {
 
   _getSettingsDialog() => SettingsDialog(
       [
-        SettingsItem(textKey: "DIALOGS.JOB_SETTINGS.CANCEL_JOB", onPressed: () async {
-          print ('there is ' + (await _mapsService.getCancelFeeAmount()).toString() + " € fee");
-          if (true) // TODO Are you sure?
-            _mapsService.cancelJob(_job);
-        }, icon: Icons.cancel, color: Colors.white),
+        SettingsItem(
+            textKey: "DIALOGS.JOB_SETTINGS.CANCEL_JOB",
+            onPressed: () async {
+              if (await _showAreYouSureDialog()) {
+                _mapsService.cancelJob(_job);
+              }
+            },
+            icon: Icons.cancel, color: Colors.white
+        ),
         SettingsItem(textKey: "CLOSE", onPressed: () {}, icon: Icons.close, color: Colors.redAccent),
       ]
   );
