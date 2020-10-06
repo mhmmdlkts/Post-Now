@@ -9,6 +9,7 @@ import 'package:postnow/dialogs/settings_dialog.dart';
 import 'package:postnow/enums/legacity_enum.dart';
 import 'package:postnow/environment/global_variables.dart';
 import 'package:postnow/models/address.dart';
+import 'package:postnow/models/draft_order.dart';
 import 'package:postnow/models/settings_item.dart';
 import 'package:postnow/screens/contact_form_screen.dart';
 import 'package:postnow/screens/legal_menu_screen.dart';
@@ -69,10 +70,8 @@ class _MapsScreenState extends State<MapsScreen> {
   TextEditingController _originTextController, _destinationTextController;
   Marker _packageMarker, _destinationMarker;
   GoogleMapController _mapController;
-  List<LatLng> _routeCoordinate;
   MapsService _mapsService;
-  double _totalDistance = 0.0;
-  double _price = 0.0;
+  DraftOrder _draft;
   MenuTyp _menuTyp;
   BottomCard _bottomCard;
   Address _originAddress, _destinationAddress;
@@ -101,52 +100,14 @@ class _MapsScreenState extends State<MapsScreen> {
     _polyLines.clear();
     _mapsService.setNewCameraPosition(
         _mapController, _getOrigin(), _getDestination(), false);
-    await setRoutePolyline(_getOrigin(), _getDestination(), RouteMode.driving);
+    _draft = await _mapsService.createDraft(_originAddress, _destinationAddress, RouteMode.driving);
+    drawPolyline(Colors.black26, [Colors.blue, Colors.blueAccent]);
 
-    calculatePrice().then((value) => {
-        setState(() {
-          if (value == null) {
-            _changeMenuTyp(MenuTyp.NO_ROUTE);
-            return;
-          }
-          if (value)
-            _changeMenuTyp(MenuTyp.CONFIRM);
-          else
-            _changeMenuTyp(MenuTyp.TRY_AGAIN);
-        })
-    });
+    _changeMenuTyp(MenuTyp.CONFIRM);
   }
 
   void onPositionChanged(Position position) {
     setMyPosition(position);
-  }
-
-  double calculateDistance (List<LatLng> coords) {
-    if (coords == null)
-      return 0.0;
-    double totalDistance = 0.0;
-    for (int i = 0; i < coords.length - 1; i++) {
-      totalDistance += _mapsService.coordinateDistance(
-          coords[i],
-          coords[i + 1]
-      );
-    }
-    return totalDistance;
-  }
-
-  Future<bool> calculatePrice () async {
-    final RemoteConfig remoteConfig = await RemoteConfig.instance;
-    await remoteConfig.fetch();
-    await remoteConfig.activateFetched();
-    _totalDistance = calculateDistance(_routeCoordinate);
-    if (_totalDistance == 0)
-      return null;
-    double calcPrice = remoteConfig.getDouble(FIREBASE_REMOTE_CONFIG_EURO_START_KEY);
-    calcPrice += _totalDistance * remoteConfig.getDouble(FIREBASE_REMOTE_CONFIG_EURO_PER_KM_KEY);
-    if (calcPrice == 0)
-      return false;
-    _price = num.parse(calcPrice.toStringAsFixed(2));
-    return true;
   }
 
   @override
@@ -199,20 +160,6 @@ class _MapsScreenState extends State<MapsScreen> {
 
     _mapsService.jobsRef.onChildAdded.listen(_onJobsDataAdded);
 
-    _mapsService.jobsRef.onChildChanged.listen((Event e) {
-      setState(() {
-        Job j = Job.fromSnapshot(e.snapshot);
-        _onJobsDataChanged(j);
-      });
-    });
-
-    _mapsService.jobsRef.onChildChanged.listen((Event e) {
-      setState(() {
-        Job j = Job.fromSnapshot(e.snapshot);
-        _onJobsDataChanged(j);
-      });
-    });
-
     _mapsService.userRef.child('credit').onValue.listen((Event e) {
       setState(() {
         _credit = e.snapshot.value + 0.0;
@@ -239,7 +186,7 @@ class _MapsScreenState extends State<MapsScreen> {
       return;
     });
 
-    _setJobIfExist();
+    _myJobListener();
 
     var locationOptions = LocationOptions(accuracy: LocationAccuracy.high, distanceFilter: 10);
 
@@ -278,36 +225,26 @@ class _MapsScreenState extends State<MapsScreen> {
     }
   }
 
-  _onJobsDataChanged(Job j) {
-    if (j == _job || (j.isJobForMe(_user.uid) && j.finishTime == null)) {
-      _job = j;
-      _getDriverInfo();
-      switch (_job.status) {
-        case Status.ON_ROAD:
-          _changeMenuTyp(MenuTyp.ACCEPTED);
-          if (_job.driverId != null) {
-            for (Driver d in _drivers) {
-              if (d.key == _job.driverId) { // TODO delete foreach
-                _myDriver = d;
-                _myDriver.isMyDriver = true;
-                _polyLines.clear();
-              }
-            }
-          }
-          break;
-        case Status.PACKAGE_PICKED:
-          _changeMenuTyp(MenuTyp.PACKAGE_PICKED);
-          break;
-        case Status.FINISHED:
-          _changeMenuTyp(MenuTyp.COMPLETED);
-          break;
-        case Status.CANCELLED:
-          _polyLines.clear();
-          _packageMarker = null;
-          _mapsService.setNewCameraPosition(_mapController, LatLng(_myPosition.latitude, _myPosition.longitude), null, true);
-          _clearJob();
-          break;
-      }
+  _onMyJobChanged(Job j) {
+    _job = j;
+    _getDriverInfo();
+    switch (_job.status) {
+      case Status.ON_ROAD:
+        _changeMenuTyp(MenuTyp.ACCEPTED);
+        break;
+      case Status.WAITING:
+        _changeMenuTyp(MenuTyp.SEARCH_DRIVER);
+        break;
+      case Status.PACKAGE_PICKED:
+        _changeMenuTyp(MenuTyp.PACKAGE_PICKED);
+        break;
+      case Status.FINISHED:
+        _changeMenuTyp(MenuTyp.COMPLETED);
+        break;
+      case Status.CANCELLED:
+        _mapsService.setNewCameraPosition(_mapController, LatLng(_myPosition.latitude, _myPosition.longitude), null, true);
+        _clearJob();
+        break;
     }
   }
 
@@ -333,7 +270,7 @@ class _MapsScreenState extends State<MapsScreen> {
     });
   }
 
-  _navigateToPaymentsAndGetResult(BuildContext context, double price, bool useCredits) async {
+  _navigateToPaymentsAndGetResult(BuildContext context, bool useCredits) async {
     setState(() {
       _changeMenuTyp(MenuTyp.PAYMENT_WAITING);
     });
@@ -346,17 +283,17 @@ class _MapsScreenState extends State<MapsScreen> {
       return;
     }*/
 
-    PaymentService().openPayMenu(price, _user.uid, useCredits, _credit).then((transactionIds) => {
+    PaymentService().openPayMenu(_draft.price, _user.uid, _draft.key, useCredits, _credit).then((transactionIds) => {
       setState(() {
+        print (transactionIds);
         if (transactionIds != null) {
-          addJobToPool(transactionIds);
+          //addJobToPool(transactionIds);
           _changeMenuTyp(MenuTyp.SEARCH_DRIVER);
         } else
           _changeMenuTyp(MenuTyp.PAYMENT_DECLINED);
       })
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -807,7 +744,7 @@ class _MapsScreenState extends State<MapsScreen> {
                       children: <Widget>[
                         ListTile(
                           leading: Icon(Icons.payment),
-                          title: Text('MAPS.PRICE'.tr(namedArgs: {'price': _price.toString()})),
+                          title: Text('MAPS.PRICE'.tr(namedArgs: {'price': _draft.price.toString()})),
                           subtitle: Text('MAPS.BOTTOM_MENUS.CONFIRM.FROM_TO'.tr(namedArgs: {'from': _originAddress.getAddress(), 'to': _destinationAddress.getAddress()})),
                         ),
                         ButtonBar(
@@ -827,9 +764,9 @@ class _MapsScreenState extends State<MapsScreen> {
                               onPressed: () {
                                 setState(() {
                                   //menuTyp = MenuTyp.PAY;
-                                  if (_price == 0)
+                                  if (_draft.price == 0)
                                     return;
-                                  _navigateToPaymentsAndGetResult(context, _price, true);
+                                  _navigateToPaymentsAndGetResult(context, true);
                                 });
                               },
                             ),
@@ -967,7 +904,7 @@ class _MapsScreenState extends State<MapsScreen> {
           customTransactionId: transactionIds['customTransId'],
           brainTreeTransactionId: transactionIds['brainTreeTransId'],
           vehicle: Vehicle.CAR,
-          price: _price,
+          price: _draft.price,
           originAddress: _originAddress,
           destinationAddress: _destinationAddress
       );
@@ -983,27 +920,12 @@ class _MapsScreenState extends State<MapsScreen> {
       });
     }
 
-    Future<void> setRoutePolyline(LatLng origin, LatLng destination, RouteMode mode) async {
-      _routeCoordinate = List();
-      if (IS_TEST) {
-        _routeCoordinate.add(origin);
-        _routeCoordinate.add(destination);
-      } else {
-        _routeCoordinate = await _googleMapPolyline.getCoordinatesWithLocation (
-            origin: origin,
-            destination: destination,
-            mode: mode
-        );
-      }
-      drawPolyline(Colors.black26, [Colors.blue, Colors.blueAccent], _routeCoordinate);
-    }
-
     initPolyline(Color color) {
       setState(() {
         _polyLines.add(Polyline(
             polylineId: PolylineId("Route_all"),
             visible: true,
-            points: _routeCoordinate,
+            points: _draft.routes,
             width: 3,
             color: color,
             startCap: Cap.roundCap,
@@ -1012,13 +934,13 @@ class _MapsScreenState extends State<MapsScreen> {
       });
     }
 
-    drawPolyline(Color firstColor, List<Color> colors, List<LatLng> routeCoords) async {
+    drawPolyline(Color firstColor, List<Color> colors) async {
       int colorIndex = 0;
       while(isDrawableRoute()) {
         _polyLines.clear();
         initPolyline(firstColor);
         await new Future.delayed(Duration(milliseconds : 200));
-        await drawPolylineHelper(colorIndex, firstColor, colors[colorIndex++ % colors.length], routeCoords);
+        await drawPolylineHelper(colorIndex, firstColor, colors[colorIndex++ % colors.length], _draft.routes);
         await new Future.delayed(Duration(milliseconds : 500));
       }
       _polyLines.clear();
@@ -1130,7 +1052,7 @@ class _MapsScreenState extends State<MapsScreen> {
             mode: mode));
       }
 
-      newRouteCoords.addAll(_routeCoordinate);
+      newRouteCoords.addAll(_draft.routes);
 
       setState(() {
         _polyLines.add(Polyline(
@@ -1533,7 +1455,7 @@ class _MapsScreenState extends State<MapsScreen> {
           maxHeight: _mapKey.currentContext.size.height,
           floatingActionButton: _positionFloatingActionButton(),
           messageSendable: false,
-          headerText: 'MAPS.PRICE'.tr(namedArgs: {'price': _price.toString()}),
+          headerText: 'MAPS.PRICE'.tr(namedArgs: {'price': _draft.price.toString()}),
           checkboxText: _credit == null? null: 'MAPS.BOTTOM_MENUS.CONFIRM.USE_CREDITS'.tr(namedArgs: {'money': _credit.toStringAsFixed(2)}),
           onCancelButtonPressed: () {
             setState(() {
@@ -1546,9 +1468,9 @@ class _MapsScreenState extends State<MapsScreen> {
           onMainButtonPressed: () {
             setState(() {
               //menuTyp = MenuTyp.PAY;
-              if (_price == 0)
+              if (_draft.price == 0)
                 return;
-              _navigateToPaymentsAndGetResult(context, _price, true);
+              _navigateToPaymentsAndGetResult(context, true);
             });
           },
           shrinkWrap: false,
@@ -1699,11 +1621,10 @@ class _MapsScreenState extends State<MapsScreen> {
     setState(() {
       _clearDestinationAddress();
       _clearOriginAddress();
-      _polyLines = Set();
+      _polyLines.clear();
+      _packageMarker = null;
       _isDestinationButtonChosen = false;
-      _totalDistance = 0.0;
-      _price = 0.0;
-      _routeCoordinate = null;
+      _draft = null;
       _myDriver = null;
       _job = null;
       _changeMenuTyp(null);
@@ -1777,24 +1698,23 @@ class _MapsScreenState extends State<MapsScreen> {
   }
 
   _getDriverInfo() async {
-    List<Future> todo = [
+    await Future.wait([
       _mapsService.getPhoneNumberFromDriver(_job).then((value) => { _driverPhone = value }),
       _mapsService.getNameFromDriver(_job).then((value) => { _driverName = value })
-    ];
-    await Future.wait(todo);
+    ]);
     _refreshBottomCard();
   }
 
-  Future<void> _setJobIfExist() async {
+  Future<void> _myJobListener() async {
     return _mapsService.userRef.child("currentJob").onValue.listen((Event e){
+      print("CurrentJobChanged");
       final jobId = e.snapshot.value;
       if (jobId != null) {
-        _mapsService.jobsRef.child(jobId.toString()).once().then((DataSnapshot snapshot){
-          Job j = Job.fromJson(snapshot.value, key: snapshot.key);
-          if (_job != null)
-            return;
+        _mapsService.jobsRef.child(jobId.toString()).onValue.listen((Event e){
+          print(e.snapshot.value["status"]);
+          Job j = Job.fromSnapshot(e.snapshot);
           _job = j;
-          _onJobsDataChanged(j);
+          _onMyJobChanged(j);
         });
       } else {
         _clearJob();

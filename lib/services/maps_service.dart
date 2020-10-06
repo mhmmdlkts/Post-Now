@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:firebase_database/firebase_database.dart';
@@ -6,10 +7,13 @@ import 'dart:math' show cos, sqrt, asin;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_map_polyline/src/route_mode.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:postnow/environment/global_variables.dart';
 import 'dart:ui' as ui;
 import 'package:http/http.dart' as http;
+import 'package:postnow/models/address.dart';
+import 'package:postnow/models/draft_order.dart';
 
 import 'package:postnow/models/job.dart';
 
@@ -18,6 +22,7 @@ class MapsService with WidgetsBindingObserver {
   final DatabaseReference driverRef = FirebaseDatabase.instance.reference().child('drivers');
   final DatabaseReference driverInfoRef = FirebaseDatabase.instance.reference().child('drivers_info');
   final DatabaseReference jobsRef = FirebaseDatabase.instance.reference().child('jobs');
+  final DatabaseReference draftRef = FirebaseDatabase.instance.reference().child('draft_order');
   DatabaseReference userRef;
   final String uid;
 
@@ -116,5 +121,28 @@ class MapsService with WidgetsBindingObserver {
 
   Future<String> getMapStyle() async {
     return await rootBundle.loadString("assets/map_styles/light_map.json");
+  }
+
+  Future<DraftOrder> createDraft(Address origin, Address destination, RouteMode mode) async {
+    DraftOrder rtnVal;
+    String url = 'https://europe-west1-post-now-f3c53.cloudfunctions.net/draftOrder?origin=${json.encode(origin.toMap())}&destination=${json.encode(destination.toMap())}&mode=${mode.toString().split(".").last}&uid=${uid}';
+    url = Uri.encodeFull(url);
+    try {
+      http.Response response = await http.get(url);
+      if (response.statusCode != 200)
+        throw('Status code: ' + response.statusCode.toString());
+      dynamic obj = json.decode(response.body);
+      if (obj["error"] != null && obj["key"] == null)
+        return null;
+      await draftRef.child(obj["key"]).once().then((DataSnapshot snapshot){
+        rtnVal = DraftOrder.fromSnapshot(snapshot);
+      }).catchError((onError) => {
+        print(onError)
+      });
+    } catch (e) {
+      print('Error 47: ' + e.message);
+      return null;
+    }
+    return rtnVal;
   }
 }

@@ -210,10 +210,6 @@ class Job {
     return toReturn;
   }
 
-  bool isJobForMe(String uid) {
-    return this.driverId == uid || this.userId == uid;
-  }
-
   bool isJobAccepted() {
     return this.acceptTime != null;
   }

@@ -11,7 +11,7 @@ class PaymentService {
   SharedPreferences prefs;
   static const String PREFS_CUSTOMER_ID = "Braintree_CustomerId";
 
-  Future<Map<String, dynamic>> openPayMenu(double amount, String uid, bool useCredits, double credits) async {
+  Future<Map<String, dynamic>> openPayMenu(double amount, String uid, String draftId, bool useCredits, double credits) async {
     String customerId = await getCustomerId();
     var url = "https://europe-west1-post-now-f3c53.cloudfunctions.net/braintree_getToken" + (customerId == null ? "" : "?customerId=" + customerId);
     String token;
@@ -28,6 +28,7 @@ class PaymentService {
     if (credits < amount)
       fakeAmount = num.parse((amount - credits).toStringAsFixed(2));
 
+    const currencyCode = 'EUR';
     final request = BraintreeDropInRequest(
       amount: fakeAmount.toString(),
       clientToken: token,
@@ -36,13 +37,13 @@ class PaymentService {
       tokenizationKey: BRAINTREE_TOKENIZATION_KEY,
       googlePaymentRequest: BraintreeGooglePaymentRequest(
         totalPrice: amount.toString(),
-        currencyCode: 'EUR',
+        currencyCode: currencyCode,
         billingAddressRequired: false,
       ),
       paypalRequest: BraintreePayPalRequest(
         amount: fakeAmount.toString(),
         displayName: 'APP_NAME'.tr(),
-        currencyCode: 'EUR',
+        currencyCode: currencyCode,
       ),
     );
     BraintreeDropInResult result = await BraintreeDropIn.start(request);
@@ -53,7 +54,7 @@ class PaymentService {
     }
 
     String nonce = result.paymentMethodNonce.nonce;
-    url = "https://europe-west1-post-now-f3c53.cloudfunctions.net/braintree_sendNonce?nonce=" + nonce + "&amount=" + amount.toString() +  "&nonceAmount=" + fakeAmount.toString() + "&userId=" + uid + "&useCredits=" + useCredits.toString();
+    url = "https://europe-west1-post-now-f3c53.cloudfunctions.net/braintree_sendNonce?nonce=" + nonce + "&draftId=" + draftId + "&nonceAmount=" + fakeAmount.toString() + "&userId=" + uid + "&useCredits=" + useCredits.toString();
 
     Map<String, dynamic> transactionIds;
     try {
@@ -75,7 +76,6 @@ class PaymentService {
   }
 
   Future<String> createCustomerId() async {
-    print("createCustomerId");
     if (prefs == null)
       prefs = await SharedPreferences.getInstance();
     User user = FirebaseAuth.instance.currentUser;
