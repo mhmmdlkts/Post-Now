@@ -10,7 +10,6 @@ import 'dart:io' as i;
 import 'package:postnow/services/chat_service.dart';
 
 
-
 class ChatScreen extends StatefulWidget {
   final String _jobId, _name;
   final bool _isDriverApp;
@@ -21,10 +20,14 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
+  final double _bubbleMargin = 15.0;
+  final GlobalKey _bottomTextInputKey = GlobalKey();
   final String _jobId, _name;
   final TextEditingController _textEditingController = new TextEditingController();
   final ScrollController _listViewController = new ScrollController();
   final bool _isDriverApp;
+  double _footerHeight = 0;
+  double _readWidgetSize = 30;
   ChatService _chatService;
   // Future<void> _initializeControllerFuture;
   List<CameraDescription> _cameras;
@@ -37,7 +40,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   bool _isBackCamera = true;
 
   _ChatScreenState(this._jobId, this._name, this._isDriverApp) {
-    _chatService = new ChatService(_jobId, _onNewMessage);
+    _chatService = ChatService(_jobId, _onNewMessage);
   }
 
   @override
@@ -45,6 +48,11 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     super.initState();
     _isCameraOpen = false;
     _showCapturedPhoto = false;
+    WidgetsBinding.instance.addPostFrameCallback((_) => {
+      setState(() {
+        _footerHeight = _bottomTextInputKey.currentContext.size.height + _bubbleMargin;
+      })
+    });
 
     _getNextCamera();
   }
@@ -71,10 +79,12 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       return;
   }
 
-  _onNewMessage() { // TODO belki yeni gelen mesaj daha listede yok ayar cekmen gerekebilir
+  _onNewMessage() async { // TODO belki yeni gelen mesaj daha listede yok ayar cekmen gerekebilir
+    setState(() { });
+    await Future.delayed(Duration(milliseconds: 30));
     setState(() {
       _listViewController.animateTo(
-        _listViewController.position.maxScrollExtent + 20,
+        _listViewController.position.maxScrollExtent,
         curve: Curves.easeOut,
         duration: const Duration(milliseconds: 300),
       );
@@ -116,56 +126,77 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   Widget _conversationField() => Container(
       height: MediaQuery.of(context).size.height,
       child: new ListView.builder (
+          padding: EdgeInsets.only(bottom: _footerHeight),
           controller: _listViewController,
-          itemCount: _chatService.messages.length,
+          itemCount: _chatService.messageCount(),
           itemBuilder: (BuildContext ctxt, int index) {
-            return Stack(
-                children: <Widget>[
-                  _conversationBubble(_chatService.messages[index].message, _chatService.messages[index].img, _chatService.messages[index].send_time.toString(), _chatService.messages[index].from_driver),
-                  Container(height: _chatService.messages.length-1 == index?160:null,)
-                ]
-            );
+            Message msg = _chatService.readMessage(index);
+            return _conversationBubble(msg);
           }
       )
   );
 
-  Widget _conversationBubble(String message, String imgPath, String sendTime, bool fromDriver) => Row(
-    mainAxisAlignment: _isDriverApp == fromDriver ? MainAxisAlignment.end : MainAxisAlignment.start,
-    children: <Widget>[
-      Container(
-        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width/5*4),
-        decoration: new BoxDecoration(
-            color: _isDriverApp == fromDriver ? Colors.blue : Colors.blueGrey,
-            borderRadius: new BorderRadius.only(
-                topLeft: Radius.circular(_isDriverApp == fromDriver ? 12.0 : 0.0),
-                topRight: Radius.circular(_isDriverApp == fromDriver ? 0.0 : 12.0),
-                bottomLeft: const Radius.circular(12.0),
-                bottomRight: const Radius.circular(12.0)
-            )
-        ),
-        alignment: _isDriverApp == fromDriver ? Alignment.topRight : Alignment.topLeft,
-        padding: imgPath == null ? EdgeInsets.all(12) : EdgeInsets.symmetric(vertical: 12, horizontal: 6),
-        margin: EdgeInsets.only(top: 15, right: 4, left: 4),
-        child : Column(
-          crossAxisAlignment: _isDriverApp == fromDriver ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-          children: <Widget>[
-            imgPath == null ? Container() : Padding(
-              child: Image.network(
-                  imgPath,
-                  fit: BoxFit.fill),
-              padding: EdgeInsets.only(bottom: 10),
+  Widget _conversationBubble(Message msg) => Stack(
+    children: [
+      Row(
+        mainAxisAlignment: _isDriverApp == msg.from_driver ? MainAxisAlignment.end : MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.max,
+        children: <Widget>[
+          Container(
+            constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width/5*4),
+            decoration: new BoxDecoration(
+                color: _isDriverApp == msg.from_driver ? Colors.blue : Colors.blueGrey,
+                borderRadius: new BorderRadius.only(
+                    topLeft: Radius.circular(_isDriverApp == msg.from_driver ? 12.0 : 0.0),
+                    topRight: Radius.circular(_isDriverApp == msg.from_driver ? 0.0 : 12.0),
+                    bottomLeft: const Radius.circular(12.0),
+                    bottomRight: const Radius.circular(12.0)
+                )
             ),
+            alignment: _isDriverApp == msg.from_driver ? Alignment.topRight : Alignment.topLeft,
+            padding: msg.img == null ? EdgeInsets.only(top: 10, bottom: 20, left: 12, right: 12) : EdgeInsets.only(top: 10, bottom: 20, left: 6, right: 6),
+            margin: EdgeInsets.only(top: _bubbleMargin, right: _isDriverApp == msg.from_driver? _readWidgetSize : 4, left: 4),
+            child : Column(
+              crossAxisAlignment: _isDriverApp == msg.from_driver ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+              children: <Widget>[
+                msg.img == null ? Container() : Padding(
+                  child: Image.network(
+                      msg.img,
+                      fit: BoxFit.fill),
+                  padding: EdgeInsets.only(bottom: 10),
+                ),
 
-            Text(message, style: TextStyle(fontSize: 16, color: Colors.white), ),
-          ],
-        ),
-      )
+                Text(msg.message, style: TextStyle(fontSize: 16, color: Colors.white), ),
+              ],
+            ),
+          ),
+        ],
+      ),
+      Positioned(child: Text(msg.getMessageSendTimeReadable(), style: TextStyle(color: Colors.white70, fontSize: 11),), bottom: 4, right: _isDriverApp == msg.from_driver? _readWidgetSize + 8: null, left:_isDriverApp == msg.from_driver?null:12),
+      Positioned(child: _isDriverApp != msg.from_driver? Container():_readWidget(msg.read), bottom: 0, right: 0,)
     ],
+  );
+
+  Widget _readWidget(bool isRead) => Container(
+    width: _readWidgetSize,
+    height: _readWidgetSize,
+    child: Stack(
+      children: [
+        Center(
+          child: Icon(Icons.adjust, color: Colors.grey, size: 17,),
+        ),
+        Center(
+          child: Icon(Icons.circle, color: isRead? Colors.blue:Colors.white, size: 7,),
+        ),
+      ],
+    ),
   );
 
   Widget _bottomTextInput() => Container(
       alignment: Alignment.bottomCenter,
       child: Container(
+          key: _bottomTextInputKey,
           color: Colors.blue,
           child: SafeArea(
               child: Container(

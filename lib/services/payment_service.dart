@@ -28,7 +28,7 @@ class PaymentService {
     if (credits < amount)
       fakeAmount = num.parse((amount - credits).toStringAsFixed(2));
 
-    const currencyCode = 'EUR';
+    const String currencyCode = 'EUR';
     final request = BraintreeDropInRequest(
       amount: fakeAmount.toString(),
       clientToken: token,

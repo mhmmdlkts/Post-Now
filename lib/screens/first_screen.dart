@@ -21,6 +21,7 @@ class FirstScreen extends StatefulWidget {
 
 class _FirstScreen extends State<FirstScreen> {
   final FirstScreenService _firstScreenService = FirstScreenService();
+  int _onlineVersion;
   SharedPreferences prefs;
   bool needsUpdate;
 
@@ -59,12 +60,12 @@ class _FirstScreen extends State<FirstScreen> {
     final RemoteConfig remoteConfig = await RemoteConfig.instance;
     await remoteConfig.fetch();
     await remoteConfig.activateFetched();
+    _onlineVersion = remoteConfig.getInt(FIREBASE_REMOTE_CONFIG_VERSION_KEY);
 
-    final onlineVersion = remoteConfig.getInt(FIREBASE_REMOTE_CONFIG_VERSION_KEY);
     final int localVersion = int.parse((await PackageInfo.fromPlatform()).buildNumber);
 
     setState(() {
-      needsUpdate = localVersion < onlineVersion;
+      needsUpdate = localVersion < _onlineVersion;
     });
 
     if (needsUpdate)

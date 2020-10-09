@@ -1,6 +1,6 @@
 import 'package:firebase_database/firebase_database.dart';
 
-class Message {
+class Message implements Comparable {
   String key;
   bool from_driver;
   String message;
@@ -26,6 +26,15 @@ class Message {
     send_time = stringToDateTime(snapshot.value["send-time"]);
   }
 
+  Message.fromJson(Map json, {this.key}) {
+    if (key == null)
+      this.key = json["key"];
+    from_driver = json["from_driver"];
+    read = json["read"];
+    message = json["message"];
+    send_time = stringToDateTime(json["send-time"]);
+  }
+
   static DateTime stringToDateTime(String dateTime_string) {
     if (dateTime_string == null)
       return null;
@@ -48,7 +57,20 @@ class Message {
     return toReturn;
   }
 
+  String getMessageSendTimeReadable() {
+    String h = send_time.hour.toString();
+    String m = send_time.minute.toString();
+    if (h.length == 1)
+      h = "0$h";
+    if (m.length == 1)
+      m = "0$m";
+    return '$h:$m';
+  }
+
   @override
   bool operator == (covariant Message other) => send_time.compareTo(other.send_time) == 0;
+
+  @override
+  int compareTo(other) => send_time.millisecondsSinceEpoch - other.send_time.millisecondsSinceEpoch;
 
 }

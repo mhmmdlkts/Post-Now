@@ -9,6 +9,7 @@ import 'package:postnow/models/job.dart';
 import 'package:postnow/models/settings_item.dart';
 import 'package:postnow/screens/chat_screen.dart';
 import 'package:postnow/services/chat_service.dart';
+import 'package:postnow/services/global_service.dart';
 import 'package:swipebuttonflutter/swipebuttonflutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -19,12 +20,12 @@ class BottomCard extends StatefulWidget {
   final Widget centerWidget;
   final bool isCenterWidgetFixed;
   final Job job;
-  final bool messageSendable;
   final bool showOriginAddress;
   final bool showDestinationAddress;
   final bool shrinkWrap;
   final bool showFooter;
   final SettingsDialog settingsDialog;
+  final String chatName;
   final String headerText;
   final String checkboxText;
   final String phone;
@@ -42,13 +43,13 @@ class BottomCard extends StatefulWidget {
     this.centerWidget,
     this.isCenterWidgetFixed = true,
     this.job,
-    this.messageSendable = true,
     this.showOriginAddress = false,
     this.shrinkWrap = true,
     this.headerText,
     this.showDestinationAddress = false,
     this.checkboxText,
     this.phone,
+    this.chatName,
     this.mainButtonText,
     this.isSwipeButton = false,
     this.defaultOpen = false,
@@ -178,7 +179,7 @@ class BottomState extends State<BottomCard> {
                     onPressed: _callCustomer,
                   ),
                 ),
-                widget.messageSendable?_sendMessageFab(_chatService.getUnreadMessageCount()): Container(),
+                widget.chatName != null ?_sendMessageFab(_chatService.getUnreadMessageCount()): Container(),
               ],
             ),
           ),
@@ -256,9 +257,10 @@ class BottomState extends State<BottomCard> {
   void _openMessageScreen() async {
     if (widget.job == null)
       return;
+    bool _isDriverApp = await GlobalService().isDriverApp();
     await Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => ChatScreen(widget.job.key, widget.job.name, true))
+        MaterialPageRoute(builder: (context) => ChatScreen(widget.job.key, widget.chatName, _isDriverApp))
     );
   }
 
@@ -337,7 +339,7 @@ class BottomState extends State<BottomCard> {
     );
   }
 
-  bool _anyFab() => widget.messageSendable || widget.phone != null || widget.onCancelButtonPressed != null;
+  bool _anyFab() => widget.chatName != null || widget.phone != null || widget.onCancelButtonPressed != null;
 
   Widget _getTargetName() {
     if (widget.job == null)

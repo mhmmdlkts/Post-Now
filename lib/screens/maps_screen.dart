@@ -16,6 +16,7 @@ import 'package:postnow/screens/legal_menu_screen.dart';
 import 'package:postnow/screens/legal_screen.dart';
 import 'package:postnow/screens/overview_screen.dart';
 import 'package:postnow/screens/voucher_screen.dart';
+import 'package:postnow/services/global_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -1088,9 +1089,10 @@ class _MapsScreenState extends State<MapsScreen> {
     }
 
     void openMessageScreen(key, name) async {
+      bool _isDriverApp = await GlobalService().isDriverApp();
       await Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => ChatScreen(key, name, false))
+          MaterialPageRoute(builder: (context) => ChatScreen(key, name, _isDriverApp))
       );
     }
     
@@ -1392,10 +1394,11 @@ class _MapsScreenState extends State<MapsScreen> {
           floatingActionButton: _positionFloatingActionButton(),
           showDestinationAddress: false,
           showOriginAddress: false,
-          messageSendable: false,
           headerText: 'MAPS.NO_AVAILABLE_DRIVER_MESSAGE'.tr(),
           mainButtonText: 'OK'.tr(),
-          onMainButtonPressed: _clearJob,
+          onMainButtonPressed: () {
+            _changeMenuTyp(MenuTyp.FROM_OR_TO);
+          },
           shrinkWrap: false,
           isSwipeButton: false,
         );
@@ -1407,7 +1410,6 @@ class _MapsScreenState extends State<MapsScreen> {
           floatingActionButton: _positionFloatingActionButton(),
           showDestinationAddress: false,
           showOriginAddress: false,
-          messageSendable: false,
           headerText: 'MAPS.BOTTOM_MENUS.TRY_AGAIN.MESSAGE'.tr(),
           mainButtonText: 'TRY_AGAIN'.tr(),
           onMainButtonPressed: goToPayButtonPressed,
@@ -1422,7 +1424,6 @@ class _MapsScreenState extends State<MapsScreen> {
           floatingActionButton: _positionFloatingActionButton(),
           showDestinationAddress: false,
           showOriginAddress: false,
-          messageSendable: false,
           headerText: 'MAPS.BOTTOM_MENUS.NO_ROUTE.MESSAGE'.tr(),
           mainButtonText: 'OK'.tr(),
           onMainButtonPressed: _clearJob,
@@ -1435,7 +1436,6 @@ class _MapsScreenState extends State<MapsScreen> {
           key: GlobalKey(),
           maxHeight: _mapKey.currentContext.size.height,
           floatingActionButton: _positionFloatingActionButton(),
-          messageSendable: false,
           isLoading: true,
           headerText: 'MAPS.BOTTOM_MENUS.CALCULATING_DISTANCE.CALCULATING_DISTANCE'.tr(),
           shrinkWrap: false,
@@ -1454,7 +1454,6 @@ class _MapsScreenState extends State<MapsScreen> {
           key: GlobalKey(),
           maxHeight: _mapKey.currentContext.size.height,
           floatingActionButton: _positionFloatingActionButton(),
-          messageSendable: false,
           headerText: 'MAPS.PRICE'.tr(namedArgs: {'price': _draft.price.toString()}),
           checkboxText: _credit == null? null: 'MAPS.BOTTOM_MENUS.CONFIRM.USE_CREDITS'.tr(namedArgs: {'money': _credit.toStringAsFixed(2)}),
           onCancelButtonPressed: () {
@@ -1483,7 +1482,6 @@ class _MapsScreenState extends State<MapsScreen> {
           key: GlobalKey(),
           maxHeight: _mapKey.currentContext.size.height,
           floatingActionButton: _positionFloatingActionButton(),
-          messageSendable: false,
           isLoading: true,
           headerText: 'MAPS.BOTTOM_MENUS.SEARCH_DRIVER.STATUS'.tr(),
           shrinkWrap: false,
@@ -1495,7 +1493,6 @@ class _MapsScreenState extends State<MapsScreen> {
           key: GlobalKey(),
           maxHeight: _mapKey.currentContext.size.height,
           floatingActionButton: _positionFloatingActionButton(),
-          messageSendable: false,
           isLoading: true,
           headerText: 'MAPS.BOTTOM_MENUS.PAYMENT_WAITING.PAYMENT_WAITING'.tr(),
           shrinkWrap: false,
@@ -1509,7 +1506,6 @@ class _MapsScreenState extends State<MapsScreen> {
           floatingActionButton: _positionFloatingActionButton(),
           showDestinationAddress: false,
           showOriginAddress: false,
-          messageSendable: false,
           headerText: 'MAPS.BOTTOM_MENUS.PAYMENT_DECLINED.PAYMENT_DECLINED'.tr(),
           mainButtonText: 'CLOSE'.tr(),
           onMainButtonPressed: () {
@@ -1527,7 +1523,7 @@ class _MapsScreenState extends State<MapsScreen> {
           floatingActionButton: _positionFloatingActionButton(),
           showDestinationAddress: true,
           showOriginAddress: true,
-          messageSendable: true,
+          chatName: _driverName,
           phone: _driverPhone,
           headerText: _driverName,
           defaultOpen: true,
@@ -1544,7 +1540,7 @@ class _MapsScreenState extends State<MapsScreen> {
           floatingActionButton: _positionFloatingActionButton(),
           showDestinationAddress: true,
           showOriginAddress: false,
-          messageSendable: true,
+          chatName: _driverName,
           phone: _driverPhone,
           headerText: _driverName,
           defaultOpen: true,
@@ -1560,7 +1556,6 @@ class _MapsScreenState extends State<MapsScreen> {
           floatingActionButton: _positionFloatingActionButton(),
           showDestinationAddress: false,
           showOriginAddress: false,
-          messageSendable: false,
           headerText: 'THANKS'.tr(),
           mainButtonText: 'OK'.tr(),
           onMainButtonPressed: _clearJob,
@@ -1591,8 +1586,6 @@ class _MapsScreenState extends State<MapsScreen> {
   _positionFloatingActionButton() => FloatingActionButton(
     heroTag: "btn",
     onPressed: () {
-      showLocalNot();
-      return;
       if (_myPosition == null)
         return;
       LatLng pos = LatLng(_myPosition.latitude, _myPosition.longitude);
@@ -1707,7 +1700,6 @@ class _MapsScreenState extends State<MapsScreen> {
 
   Future<void> _myJobListener() async {
     return _mapsService.userRef.child("currentJob").onValue.listen((Event e){
-      print("CurrentJobChanged");
       final jobId = e.snapshot.value;
       if (jobId != null) {
         _mapsService.jobsRef.child(jobId.toString()).onValue.listen((Event e){
