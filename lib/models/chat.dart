@@ -24,7 +24,6 @@ class Chat {
       return unreadMessages;
     int count = 0;
     messages.forEach((element) {
-      print(element.key + " -> " + element.read.toString());
       if (!element.read && _isDriverApp != element.from_driver)
         count++;
     });

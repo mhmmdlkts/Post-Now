@@ -1,22 +1,22 @@
-import 'package:firebase_remote_config/firebase_remote_config.dart';
+import 'package:audioplayers/audio_cache.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:google_map_polyline/google_map_polyline.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:postnow/dialogs/address_manager_dialog.dart';
 import 'package:postnow/dialogs/custom_alert_dialog.dart';
 import 'package:postnow/dialogs/settings_dialog.dart';
-import 'package:postnow/enums/legacity_enum.dart';
 import 'package:postnow/environment/global_variables.dart';
 import 'package:postnow/models/address.dart';
 import 'package:postnow/models/draft_order.dart';
 import 'package:postnow/models/settings_item.dart';
 import 'package:postnow/screens/contact_form_screen.dart';
 import 'package:postnow/screens/legal_menu_screen.dart';
-import 'package:postnow/screens/legal_screen.dart';
 import 'package:postnow/screens/overview_screen.dart';
 import 'package:postnow/screens/voucher_screen.dart';
 import 'package:postnow/services/global_service.dart';
+import 'package:postnow/services/vibration_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -57,12 +57,14 @@ class _MapsScreenState extends State<MapsScreen> {
   final GoogleMapPolyline _googleMapPolyline = new GoogleMapPolyline(apiKey: GOOGLE_DIRECTIONS_API_KEY);
   final GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: GOOGLE_DIRECTIONS_API_KEY);
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+  final AudioCache _audioPlayer = AudioCache();
   final GlobalKey _mapKey = GlobalKey();
   final List<Driver> _drivers = List();
   final User _user;
   String _driverPhone;
   String _driverName;
   bool _isInitialized = false;
+  bool _isInitDone = false;
   int _initCount = 0;
   int _initDone = 0;
   Set<Polyline> _polyLines = Set();
@@ -77,6 +79,7 @@ class _MapsScreenState extends State<MapsScreen> {
   BottomCard _bottomCard;
   Address _originAddress, _destinationAddress;
   Position _myPosition;
+  PermissionStatus _permissionStatus;
   Job _job;
   Driver _myDriver;
   double _credit;
@@ -107,8 +110,8 @@ class _MapsScreenState extends State<MapsScreen> {
     _changeMenuTyp(MenuTyp.CONFIRM);
   }
 
-  void onPositionChanged(Position position) {
-    setMyPosition(position);
+  void _onPositionChanged(Position position) {
+    _setMyPosition(position);
   }
 
   @override
@@ -118,37 +121,33 @@ class _MapsScreenState extends State<MapsScreen> {
     Screen.keepOn(true);
 
     Future.delayed(const Duration(milliseconds: 2500)).then((value) {
-      if (_isInitialized)
-        return;
-      print('Force init');
-      setState((){
-        _isInitialized = true;
-      });
+      if(_initIsDone())
+        print("Force init");
     });
 
     _initCount++;
     _mapsService.getBytesFromAsset('assets/package_map_marker.png', 130).then((value) => { setState((){
       _packageLocationIcon = BitmapDescriptor.fromBytes(value);
-      nextInitializeDone('1');
+      _nextInitializeDone('1');
     })});
 
     _initCount++;
     _mapsService.getBytesFromAsset('assets/driver_map_marker.png', 150).then((value) => { setState((){
       _driverLocationIcon = BitmapDescriptor.fromBytes(value);
-      nextInitializeDone('2');
+      _nextInitializeDone('2');
     })});
 
     _initCount++;
     _mapsService.getBytesFromAsset('assets/home_map_marker.png', 130).then((value) => { setState((){
       _homeLocationIcon = BitmapDescriptor.fromBytes(value);
-      nextInitializeDone('3');
+      _nextInitializeDone('3');
     })});
 
     _initCount++;
     SharedPreferences.getInstance().then((value) => {
         if (value.containsKey('orders'))
           _orders = value.getStringList('orders'),
-        nextInitializeDone('4')
+        _nextInitializeDone('4')
       }
     );
 
@@ -163,7 +162,10 @@ class _MapsScreenState extends State<MapsScreen> {
 
     _mapsService.userRef.child('credit').onValue.listen((Event e) {
       setState(() {
-        _credit = e.snapshot.value + 0.0;
+        if (e.snapshot.value == null)
+          _credit = 0.0;
+        else
+          _credit = e.snapshot.value + 0.0;
       });
     });
 
@@ -186,30 +188,30 @@ class _MapsScreenState extends State<MapsScreen> {
       print('onLaunch: $message');
       return;
     });
-
-    _myJobListener();
-
-    var locationOptions = LocationOptions(accuracy: LocationAccuracy.high, distanceFilter: 10);
-
-    Geolocator().getPositionStream(locationOptions).listen(onPositionChanged);
-    nextInitializeDone('6');
+    
+    _nextInitializeDone('6');
   }
 
-  nextInitializeDone(String code) {
+  void _nextInitializeDone(String code) {
     // print(code);
     _initDone++;
     if (_initCount == _initDone) {
-      getMyPosition().then((value) => {
-        _mapController.moveCamera(CameraUpdate.newCameraPosition(
-            CameraPosition(target: LatLng(value.latitude, value.longitude), zoom: 13)
-        )),
-        Future.delayed(Duration(milliseconds: 500), () =>
-          setState((){
-            _isInitialized = true;
-          })
-        )
-      });
+      _initIsDone();
     }
+  }
+
+  bool _initIsDone() {
+    if (_isInitDone)
+      return false;
+    _isInitDone = true;
+    _initMyPosition().then((val) => {
+      Future.delayed(Duration(milliseconds: 400), () =>
+        setState((){
+          _isInitialized = true;
+        })
+      )
+    });
+    return true;
   }
 
   void _onDriversDataAdded(Event event) {
@@ -429,7 +431,7 @@ class _MapsScreenState extends State<MapsScreen> {
       ),
       onMapCreated: _onMapCreated,
       zoomControlsEnabled: false,
-      myLocationEnabled: true,
+      myLocationEnabled: _myPosition != null,
       myLocationButtonEnabled: false,
       polylines: _polyLines,
       markers: _createMarker(),
@@ -572,7 +574,7 @@ class _MapsScreenState extends State<MapsScreen> {
                             FlatButton(
                               child: Text('SEND_MESSAGE'.tr()),
                               onPressed: () {
-                                openMessageScreen(_job.key, _myDriver.getName());
+                                _openMessageScreen(_job.key, _myDriver.getName());
                               },
                             ),
                           ],
@@ -607,7 +609,7 @@ class _MapsScreenState extends State<MapsScreen> {
                             FlatButton(
                               child: Text('SEND_MESSAGE'.tr()),
                               onPressed: () {
-                                openMessageScreen(_job.key, _myDriver.getName());
+                                _openMessageScreen(_job.key, _myDriver.getName());
                               },
                             ),
                           ],
@@ -1067,28 +1069,49 @@ class _MapsScreenState extends State<MapsScreen> {
         ));
       });
     }
+    
+    Future<bool> _positionIsNotGranted() async {
+      if (_permissionStatus == PermissionStatus.granted) {
+        return false;
+      }
+      _permissionStatus = await Permission.location.status;
+      if (_permissionStatus.isGranted)
+        return false;
+      _permissionStatus = await Permission.location.request();
+      if (_permissionStatus == PermissionStatus.permanentlyDenied || _permissionStatus == PermissionStatus.denied) {
+        bool val = await _allowLocationDialog();
+        if (val) {
+          await openAppSettings();
+          await _iAmBackDialog();
+        }
+      }
+      return !_permissionStatus.isGranted;
+    }
 
-    Future<Position> getMyPosition() async {
-      if (_myPosition != null)
-        return _myPosition;
+    Future<void> _initMyPosition() async {
+      if (await _positionIsNotGranted()) {
+        return null;
+      }
+      const locationOptions = LocationOptions(accuracy: LocationAccuracy.high, distanceFilter: 10);
 
-      setMyPosition(await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.low));
+      Geolocator().getPositionStream(locationOptions).listen(_onPositionChanged);
+
+      _setMyPosition(await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.low));
 
       Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high).then((value) => {
         _myPosition = value,
       });
 
-      return _myPosition;
+      await _mapController.moveCamera(CameraUpdate.newCameraPosition(
+          CameraPosition(target: LatLng(_myPosition.latitude, _myPosition.longitude), zoom: 13)
+      ));
     }
 
-    void setMyPosition(Position pos) {
-      if (_myPosition == null) { // first time
-        _mapsService.setNewCameraPosition(_mapController, new LatLng(pos.latitude, pos.longitude), null, true);
-      }
+    void _setMyPosition(Position pos) {
       _myPosition = pos;
     }
 
-    void openMessageScreen(key, name) async {
+    void _openMessageScreen(key, name) async {
       bool _isDriverApp = await GlobalService().isDriverApp();
       await Navigator.push(
           context,
@@ -1583,17 +1606,21 @@ class _MapsScreenState extends State<MapsScreen> {
         payload: 'item x');
   }
 
-  _positionFloatingActionButton() => FloatingActionButton(
-    heroTag: "btn",
-    onPressed: () {
-      if (_myPosition == null)
-        return;
-      LatLng pos = LatLng(_myPosition.latitude, _myPosition.longitude);
-      _mapsService.setNewCameraPosition(_mapController, pos, null, true);
-    },
-    child: Icon(Icons.my_location, color: Colors.white,),
-    backgroundColor: Colors.lightBlueAccent,
-  );
+  _positionFloatingActionButton() {
+    if (_myPosition == null)
+      return null;
+    return FloatingActionButton(
+      heroTag: "btn",
+      onPressed: () {
+        if (_myPosition == null)
+          return;
+        LatLng pos = LatLng(_myPosition.latitude, _myPosition.longitude);
+        _mapsService.setNewCameraPosition(_mapController, pos, null, true);
+      },
+      child: Icon(Icons.my_location, color: Colors.white,),
+      backgroundColor: Colors.lightBlueAccent,
+    );
+  }
 
     bool isOnlineDriverAvailable() {
       for (int i = 0; i < _drivers.length; i++) {
@@ -1676,12 +1703,14 @@ class _MapsScreenState extends State<MapsScreen> {
   }
 
   _showMessageToast(key, name, message) {
+    VibrationService.vibrateMessage();
+    _audioPlayer.play('sounds/push_notification.mp3');
     showToastWidget(
         MessageToast(
           message: message,
           name: name,
           onPressed: () {
-            openMessageScreen(key, name);
+            _openMessageScreen(key, name);
           },
         ),
         duration: Duration(seconds: 5),
@@ -1724,6 +1753,39 @@ class _MapsScreenState extends State<MapsScreen> {
             message: "DIALOGS.ARE_YOU_SURE_CANCEL.CONTENT_WITH_AMOUNT".tr(namedArgs: {'amount': amount}),
             negativeButtonText: "CANCEL".tr(),
             positiveButtonText: "ACCEPT".tr(),
+          );
+        }
+    );
+    if (val == null)
+      return false;
+    return val;
+  }
+
+  Future<bool> _allowLocationDialog() async {
+    final val = await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return CustomAlertDialog(
+            title: "DIALOGS.ALLOW_LOCATION.TITLE".tr(),
+            message: "DIALOGS.ALLOW_LOCATION.MESSAGE".tr(),
+            negativeButtonText: "CANCEL".tr(),
+            positiveButtonText: "DIALOGS.ALLOW_LOCATION.ALLOW".tr(),
+          );
+        }
+    );
+    if (val == null)
+      return false;
+    return val;
+  }
+
+  Future<bool> _iAmBackDialog() async {
+    final val = await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return CustomAlertDialog(
+            title: "DIALOGS.I_AM_BACK.TITLE".tr(),
+            message: "DIALOGS.I_AM_BACK.MESSAGE".tr(),
+            positiveButtonText: "DIALOGS.I_AM_BACK.POSITIVE".tr(),
           );
         }
     );

@@ -16,7 +16,10 @@ class User {
     name = snapshot.value["name"];
     phone = snapshot.value["phone"];
     email = snapshot.value["email"];
-    credit = snapshot.value["credit"] + 0.0;
+    credit = snapshot.value["credit"];
+    if (credit == null)
+      credit = 0.0;
+    else credit += 0.0;
     token = snapshot.value["token"];
     languageCode = snapshot.value["lang"];
   }

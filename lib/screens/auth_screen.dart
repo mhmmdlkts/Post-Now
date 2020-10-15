@@ -7,6 +7,7 @@ import 'package:postnow/enums/legacity_enum.dart';
 import 'package:postnow/screens/legal_screen.dart';
 import 'package:postnow/screens/splash_screen.dart';
 import 'package:postnow/services/auth_service.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AuthScreen extends StatefulWidget {
   AuthScreen({Key key}) : super(key: key);
@@ -197,7 +198,14 @@ class _AuthScreenState extends State<AuthScreen> {
               ),
               Container(height: 10,),
               FlatButton(
-                  onPressed: () {
+                  onPressed: () async {
+                    const url = 'https://postnow.at/app-postnow-privacy-policy/';
+                    if (await canLaunch(url)) {
+                      await launch(url);
+                    } else {
+                      throw 'Could not launch $url';
+                    }
+                    return;
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => LegalScreen(LegalTyp.PRIVACY_POLICY)),
