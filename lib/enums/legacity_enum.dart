@@ -1,5 +1,0 @@
-enum LegalTyp {
-  SOFTWARE_LICENCES,
-  PRIVACY_POLICY,
-  CONTACT
-}

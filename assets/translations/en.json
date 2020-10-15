@@ -81,7 +81,8 @@
     "SIDE_MENU": {
       "MY_ORDERS": "My Orders",
       "VOUCHER": "Voucher",
-      "LEGAL": "Legal",
+      "PRIVACY_POLICY": "Privacy Policy",
+      "SOFTWARE_LICENCES": "Software Licences",
       "CONTACT": "Contact",
       "SIGN_OUT": "Logout"
     },

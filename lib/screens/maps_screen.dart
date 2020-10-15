@@ -12,10 +12,10 @@ import 'package:postnow/models/address.dart';
 import 'package:postnow/models/draft_order.dart';
 import 'package:postnow/models/settings_item.dart';
 import 'package:postnow/screens/contact_form_screen.dart';
-import 'package:postnow/screens/legal_menu_screen.dart';
 import 'package:postnow/screens/overview_screen.dart';
 import 'package:postnow/screens/voucher_screen.dart';
 import 'package:postnow/services/global_service.dart';
+import 'package:postnow/services/legal_service.dart';
 import 'package:postnow/services/vibration_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -368,13 +368,16 @@ class _MapsScreenState extends State<MapsScreen> {
             },
           ),
           ListTile(
-            title: Text('MAPS.SIDE_MENU.LEGAL'.tr()),
+            title: Text('MAPS.SIDE_MENU.PRIVACY_POLICY'.tr()),
             onTap: () {
               _thisMethodFixABugButIStillAlwaysABugFixMeDude();
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => LegalMenu()),
-              );
+              LegalService.openPrivacyPolicy();
+            },
+          ),
+          ListTile(
+            title: Text('MAPS.SIDE_MENU.SOFTWARE_LICENCES'.tr()),
+            onTap: () {
+              LegalService.openLicences();
             },
           ),
           ListTile(
@@ -1112,7 +1115,7 @@ class _MapsScreenState extends State<MapsScreen> {
     }
 
     void _openMessageScreen(key, name) async {
-      bool _isDriverApp = await GlobalService().isDriverApp();
+      bool _isDriverApp = await GlobalService.isDriverApp();
       await Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => ChatScreen(key, name, _isDriverApp))
