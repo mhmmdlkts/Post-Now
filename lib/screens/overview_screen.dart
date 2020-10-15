@@ -6,24 +6,29 @@ import 'package:postnow/services/overview_service.dart';
 
 class OverviewScreen extends StatefulWidget {
   final User _user;
-  OverviewScreen(this._user);
+  final OverviewService overviewService;
+  OverviewScreen(this._user, {this.overviewService});
 
   @override
-  _OverviewScreen createState() => _OverviewScreen(_user);
+  _OverviewScreen createState() => _OverviewScreen(_user, overviewService: overviewService);
 }
 
 class _OverviewScreen extends State<OverviewScreen> {
   OverviewService _overviewService;
   User _user;
 
-  _OverviewScreen(this._user) {
+  _OverviewScreen(this._user, {OverviewService overviewService}) {
+    if (overviewService != null && overviewService.orders.isNotEmpty) {
+      _overviewService = overviewService;
+      return;
+    }
     _overviewService = OverviewService(_user.uid);
+    _overviewService.initOrderList().then((val) => setState((){}));
   }
 
   @override
   void initState() {
     super.initState();
-    _overviewService.initOrderList().then((val) => setState((){}));
   }
 
   @override

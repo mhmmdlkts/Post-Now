@@ -234,6 +234,13 @@ class Job {
     return destinationAddress.coordinates;
   }
 
+  Address getAddress(bool isDestination) {
+    if (isDestination)
+      return destinationAddress;
+    else
+      return originAddress;
+  }
+
   String getOriginAddress() {
     if (originAddress == null)
       return null;

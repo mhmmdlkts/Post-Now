@@ -16,6 +16,7 @@ import 'package:postnow/screens/overview_screen.dart';
 import 'package:postnow/screens/voucher_screen.dart';
 import 'package:postnow/services/global_service.dart';
 import 'package:postnow/services/legal_service.dart';
+import 'package:postnow/services/overview_service.dart';
 import 'package:postnow/services/vibration_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -61,6 +62,7 @@ class _MapsScreenState extends State<MapsScreen> {
   final GlobalKey _mapKey = GlobalKey();
   final List<Driver> _drivers = List();
   final User _user;
+  OverviewService _overviewService;
   String _driverPhone;
   String _driverName;
   bool _isInitialized = false;
@@ -87,6 +89,7 @@ class _MapsScreenState extends State<MapsScreen> {
 
   _MapsScreenState(this._user) {
     _mapsService = MapsService(_user.uid);
+    _overviewService = OverviewService(_user.uid);
   }
 
   goToPayButtonPressed() {
@@ -188,7 +191,12 @@ class _MapsScreenState extends State<MapsScreen> {
       print('onLaunch: $message');
       return;
     });
-    
+
+    _overviewService.initOrderList().then((value) => {
+      print('aloo: ' + _overviewService.orders.length.toString()),
+      setState((){})
+    });
+
     _nextInitializeDone('6');
   }
 
@@ -353,7 +361,7 @@ class _MapsScreenState extends State<MapsScreen> {
               _thisMethodFixABugButIStillAlwaysABugFixMeDude();
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => OverviewScreen(_user)),
+                MaterialPageRoute(builder: (context) => OverviewScreen(_user, overviewService: _overviewService)),
               );
             },
           ),
@@ -1290,10 +1298,8 @@ class _MapsScreenState extends State<MapsScreen> {
                   )
                 )
               ) : Container(),
-              (isDestination == _isDestinationButtonChosen) ?
-              _getLastAddress(1) : Container(),
-              (isDestination == _isDestinationButtonChosen) ?
-              _getLastAddress(2) : Container(),
+              _getLastAddress(isDestination)
+
             ],
           )
       );
@@ -1668,10 +1674,19 @@ class _MapsScreenState extends State<MapsScreen> {
     _isDestinationButtonChosen = false;
   }
 
-  _getLastAddress(int i) {
-    if (0 >= i || _orders.length < i)
+  Widget _getLastAddress(bool isDestination) {
+    if (isDestination != _isDestinationButtonChosen)
       return Container();
-    Job order = Job.fromJson(json.decode(_orders[_orders.length-i]));
+    List<Address> addresses = _overviewService.getLastAddresses(2, isDestination);
+    print(_overviewService.orders.length.toString() + 'hmm: ' + addresses.toString());
+    List<Widget> addressContentWidget = List();
+    for (int i = 0; i < addresses.length; i++) {
+      addressContentWidget.add(_getLastAddressContentWidget(addresses[i]));
+    }
+    return Column( children:  addressContentWidget );
+  }
+
+  Widget _getLastAddressContentWidget(Address address) {
     return Container(
         margin: EdgeInsets.only(bottom: 5),
         width: (MediaQuery
@@ -1683,8 +1698,7 @@ class _MapsScreenState extends State<MapsScreen> {
               borderRadius: BorderRadius.circular(18.0),
             ),
             onPressed: () {
-              _setMarker(_isDestinationButtonChosen ? order.destinationAddress.coordinates : order.originAddress.coordinates,
-                  address: _isDestinationButtonChosen ? order.destinationAddress : order.originAddress);
+              _setMarker(address.coordinates, address: address);
             },
             color: Colors.redAccent,
             child: Column(
@@ -1693,9 +1707,7 @@ class _MapsScreenState extends State<MapsScreen> {
                 children: <Widget>[
                   Padding(
                     padding: EdgeInsets.symmetric(vertical: 5),
-                    child: Text(_isDestinationButtonChosen
-                        ? order.destinationAddress.getAddress()
-                        : order.originAddress.getAddress(),
+                    child: Text(address.getAddress(),
                       style: TextStyle(color: Colors.white),
                       textAlign: TextAlign.center,),
                   )
