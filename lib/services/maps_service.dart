@@ -41,7 +41,7 @@ class MapsService with WidgetsBindingObserver {
     return 12742 * asin(sqrt(a));
   }
 
-  void setNewCameraPosition(GoogleMapController controller, LatLng first, LatLng second, bool centerFirst) {
+  void setNewCameraPosition(GoogleMapController controller, LatLng first, LatLng second, bool centerFirst) async {
     if (first == null || controller == null)
       return;
     CameraUpdate cameraUpdate;
@@ -52,16 +52,15 @@ class MapsService with WidgetsBindingObserver {
       cameraUpdate = CameraUpdate.newCameraPosition(
           CameraPosition(target: LatLng(first.latitude, first.longitude), zoom: 13));
     } else {
+      LatLng target = LatLng(
+          (first.latitude + second.latitude) / 2,
+          (first.longitude + second.longitude) / 2
+      );
       cameraUpdate = CameraUpdate.newCameraPosition(
-          CameraPosition(target:
-          LatLng(
-              (first.latitude + second.latitude) / 2,
-              (first.longitude + second.longitude) / 2
-          ),
-              zoom: coordinateDistance(first, second)));
+          CameraPosition(target: target, zoom: await controller.getZoomLevel()));
 
-      LatLngBounds bound = _latLngBoundsCalculate(first, second);
-      cameraUpdate = CameraUpdate.newLatLngBounds(bound, 70);
+      /*LatLngBounds bound = _latLngBoundsCalculate(first, second);
+      cameraUpdate = CameraUpdate.newLatLngBounds(bound, 70);*/
     }
     controller.animateCamera(cameraUpdate);
   }

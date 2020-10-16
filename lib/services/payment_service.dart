@@ -23,38 +23,44 @@ class PaymentService {
     }
 
     assert (token != null);
+    if (useCredits) {
+      if (credits < amount)
+        amount = num.parse((amount - credits).toStringAsFixed(2));
+      else
+        amount = 0.0;
+    }
+    print(amount);
+    String nonce = "";
+    if (amount != 0) {
+      const String currencyCode = 'EUR';
+      final request = BraintreeDropInRequest(
+        amount: amount.toString(),
+        clientToken: token,
+        collectDeviceData: true,
+        cardEnabled: true,
+        tokenizationKey: BRAINTREE_TOKENIZATION_KEY,
+        googlePaymentRequest: BraintreeGooglePaymentRequest(
+          totalPrice: amount.toString(),
+          currencyCode: currencyCode,
+          billingAddressRequired: false,
+        ),
+        paypalRequest: BraintreePayPalRequest(
+          amount: amount.toString(),
+          displayName: 'APP_NAME'.tr(),
+          currencyCode: currencyCode,
+        ),
+      );
+      BraintreeDropInResult result = await BraintreeDropIn.start(request);
 
-    double fakeAmount = 0.1;
-    if (credits < amount)
-      fakeAmount = num.parse((amount - credits).toStringAsFixed(2));
+      if (result == null) {
+        print('Selection was canceled.');
+        return null;
+      }
 
-    const String currencyCode = 'EUR';
-    final request = BraintreeDropInRequest(
-      amount: fakeAmount.toString(),
-      clientToken: token,
-      collectDeviceData: true,
-      cardEnabled: true,
-      tokenizationKey: BRAINTREE_TOKENIZATION_KEY,
-      googlePaymentRequest: BraintreeGooglePaymentRequest(
-        totalPrice: amount.toString(),
-        currencyCode: currencyCode,
-        billingAddressRequired: false,
-      ),
-      paypalRequest: BraintreePayPalRequest(
-        amount: fakeAmount.toString(),
-        displayName: 'APP_NAME'.tr(),
-        currencyCode: currencyCode,
-      ),
-    );
-    BraintreeDropInResult result = await BraintreeDropIn.start(request);
-
-    if (result == null) {
-      print('Selection was canceled.');
-      return null;
+      nonce = result.paymentMethodNonce.nonce;
     }
 
-    String nonce = result.paymentMethodNonce.nonce;
-    url = "https://europe-west1-post-now-f3c53.cloudfunctions.net/braintree_sendNonce?nonce=" + nonce + "&draftId=" + draftId + "&nonceAmount=" + fakeAmount.toString() + "&userId=" + uid + "&useCredits=" + useCredits.toString();
+    url = "https://europe-west1-post-now-f3c53.cloudfunctions.net/braintree_sendNonce?nonce=" + nonce + "&draftId=" + draftId + "&nonceAmount=" + amount.toString() + "&userId=" + uid + "&useCredits=" + useCredits.toString();
 
     Map<String, dynamic> transactionIds;
     try {

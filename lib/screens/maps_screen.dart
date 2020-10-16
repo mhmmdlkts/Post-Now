@@ -94,10 +94,10 @@ class _MapsScreenState extends State<MapsScreen> {
 
   goToPayButtonPressed() {
     setState(() {
-      if (!isOnlineDriverAvailable()) {
+      /*if (!isOnlineDriverAvailable()) { TODO activate me
         _changeMenuTyp(MenuTyp.NO_DRIVER_AVAILABLE);
         return;
-      }
+      }*/
       _changeMenuTyp(MenuTyp.CALCULATING_DISTANCE);
       getRoute();
     });
@@ -105,6 +105,8 @@ class _MapsScreenState extends State<MapsScreen> {
 
   getRoute() async {
     _polyLines.clear();
+    print("origin: " + _getOrigin().toString());
+    print("destination: " + _getDestination().toString());
     _mapsService.setNewCameraPosition(
         _mapController, _getOrigin(), _getDestination(), false);
     _draft = await _mapsService.createDraft(_originAddress, _destinationAddress, RouteMode.driving);
@@ -193,9 +195,10 @@ class _MapsScreenState extends State<MapsScreen> {
     });
 
     _overviewService.initOrderList().then((value) => {
-      print('aloo: ' + _overviewService.orders.length.toString()),
       setState((){})
     });
+
+    _myJobListener();
 
     _nextInitializeDone('6');
   }
@@ -299,7 +302,7 @@ class _MapsScreenState extends State<MapsScreen> {
         print (transactionIds);
         if (transactionIds != null) {
           //addJobToPool(transactionIds);
-          _changeMenuTyp(MenuTyp.SEARCH_DRIVER);
+          //_changeMenuTyp(MenuTyp.SEARCH_DRIVER);
         } else
           _changeMenuTyp(MenuTyp.PAYMENT_DECLINED);
       })
@@ -1678,7 +1681,6 @@ class _MapsScreenState extends State<MapsScreen> {
     if (isDestination != _isDestinationButtonChosen)
       return Container();
     List<Address> addresses = _overviewService.getLastAddresses(2, isDestination);
-    print(_overviewService.orders.length.toString() + 'hmm: ' + addresses.toString());
     List<Widget> addressContentWidget = List();
     for (int i = 0; i < addresses.length; i++) {
       addressContentWidget.add(_getLastAddressContentWidget(addresses[i]));
