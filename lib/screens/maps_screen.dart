@@ -10,6 +10,7 @@ import 'package:postnow/dialogs/settings_dialog.dart';
 import 'package:postnow/environment/global_variables.dart';
 import 'package:postnow/models/address.dart';
 import 'package:postnow/models/draft_order.dart';
+import 'package:postnow/models/price.dart';
 import 'package:postnow/models/settings_item.dart';
 import 'package:postnow/screens/contact_form_screen.dart';
 import 'package:postnow/screens/overview_screen.dart';
@@ -297,7 +298,7 @@ class _MapsScreenState extends State<MapsScreen> {
       return;
     }*/
 
-    PaymentService().openPayMenu(_draft.price, _user.uid, _draft.key, useCredits, _credit).then((transactionIds) => {
+    PaymentService().openPayMenu(_draft.price.total, _user.uid, _draft.key, useCredits, _credit).then((transactionIds) => {
       setState(() {
         print (transactionIds);
         if (transactionIds != null) {
@@ -914,29 +915,6 @@ class _MapsScreenState extends State<MapsScreen> {
         )
     );
 
-    void addJobToPool(Map<String, dynamic> transactionIds) async {
-      _job = Job(
-          name: _user.displayName,
-          userId: _user.uid,
-          customTransactionId: transactionIds['customTransId'],
-          brainTreeTransactionId: transactionIds['brainTreeTransId'],
-          vehicle: Vehicle.CAR,
-          price: _draft.price,
-          originAddress: _originAddress,
-          destinationAddress: _destinationAddress
-      );
-      _orders.add(json.encode(_job.toJson()));
-      SharedPreferences.getInstance().then((value) => {
-          value.setStringList('orders', _orders)
-        }
-      );
-      String jobId = _mapsService.jobsRef.push().key;
-      _mapsService.jobsRef.child(jobId).set(_job.toMap());
-      _mapsService.jobsRef.child(jobId).onChildRemoved.listen((Event e) {
-        _clearJob();
-      });
-    }
-
     initPolyline(Color color) {
       setState(() {
         _polyLines.add(Polyline(
@@ -1408,6 +1386,8 @@ class _MapsScreenState extends State<MapsScreen> {
   }
 
   void _changeMenuTyp(menuTyp) async {
+    if (_menuTyp == menuTyp)
+      return;
     setState(() {
       _menuTyp = menuTyp;
       _changeBottomCard(_menuTyp);
@@ -1489,7 +1469,7 @@ class _MapsScreenState extends State<MapsScreen> {
           key: GlobalKey(),
           maxHeight: _mapKey.currentContext.size.height,
           floatingActionButton: _positionFloatingActionButton(),
-          headerText: 'MAPS.PRICE'.tr(namedArgs: {'price': _draft.price.toString()}),
+          headerText: 'MAPS.PRICE'.tr(namedArgs: {'price': _draft.price.total.toString()}),
           checkboxText: _credit == null? null: 'MAPS.BOTTOM_MENUS.CONFIRM.USE_CREDITS'.tr(namedArgs: {'money': _credit.toStringAsFixed(2)}),
           onCancelButtonPressed: () {
             setState(() {

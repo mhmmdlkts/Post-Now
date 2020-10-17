@@ -3,6 +3,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:postnow/enums/job_status_enum.dart';
 import 'package:postnow/enums/job_vehicle_enum.dart';
+import 'package:postnow/models/price.dart';
 import 'address.dart';
 
 class Job {
@@ -17,7 +18,7 @@ class Job {
   String driverId;
   String userId;
   Status status;
-  double price;
+  Price price;
   String name;
   String sign;
   String key;
@@ -47,7 +48,7 @@ class Job {
     sign = snapshot.value["sign"];
     brainTreeTransactionId = snapshot.value["brainTreeTransactionId"];
     customTransactionId = snapshot.value["customTransactionId"];
-    price = snapshot.value["price"] + 0.0;
+    price = Price.fromJson(snapshot.value["price"]);
     status = stringToStatus(snapshot.value["status"]);
     vehicle = stringToVehicle(snapshot.value["vehicle"]);
     originAddress = Address.fromJson(snapshot.value["origin-address"]);
@@ -162,7 +163,7 @@ class Job {
     'sign': sign,
     'customTransactionId': customTransactionId,
     'brainTreeTransactionId': brainTreeTransactionId,
-    'price': price,
+    'price': price.toMap(),
     'status': statusToString(status),
     'vehicle': vehicleToString(vehicle),
     'origin-address': originAddress.toMap(),
@@ -181,7 +182,7 @@ class Job {
     sign = json["sign"];
     customTransactionId = json["customTransactionId"];
     brainTreeTransactionId = json["brainTreeTransactionId"];
-    price = json["price"] + 0.0;
+    price = Price.fromJson(json["price"]);
     status = stringToStatus(json["status"]);
     vehicle = stringToVehicle(json["vehicle"]);
     originAddress = Address.fromJson(json["origin-address"]);
@@ -197,7 +198,7 @@ class Job {
     if (driverId != null) toReturn['driver-id'] = driverId;
     if (userId != null) toReturn['user-id'] = userId;
     if (sign != null) toReturn['sign'] = sign;
-    if (price != null) toReturn['price'] = price;
+    if (price != null) toReturn['price'] = price.toMap();
     if (customTransactionId != null) toReturn['customTransactionId'] = customTransactionId;
     if (brainTreeTransactionId != null) toReturn['brainTreeTransactionId'] = brainTreeTransactionId;
     if (status != null) toReturn['status'] = statusToString(status);

@@ -101,7 +101,7 @@ class _OverviewScreen extends State<OverviewScreen> {
                   Icon(Icons.euro_symbol, color: Colors.black54,),
                   Container(width: padding),
                   Expanded(
-                    child: Text(job.price.toString()),
+                    child: Text(job.price.total.toString()),
                   )
                 ],
               ),
