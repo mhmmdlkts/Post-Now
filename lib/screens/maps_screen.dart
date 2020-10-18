@@ -1,4 +1,5 @@
 import 'package:audioplayers/audio_cache.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:google_map_polyline/google_map_polyline.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -149,14 +150,15 @@ class _MapsScreenState extends State<MapsScreen> {
 
     _mapsService.jobsRef.onChildAdded.listen(_onJobsDataAdded);
 
-    _mapsService.userRef.child('credit').onValue.listen((Event e) {
+    FirebaseFirestore.instance.collection('users').doc(_user.uid).snapshots().listen((snapshot) {
       setState(() {
-        if (e.snapshot.value == null)
+        if (!snapshot.exists || snapshot["credit"] == null)
           _credit = 0.0;
         else
-          _credit = e.snapshot.value + 0.0;
+          _credit = snapshot["credit"] + 0.0;
       });
     });
+
 
     _firebaseMessaging.configure(onMessage: (Map<String, dynamic> message) {
       print('onResume: $message');
