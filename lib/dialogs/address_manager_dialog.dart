@@ -26,6 +26,7 @@ class _AddressManager extends State<AddressManager> {
     _houseNumberController = new TextEditingController(text: _address.houseNumber);
     _doorNumberController = new TextEditingController(text: _address.doorNumber);
     _doorNameController = new TextEditingController(text: _address.doorName);
+    _extraService = _address.doorName == null || _address.doorNumber != null;
   }
 
   @override
