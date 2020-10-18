@@ -1,13 +1,12 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:path/path.dart' as path_package;
-import 'package:path_provider/path_provider.dart';
 import 'package:postnow/models/message.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'dart:io' as i;
 
 import 'package:postnow/services/chat_service.dart';
+
+import 'camera_screen.dart';
 
 
 class ChatScreen extends StatefulWidget {
@@ -29,15 +28,10 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   double _footerHeight = 0;
   double _readWidgetSize = 30;
   ChatService _chatService;
-  // Future<void> _initializeControllerFuture;
   List<CameraDescription> _cameras;
   CameraController _cameraController;
   String _inputMessage = "";
-  String _imagePath = "";
   bool _isUploading = false;
-  bool _isCameraOpen = false;
-  bool _showCapturedPhoto = false;
-  bool _isBackCamera = true;
 
   _ChatScreenState(this._jobId, this._name, this._isDriverApp) {
     _chatService = ChatService(_jobId, _onNewMessage);
@@ -46,37 +40,19 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    _isCameraOpen = false;
-    _showCapturedPhoto = false;
-    WidgetsBinding.instance.addPostFrameCallback((_) => {
+    WidgetsBinding.instance.addPostFrameCallback((_) =>
+    {
       setState(() {
-        _footerHeight = _bottomTextInputKey.currentContext.size.height + _bubbleMargin;
+        _footerHeight =
+            _bottomTextInputKey.currentContext.size.height + _bubbleMargin;
       })
     });
-
-    _getNextCamera();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed && _cameraController != null) {
-      // _initializeControllerFuture = _cameraController.initialize();
-    }
   }
 
   @override
   void dispose() {
     _cameraController?.dispose();
     super.dispose();
-  }
-
-  _getNextCamera() async {
-    if (_cameras == null)
-      _cameras = await availableCameras();
-    _cameraController = CameraController(_isBackCamera ? _cameras.first : _cameras.last,ResolutionPreset.high);
-    // _initializeControllerFuture = _cameraController.initialize();
-    if (!mounted)
-      return;
   }
 
   _onNewMessage() async { // TODO belki yeni gelen mesaj daha listede yok ayar cekmen gerekebilir
@@ -108,14 +84,10 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
           ),
           body: Stack(
             children: <Widget>[
-              Positioned(
-                child: _isCameraOpen ? _cameraOrImageField() : _conversationField(),
-              ),
-              Positioned(
-                  child: new Align(
-                      alignment: FractionalOffset.bottomCenter,
-                      child: _bottomTextInput()
-                  )
+              _conversationField(),
+              Align(
+                  alignment: FractionalOffset.bottomCenter,
+                  child: _bottomTextInput()
               )
             ],
           ),
@@ -161,9 +133,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
               crossAxisAlignment: _isDriverApp == msg.from_driver ? CrossAxisAlignment.end : CrossAxisAlignment.start,
               children: <Widget>[
                 msg.img == null ? Container() : Padding(
-                  child: Image.network(
-                      msg.img,
-                      fit: BoxFit.fill),
+                  child: Image.network(msg.img, fit: BoxFit.fill),
                   padding: EdgeInsets.only(bottom: 10),
                 ),
 
@@ -197,16 +167,10 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       alignment: Alignment.bottomCenter,
       child: Container(
           key: _bottomTextInputKey,
-          color: Colors.blue,
+          color: Colors.black,
           child: SafeArea(
               child: Container(
                 padding: EdgeInsets.only(left: 14, top: 2, bottom: 2, right: 4),
-                decoration: BoxDecoration(
-                    border: Border(
-                      top: BorderSide(width: 0.5, color: Colors.white70),
-                      bottom: BorderSide(width: 0.5, color: Colors.white70),
-                    )
-                ),
                 child: Row (
                   children: <Widget>[
                     Expanded(
@@ -223,10 +187,14 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                         },
                       ),
                     ),
-                    _isCameraOpen ? SizedBox.shrink() :
                     IconButton(
                       onPressed: () {
-                        _openCameraWindow();
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => CameraScreen())
+                        ).then((value) => {
+                          _sendMessage(imagePath: value)
+                        });
                       },
                       icon: Icon(Icons.photo_camera, color: Colors.white,),
                     ),
@@ -241,107 +209,15 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       )
   );
 
-  _openCameraWindow() async {
-    setState(() {
-      _isCameraOpen = true;
-    });
-  }
-
-  _cameraPrev() => Stack(
-    children: <Widget>[
-      CameraPreview(_cameraController,),
-      /*Positioned.fill(
-          top: 10,
-          right: 10,
-          child: Align(
-            alignment: Alignment.topRight,
-            child: IconButton(
-              icon: Icon(Icons.switch_camera, color: Colors.white,),
-              onPressed: () => {
-                setState(() {
-                  isBackCamera = !isBackCamera; // TODO ...
-                })
-              },
-            ),
-          )
-      ),*/
-      Positioned.fill(
-          bottom: 130,
-          child: Align(
-            alignment: Alignment.bottomCenter,
-            child: FloatingActionButton(
-              child: Icon(Icons.photo_camera, color: Colors.white,),
-              onPressed: _onCaptureButtonPressed,
-            ),
-          )
-      ),
-    ],
-  );
-
-
-  _onCaptureButtonPressed() async {  //on camera button presstry {
-    try {
-      final path = path_package.join(
-        (await getTemporaryDirectory()).path, //Temporary path
-        '${DateTime.now()}.png',
-      );
-      _imagePath = path;
-      await _cameraController.takePicture(_imagePath); //take photo
-      print(_showCapturedPhoto);
-      setState(() {
-        _showCapturedPhoto = true;
-      });
-    } catch (e) {
-      print(e);
-    }
-  }
-
-
-  Widget _cameraOrImageField() => Stack(
-      children: <Widget>[
-        _showCapturedPhoto? Image.file(i.File(_imagePath)):_cameraPrev(),
-        Positioned.fill(
-            top: 10,
-            left: 10,
-            child: Align(
-              alignment: Alignment.topLeft,
-              child: IconButton(
-                icon: Icon(_showCapturedPhoto? Icons.arrow_back_ios : Icons.clear, color: Colors.white,),
-                onPressed: () => {
-                  setState(() {
-                    _showCapturedPhoto = false;
-                    if (!_showCapturedPhoto)
-                      _isCameraOpen = false;
-                  })
-                },
-              ),
-            )
-        ),
-        !_isUploading ? Container():
-        Positioned.fill(
-            top: 10,
-            left: 10,
-            child: Align(
-                alignment: Alignment.center,
-                child: CircularProgressIndicator()
-            )
-        ),
-      ]
-  );
-
-  bool _isMessageSendable() => _isCameraOpen ? _showCapturedPhoto : true;
-
-  _sendMessage() async {
-    if (!_isMessageSendable())
-      return;
-    if (_inputMessage.length == 0 && _imagePath.length == 0)
+  _sendMessage({String imagePath}) async {
+    if (_inputMessage.length == 0 && imagePath == null)
       return;
     String dbImagePath;
-    if (_imagePath != "") {
+    if (imagePath != null) {
       setState(() {
         _isUploading = true;
       });
-      dbImagePath = await _chatService.startUpload(_imagePath);
+      dbImagePath = await _chatService.startUpload(imagePath);
       setState(() {
         _isUploading = false;
       });
@@ -354,10 +230,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   _clearField() {
     setState(() {
       _textEditingController.clear();
-      _imagePath = "";
       _inputMessage = "";
-      _isCameraOpen = false;
-      _showCapturedPhoto = false;
     });
   }
 }

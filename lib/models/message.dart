@@ -32,6 +32,7 @@ class Message implements Comparable {
     from_driver = json["from_driver"];
     read = json["read"];
     message = json["message"];
+    img = json["img"];
     send_time = stringToDateTime(json["send-time"]);
   }
 

@@ -1,0 +1,4 @@
+enum PermissionTypEnum {
+  LOCATION,
+  CAMERA
+}

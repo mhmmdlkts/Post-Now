@@ -7,6 +7,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:postnow/dialogs/address_manager_dialog.dart';
 import 'package:postnow/dialogs/custom_alert_dialog.dart';
 import 'package:postnow/dialogs/settings_dialog.dart';
+import 'package:postnow/enums/permission_typ_enum.dart';
 import 'package:postnow/environment/global_variables.dart';
 import 'package:postnow/models/address.dart';
 import 'package:postnow/models/draft_order.dart';
@@ -18,6 +19,7 @@ import 'package:postnow/screens/voucher_screen.dart';
 import 'package:postnow/services/global_service.dart';
 import 'package:postnow/services/legal_service.dart';
 import 'package:postnow/services/overview_service.dart';
+import 'package:postnow/services/permission_service.dart';
 import 'package:postnow/services/vibration_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -82,7 +84,6 @@ class _MapsScreenState extends State<MapsScreen> {
   BottomCard _bottomCard;
   Address _originAddress, _destinationAddress;
   Position _myPosition;
-  PermissionStatus _permissionStatus;
   Job _job;
   Driver _myDriver;
   double _credit;
@@ -1061,29 +1062,11 @@ class _MapsScreenState extends State<MapsScreen> {
         ));
       });
     }
-    
-    Future<bool> _positionIsNotGranted() async {
-      if (_permissionStatus == PermissionStatus.granted) {
-        return false;
-      }
-      _permissionStatus = await Permission.location.status;
-      if (_permissionStatus.isGranted)
-        return false;
-      _permissionStatus = await Permission.location.request();
-      if (_permissionStatus == PermissionStatus.permanentlyDenied || _permissionStatus == PermissionStatus.denied) {
-        bool val = await _allowLocationDialog();
-        if (val) {
-          await openAppSettings();
-          await _iAmBackDialog();
-        }
-      }
-      return !_permissionStatus.isGranted;
-    }
 
     Future<void> _initMyPosition() async {
-      if (await _positionIsNotGranted()) {
+      if (await PermissionService.positionIsNotGranted(context, PermissionTypEnum.LOCATION))
         return null;
-      }
+
       const locationOptions = LocationOptions(accuracy: LocationAccuracy.high, distanceFilter: 10);
 
       Geolocator().getPositionStream(locationOptions).listen(_onPositionChanged);
@@ -1385,7 +1368,8 @@ class _MapsScreenState extends State<MapsScreen> {
       return null;
   }
 
-  void _changeMenuTyp(menuTyp) async {
+  void _changeMenuTyp(menuTyp, {bool forceRefresh = false}) async {
+    if (!forceRefresh && _menuTyp == menuTyp)
     if (_menuTyp == menuTyp)
       return;
     setState(() {
@@ -1395,7 +1379,9 @@ class _MapsScreenState extends State<MapsScreen> {
   }
 
   void _refreshBottomCard() {
-    _changeBottomCard(_menuTyp);
+    setState(() {
+      _changeMenuTyp(_menuTyp, forceRefresh: true);
+    });
   }
 
   void _changeBottomCard(menuTyp) {
@@ -1750,39 +1736,6 @@ class _MapsScreenState extends State<MapsScreen> {
             message: "DIALOGS.ARE_YOU_SURE_CANCEL.CONTENT_WITH_AMOUNT".tr(namedArgs: {'amount': amount}),
             negativeButtonText: "CANCEL".tr(),
             positiveButtonText: "ACCEPT".tr(),
-          );
-        }
-    );
-    if (val == null)
-      return false;
-    return val;
-  }
-
-  Future<bool> _allowLocationDialog() async {
-    final val = await showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return CustomAlertDialog(
-            title: "DIALOGS.ALLOW_LOCATION.TITLE".tr(),
-            message: "DIALOGS.ALLOW_LOCATION.MESSAGE".tr(),
-            negativeButtonText: "CANCEL".tr(),
-            positiveButtonText: "DIALOGS.ALLOW_LOCATION.ALLOW".tr(),
-          );
-        }
-    );
-    if (val == null)
-      return false;
-    return val;
-  }
-
-  Future<bool> _iAmBackDialog() async {
-    final val = await showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return CustomAlertDialog(
-            title: "DIALOGS.I_AM_BACK.TITLE".tr(),
-            message: "DIALOGS.I_AM_BACK.MESSAGE".tr(),
-            positiveButtonText: "DIALOGS.I_AM_BACK.POSITIVE".tr(),
           );
         }
     );

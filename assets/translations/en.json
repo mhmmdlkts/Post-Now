@@ -153,10 +153,17 @@
     }
   },
   "DIALOGS": {
-    "ALLOW_LOCATION": {
-      "TITLE": "Konum izni verin",
-      "MESSAGE": "Uyulamayi daha iyi kullanabilmek icin konum izni verin",
-      "ALLOW": "Izin ver"
+    "PERMISSIONTYPENUM": {
+      "CAMERA": {
+        "TITLE": "Kamera izni verin",
+        "MESSAGE": "Fotograf cekebilmek icin kameraniza erisebilmemiz gerek",
+        "ALLOW": "Izin ver"
+      },
+      "LOCATION": {
+        "TITLE": "Konum izni verin",
+        "MESSAGE": "Uyulamayi daha iyi kullanabilmek icin konum izni verin",
+        "ALLOW": "Izin ver"
+      }
     },
     "I_AM_BACK": {
       "TITLE": "Seni bekliyoruz",

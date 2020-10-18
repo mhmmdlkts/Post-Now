@@ -14,6 +14,8 @@ class Chat {
     unreadMessages = null;
     messages = List();
     key = snapshot.key;
+    if (snapshot.value == null)
+      return;
     for (final msg_key in snapshot.value.keys)
       messages.add(Message.fromJson(snapshot.value[msg_key], key: msg_key));
     messages.sort(); // TODO slow

@@ -80,7 +80,8 @@ class MapsService with WidgetsBindingObserver {
   Future<String> getPhoneNumberFromDriver(Job j) async {
     String phone;
     await driverInfoRef.child(j.driverId).child("phone").once().then((value) => {
-      phone = value.value
+      if (value != null)
+        phone = value.value
     });
     return phone;
   }
