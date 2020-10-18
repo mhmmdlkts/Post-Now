@@ -1,17 +1,13 @@
 import 'package:audioplayers/audio_cache.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:google_map_polyline/google_map_polyline.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:postnow/dialogs/address_manager_dialog.dart';
 import 'package:postnow/dialogs/custom_alert_dialog.dart';
 import 'package:postnow/dialogs/settings_dialog.dart';
 import 'package:postnow/enums/permission_typ_enum.dart';
-import 'package:postnow/environment/global_variables.dart';
 import 'package:postnow/models/address.dart';
 import 'package:postnow/models/draft_order.dart';
-import 'package:postnow/models/price.dart';
 import 'package:postnow/models/settings_item.dart';
 import 'package:postnow/screens/contact_form_screen.dart';
 import 'package:postnow/screens/overview_screen.dart';
@@ -21,12 +17,10 @@ import 'package:postnow/services/legal_service.dart';
 import 'package:postnow/services/overview_service.dart';
 import 'package:postnow/services/permission_service.dart';
 import 'package:postnow/services/vibration_service.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:postnow/services/payment_service.dart';
-import 'package:postnow/enums/job_vehicle_enum.dart';
 import 'package:postnow/screens/splash_screen.dart';
 import 'package:postnow/services/maps_service.dart';
 import 'package:google_maps_webservice/places.dart';
@@ -45,7 +39,6 @@ import 'package:oktoast/oktoast.dart';
 import 'package:screen/screen.dart';
 import '../bottom_card.dart';
 import 'chat_screen.dart';
-import 'dart:convert';
 import 'dart:async';
 
 
@@ -73,7 +66,6 @@ class _MapsScreenState extends State<MapsScreen> {
   int _initCount = 0;
   int _initDone = 0;
   Set<Polyline> _polyLines = Set();
-  List<String> _orders = List();
   BitmapDescriptor _packageLocationIcon, _driverLocationIcon, _homeLocationIcon;
   TextEditingController _originTextController, _destinationTextController;
   Marker _packageMarker, _destinationMarker;
@@ -107,8 +99,6 @@ class _MapsScreenState extends State<MapsScreen> {
 
   getRoute() async {
     _polyLines.clear();
-    print("origin: " + _getOrigin().toString());
-    print("destination: " + _getDestination().toString());
     _mapsService.setNewCameraPosition(
         _mapController, _getOrigin(), _getDestination(), false);
     _draft = await _mapsService.createDraft(_originAddress, _destinationAddress, RouteMode.driving);
@@ -149,14 +139,6 @@ class _MapsScreenState extends State<MapsScreen> {
       _homeLocationIcon = BitmapDescriptor.fromBytes(value);
       _nextInitializeDone('3');
     })});
-
-    _initCount++;
-    SharedPreferences.getInstance().then((value) => {
-        if (value.containsKey('orders'))
-          _orders = value.getStringList('orders'),
-        _nextInitializeDone('4')
-      }
-    );
 
     _originTextController = new TextEditingController(text: '');
     _destinationTextController = new TextEditingController(text: '');
@@ -273,8 +255,6 @@ class _MapsScreenState extends State<MapsScreen> {
     });
   }
 
-
-
   void _onMapCreated(GoogleMapController controller) {
     setState(() {
       _mapController = controller;
@@ -291,21 +271,10 @@ class _MapsScreenState extends State<MapsScreen> {
       _changeMenuTyp(MenuTyp.PAYMENT_WAITING);
     });
 
-    /*if (IS_TEST) {
-      setState(() {
-        addJobToPool('test_transaction_id');
-        _changeMenuTyp(MenuTyp.SEARCH_DRIVER);
-      });
-      return;
-    }*/
-
     PaymentService().openPayMenu(_draft.price.total, _user.uid, _draft.key, useCredits, _credit).then((transactionIds) => {
       setState(() {
         print (transactionIds);
-        if (transactionIds != null) {
-          //addJobToPool(transactionIds);
-          //_changeMenuTyp(MenuTyp.SEARCH_DRIVER);
-        } else
+        if (transactionIds == null)
           _changeMenuTyp(MenuTyp.PAYMENT_DECLINED);
       })
     });
@@ -331,7 +300,7 @@ class _MapsScreenState extends State<MapsScreen> {
         children: <Widget> [
           googleMapsWidget(),
           getTopMenu(),
-          getBottomMenu() == null? Container() : getBottomMenu(), // TODO
+          _bottomCard == null? Container() : _bottomCard, // TODO
         ]
     ),
     drawer: Drawer(
@@ -523,17 +492,6 @@ class _MapsScreenState extends State<MapsScreen> {
     );
   }
 
-    Widget getBottomMenu() {
-      switch (_menuTyp) {
-        case MenuTyp.FROM_OR_TO:
-          return fromOrToMenu();
-      }
-      if (_bottomCard == null)
-        return Container();
-      else
-        return _bottomCard;
-    }
-
     Widget jobCompleted() => Positioned(
         bottom: 0,
         child: SizedBox(
@@ -556,354 +514,6 @@ class _MapsScreenState extends State<MapsScreen> {
                               child: Text('OK'.tr()),
                               onPressed: () {
                                 _clearJob();
-                              },
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ]
-            )
-        )
-    );
-
-    Widget packagePicked() => Positioned(
-        bottom: 0,
-        child: SizedBox(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height/4,
-            child: Column(
-                children: <Widget>[
-                  Card(
-
-                    child: Column(
-                      mainAxisSize: MainAxisSize.max,
-                      children: <Widget>[
-                        ListTile(
-                          leading: Icon(Icons.directions_car),
-                          title: Text("MAPS.BOTTOM_MENUS.YOUR_DRIVER".tr(namedArgs: {'name': _myDriver.getName()})),
-                          subtitle: Text("MAPS.BOTTOM_MENUS.PACKAGE_PICKED.STATUS".tr()),
-                        ),
-                        ButtonBar(
-                          children: <Widget>[
-                            FlatButton(
-                              child: Text('SEND_MESSAGE'.tr()),
-                              onPressed: () {
-                                _openMessageScreen(_job.key, _myDriver.getName());
-                              },
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ]
-            )
-        )
-    );
-
-    Widget jobAcceptedMenu() => Positioned(
-        bottom: 0,
-        child: SizedBox(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height/4,
-            child: Column(
-                children: <Widget>[
-                  Card(
-
-                    child: Column(
-                      mainAxisSize: MainAxisSize.max,
-                      children: <Widget>[
-                        ListTile(
-                          leading: Icon(Icons.directions_car),
-                          title: Text("MAPS.BOTTOM_MENUS.YOUR_DRIVER".tr(namedArgs: {'name': _myDriver.getName()})),
-                          subtitle: Text("MAPS.BOTTOM_MENUS.ON_JOB.STATUS".tr()),
-                        ),
-                        ButtonBar(
-                          children: <Widget>[
-                            FlatButton(
-                              child: Text('SEND_MESSAGE'.tr()),
-                              onPressed: () {
-                                _openMessageScreen(_job.key, _myDriver.getName());
-                              },
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ]
-            )
-        )
-    );
-
-    Widget fromOrToMenu() => Positioned(
-        bottom: 0,
-        child: SizedBox(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height/4,
-            child: Column(
-                children: <Widget>[
-
-                ]
-            )
-        )
-    );
-
-    Widget noDriverAvailableMenu() => Positioned(
-        bottom: 0,
-        child: SizedBox(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height/4,
-            child: Column(
-                children: <Widget>[
-                  Card(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.max,
-                      children: <Widget>[
-                        ListTile(
-                          leading: Icon(Icons.directions_car),
-                          title: Text('MAPS.NO_AVAILABLE_DRIVER_MESSAGE'.tr()),
-                        ),
-                        ButtonBar(
-                          children: <Widget>[
-                            FlatButton(
-                              child: Text('OK'.tr()),
-                              onPressed: () {
-                                _changeMenuTyp(MenuTyp.FROM_OR_TO);
-                              },
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ]
-            )
-        )
-    );
-
-  Widget noRouteMenu() => Positioned(
-      bottom: 0,
-      child: SizedBox(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height/4,
-          child: Column(
-              children: <Widget>[
-                Card(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.max,
-                    children: <Widget>[
-                      ListTile(
-                        leading: Icon(Icons.directions_car),
-                        title: Text('MAPS.BOTTOM_MENUS.NO_ROUTE.MESSAGE'.tr()),
-                      ),
-                      ButtonBar(
-                        children: <Widget>[
-                          FlatButton(
-                            child: Text('OK'.tr()),
-                            onPressed: () {
-                              setState(() {
-                                _clearJob();
-                              });
-                            },
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ]
-          )
-      )
-  );
-
-    Widget tryAgainMenu() => Positioned(
-        bottom: 0,
-        child: SizedBox(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height/4,
-            child: Column(
-                children: <Widget>[
-                  Card(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.max,
-                      children: <Widget>[
-                        ListTile(
-                          leading: Icon(Icons.directions_car),
-                          title: Text('MAPS.BOTTOM_MENUS.TRY_AGAIN.MESSAGE'.tr()),
-                        ),
-                        ButtonBar(
-                          children: <Widget>[
-                            FlatButton(
-                              child: Text('TRY_AGAIN'.tr()),
-                              onPressed: goToPayButtonPressed,
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ]
-            )
-        )
-    );
-
-    Widget confirmMenu() => Positioned(
-        bottom: 0,
-        child: SizedBox (
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height/4,
-            child: Column(
-                children: <Widget>[
-                  Card(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.max,
-                      children: <Widget>[
-                        ListTile(
-                          leading: Icon(Icons.payment),
-                          title: Text('MAPS.PRICE'.tr(namedArgs: {'price': _draft.price.toString()})),
-                          subtitle: Text('MAPS.BOTTOM_MENUS.CONFIRM.FROM_TO'.tr(namedArgs: {'from': _originAddress.getAddress(), 'to': _destinationAddress.getAddress()})),
-                        ),
-                        ButtonBar(
-                          children: <Widget>[
-                            FlatButton(
-                              child: Text('CANCEL'.tr()),
-                              onPressed: () {
-                                setState(() {
-                                  _polyLines.clear();
-                                  if (_destinationAddress != null && _originAddress != null)
-                                    _changeMenuTyp(MenuTyp.FROM_OR_TO);
-                                });
-                              },
-                            ),
-                            FlatButton(
-                              child: Text('ACCEPT'.tr()),
-                              onPressed: () {
-                                setState(() {
-                                  //menuTyp = MenuTyp.PAY;
-                                  if (_draft.price == 0)
-                                    return;
-                                  _navigateToPaymentsAndGetResult(context, true);
-                                });
-                              },
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ]
-            )
-        )
-    );
-
-    Widget searchDriverMenu() => Positioned(
-        bottom: 0,
-        child: SizedBox (
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height/4,
-            child: Column(
-                children: <Widget>[
-                  Card(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.max,
-                      children: <Widget>[
-                        ListTile(
-                          leading: Icon(Icons.directions_car),
-                          title: Text("MAPS.BOTTOM_MENUS.SEARCH_DRIVER.ORDER_ACCEPTED".tr()),
-                          subtitle: Text("MAPS.BOTTOM_MENUS.SEARCH_DRIVER.STATUS".tr()),
-                        ),
-                        _menuTyp != MenuTyp.ACCEPTED ? Padding (
-                          padding: EdgeInsets.all(10.0),
-                          child: CircularProgressIndicator(
-                            valueColor: new AlwaysStoppedAnimation<Color>(Colors.deepPurple),
-                          ),
-                        ): Container()
-                      ],
-                    ),
-                  ),
-                ]
-            )
-        )
-    );
-
-    Widget paymentWaiting() => Positioned(
-        bottom: 0,
-        child: SizedBox (
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height/4,
-            child: Column(
-                children: <Widget>[
-                  Card(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.max,
-                      children: <Widget>[
-                        ListTile(
-                          leading: Icon(Icons.payment),
-                          title: Text('MAPS.BOTTOM_MENUS.PAYMENT_WAITING.PAYMENT_WAITING'.tr()),
-                        ),
-                        _menuTyp != MenuTyp.ACCEPTED ? Padding (
-                          padding: EdgeInsets.all(10.0),
-                          child: CircularProgressIndicator(
-                            valueColor: new AlwaysStoppedAnimation<Color>(Colors.deepPurple),
-                          ),
-                        ): Container()
-                      ],
-                    ),
-                  ),
-                ]
-            )
-        )
-    );
-
-    Widget calcDistanceMenu() => Positioned(
-        bottom: 0,
-        child: SizedBox (
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height/4,
-            child: Column(
-                children: <Widget>[
-                  Card(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.max,
-                      children: <Widget>[
-                        ListTile(
-                          leading: Icon(Icons.payment),
-                          title: Text('MAPS.BOTTOM_MENUS.CALCULATING_DISTANCE.CALCULATING_DISTANCE'.tr()),
-                        ),
-                        CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Colors.deepPurple),
-                        ),
-                      ],
-                    ),
-                  ),
-                ]
-            )
-        )
-    );
-
-    Widget paymentDeclined() => Positioned(
-        bottom: 0,
-        child: SizedBox (
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height/4,
-            child: Column(
-                children: <Widget>[
-                  Card(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.max,
-                      children: <Widget>[
-                        ListTile(
-                          leading: Icon(Icons.error_outline),
-                          title: Text('MAPS.BOTTOM_MENUS.PAYMENT_DECLINED.PAYMENT_DECLINED'.tr()),
-                        ),
-                        ButtonBar(
-                          children: <Widget>[
-                            FlatButton(
-                              child: Text('CLOSE'.tr()),
-                              onPressed: () {
-                                _changeMenuTyp(MenuTyp.CONFIRM);
                               },
                             ),
                           ],
@@ -1038,15 +648,13 @@ class _MapsScreenState extends State<MapsScreen> {
     Future<void> addToRoutePolyline(LatLng origin, LatLng destination, RouteMode mode) async {
       List<LatLng> newRouteCoords = List();
 
-      if (IS_TEST) {
-        newRouteCoords.add(origin);
-        newRouteCoords.add(destination);
-      } else {
-        newRouteCoords.addAll(await _googleMapPolyline.getCoordinatesWithLocation(
-            origin: origin,
-            destination: destination,
-            mode: mode));
-      }
+      newRouteCoords.addAll(
+          await _googleMapPolyline.getCoordinatesWithLocation(
+              origin: origin,
+              destination: destination,
+              mode: mode
+          )
+      );
 
       newRouteCoords.addAll(_draft.routes);
 
@@ -1388,6 +996,7 @@ class _MapsScreenState extends State<MapsScreen> {
     switch (menuTyp)
     {
       case MenuTyp.FROM_OR_TO:
+        break;
       case MenuTyp.NO_DRIVER_AVAILABLE:
         _bottomCard = new BottomCard(
           key: GlobalKey(),
@@ -1468,7 +1077,7 @@ class _MapsScreenState extends State<MapsScreen> {
           onMainButtonPressed: () {
             setState(() {
               //menuTyp = MenuTyp.PAY;
-              if (_draft.price == 0)
+              if (_draft.price.total == 0)
                 return;
               _navigateToPaymentsAndGetResult(context, true);
             });
@@ -1477,7 +1086,6 @@ class _MapsScreenState extends State<MapsScreen> {
           showFooter: false,
         );
         break;
-        // return confirmMenu(); TODO SHOW destination addresses
       case MenuTyp.SEARCH_DRIVER:
         _bottomCard = new BottomCard(
           key: GlobalKey(),
@@ -1569,21 +1177,6 @@ class _MapsScreenState extends State<MapsScreen> {
     }
   }
 
-
-  showLocalNot() async {
-    FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-
-    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
-        'your channel id', 'your channel name', 'your channel description',
-        importance: Importance.Max, priority: Priority.High, ticker: 'ticker');
-    var iOSPlatformChannelSpecifics = IOSNotificationDetails();
-    var platformChannelSpecifics = NotificationDetails(
-        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
-    await flutterLocalNotificationsPlugin.show(
-        0, 'plain title', 'plain body', platformChannelSpecifics,
-        payload: 'item x');
-  }
-
   _positionFloatingActionButton() {
     if (_myPosition == null)
       return null;
@@ -1600,13 +1193,13 @@ class _MapsScreenState extends State<MapsScreen> {
     );
   }
 
-    bool isOnlineDriverAvailable() {
-      for (int i = 0; i < _drivers.length; i++) {
-        if (_drivers[i].isOnline)
-          return true;
-      }
-      return false;
+  bool isOnlineDriverAvailable() {
+    for (int i = 0; i < _drivers.length; i++) {
+      if (_drivers[i].isOnline)
+        return true;
     }
+    return false;
+  }
 
   FloatingActionButton _goToPayFloatingActionButton() => FloatingActionButton(
     heroTag: "btn",

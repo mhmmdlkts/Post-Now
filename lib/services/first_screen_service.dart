@@ -19,10 +19,6 @@ class FirstScreenService {
             FlatButton(
               child: Text('DIALOGS.UPDATE_AVAILABLE.BUTTON'.tr()),
               onPressed: () {
-                if (IS_TEST)
-                  StoreRedirect.redirect(androidAppId: GOOGLE_PLAY_STORE_PACKAGE_NAME,
-                      iOSAppId: APPLE_APP_STORE_IOS_ID);
-                else
                   StoreRedirect.redirect();
               },
             ),
