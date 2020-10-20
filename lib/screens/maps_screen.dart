@@ -14,6 +14,7 @@ import 'package:postnow/models/draft_order.dart';
 import 'package:postnow/models/settings_item.dart';
 import 'package:postnow/screens/contact_form_screen.dart';
 import 'package:postnow/screens/overview_screen.dart';
+import 'package:postnow/screens/settings_screen.dart';
 import 'package:postnow/screens/voucher_screen.dart';
 import 'package:postnow/services/global_service.dart';
 import 'package:postnow/services/legal_service.dart';
@@ -374,17 +375,20 @@ class _MapsScreenState extends State<MapsScreen> {
             },
           ),
           ListTile(
-            title: Text('MAPS.SIDE_MENU.SOFTWARE_LICENCES'.tr()),
-            onTap: () {
-              LegalService.openLicences();
-            },
-          ),
-          ListTile(
             title: Text('MAPS.SIDE_MENU.CONTACT'.tr()),
             onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => ContactFormScreen(_user)),
+              );
+            },
+          ),
+          ListTile(
+            title: Text('SETTINGS'.tr()),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SettingsScreen(_user)),
               );
             },
           ),
@@ -995,9 +999,9 @@ class _MapsScreenState extends State<MapsScreen> {
 
   void _changeMenuTyp(menuTyp, {bool forceRefresh = false}) async {
     if (!forceRefresh && _menuTyp == menuTyp)
-    if (_menuTyp == menuTyp)
       return;
     setState(() {
+      print(menuTyp);
       _menuTyp = menuTyp;
       _changeBottomCard(_menuTyp);
     });
@@ -1013,6 +1017,7 @@ class _MapsScreenState extends State<MapsScreen> {
     switch (menuTyp)
     {
       case MenuTyp.FROM_OR_TO:
+        _bottomCard = null;
         break;
       case MenuTyp.NO_DRIVER_AVAILABLE:
         _bottomCard = new BottomCard(
@@ -1084,8 +1089,7 @@ class _MapsScreenState extends State<MapsScreen> {
           onCancelButtonPressed: () {
             setState(() {
               _polyLines.clear();
-              if (_destinationAddress != null && _originAddress != null)
-                _changeMenuTyp(MenuTyp.FROM_OR_TO);
+              _changeMenuTyp(MenuTyp.FROM_OR_TO);
             });
           },
           body: PaymentMethods(_user, _creditCards, (PaymentMethodsEnum paymentMethod, bool useCredits, CreditCard creditCard) {
@@ -1261,10 +1265,7 @@ class _MapsScreenState extends State<MapsScreen> {
   Widget _getLastAddressContentWidget(Address address) {
     return Container(
         margin: EdgeInsets.only(bottom: 5),
-        width: (MediaQuery
-            .of(context)
-            .size
-            .width) * (0.4),
+        width: (MediaQuery.of(context).size.width) * (0.4),
         child: RaisedButton(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(18.0),

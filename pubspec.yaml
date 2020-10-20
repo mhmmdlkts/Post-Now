@@ -65,6 +65,7 @@ dependencies:
   vibration: ^1.7.1
   credit_card_type_detector: ^1.1.0
   credit_card: ^0.1.8
+  flutter_cupertino_settings: ^0.3.1
 
 dev_dependencies:
   flutter_test:

@@ -1,5 +1,5 @@
 import 'package:firebase_database/firebase_database.dart';
-import 'package:postnow/models/CreditCard.dart';
+import 'package:postnow/models/global_settings.dart';
 
 class User {
   String key;
@@ -8,6 +8,7 @@ class User {
   String email;
   String languageCode;
   String token;
+  GlobalSettings settings;
 
   User({this.name, this.phone, this.token, this.email, this.languageCode});
 
@@ -18,6 +19,8 @@ class User {
     email = snapshot.value["email"];
     token = snapshot.value["token"];
     languageCode = snapshot.value["lang"];
+    if (snapshot.value["settings"] != null)
+      settings = GlobalSettings.fromJson(snapshot.value["settings"]);
   }
 
   Map<String, dynamic> toJson() {
@@ -27,10 +30,7 @@ class User {
     if (email != null) data['email'] = this.email;
     if (token != null) data['token'] = this.token;
     if (languageCode != null) data['lang'] = this.languageCode;
+    if (settings != null) data['settings'] = this.settings.toJson();
     return data;
-  }
-
-  String getName() {
-    return name == null? "Name" : name;
   }
 }

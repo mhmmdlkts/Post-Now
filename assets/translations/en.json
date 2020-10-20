@@ -50,6 +50,23 @@
       "CONTACT": "Contact"
     }
   },
+  "SETTINGS_SCREEN": {
+    "ACCOUNT": {
+      "TITLE": "Account",
+      "NAME_HINT": "Name",
+      "PHONE_HINT": "Phone",
+      "EMAIL_HINT": "Email"
+    },
+    "INVOICE": {
+      "TITLE": "Rechnungs Addresse",
+      "ENABLE": "Faturada adresim yazsin istiyorum",
+      "NAME_HINT": "Faturada gözükecek isim",
+      "ADDRESS_HINT": "Faturada gözükecek adres",
+      "DESCRIPTION": "Bunu aktif hale getirdiginizde faturanizda yazmasini istediginz address yazacaktir"
+    },
+    "SOFTWARE_LICENCES": "License",
+    "SIGN_OUT": "Logout"
+  },
   "CONTACT_FORM": {
     "TITLE": "Contact Form",
     "NAME": {
@@ -85,7 +102,7 @@
       "MY_ORDERS": "My Orders",
       "VOUCHER": "Voucher",
       "PRIVACY_POLICY": "Privacy Policy",
-      "SOFTWARE_LICENCES": "Software Licences",
+      "SOFTWARE_LICENCES": "Software Licence",
       "CONTACT": "Contact",
       "SIGN_OUT": "Logout"
     },
@@ -137,6 +154,7 @@
   },
   "VOUCHER": {
     "TITLE": "Voucher",
+    "TEXT_FIELD_MESSAGE": "Oder geben Sie den code hier ein",
     "SUCCESS_MESSAGE": "{value} € degerinde para fiskirtildi",
     "ERROR": {
       "NO_ERROR": "Hata yok",
@@ -197,6 +215,12 @@
     },
     "JOB_SETTINGS": {
       "CANCEL_JOB" : "Yolculugu iptal et"
+    },
+    "SETTINGS": {
+      "YOU_CANT_CHANGE": {
+        "MESSAGE": "Bu alani degiistirmeye ihtiyaciniz varsa bizimle letisime gecin",
+        "CONTACT": "Iletisime gec"
+      }
     }
   },
   "PAYMENTMETHODSENUM": {
