@@ -63,6 +63,8 @@ dependencies:
   flutter_polyline_points: ^0.2.4
   audioplayers: ^0.16.1
   vibration: ^1.7.1
+  credit_card_type_detector: ^1.1.0
+  credit_card: ^0.1.8
 
 dev_dependencies:
   flutter_test:
@@ -71,8 +73,14 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
+  fonts:
+      - family:  MyFlutterApp
+        fonts:
+         - asset: fonts/MyFlutterApp.ttf
+
   assets:
     - assets/
+    - assets/images/payment_methods/
     - assets/map_styles/
     - assets/marker_buttons/
     - assets/translations/

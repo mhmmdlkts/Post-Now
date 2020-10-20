@@ -8,6 +8,9 @@
   "CLOSE": "Close",
   "SETTINGS": "Settings",
   "SEND_MESSAGE": "Send a message",
+  "SAVE": "Save",
+  "GO_BACK": "Go back",
+  "CHECKOUT": "Checkout",
   "TRY_AGAIN": "Tekrar dene",
   "INTRO": {
     "PAGE1": {
@@ -74,7 +77,7 @@
   "MAPS": {
     "NO_AVAILABLE_DRIVER_MESSAGE": "No available driver in your area.",
     "CURRENT_LOCATION": "Current Location",
-    "PRICE": "Price: {price}€",
+    "PRICE": "Price: {price} €",
     "PACKAGE_ADDRESS": "Sender adress",
     "DESTINATION_ADDRESS": "Recipient adress",
     "TYPE_ADDRESS": "Enter the adress",
@@ -102,7 +105,8 @@
       },
       "CONFIRM": {
         "FROM_TO": "Sender Adress: {from}\nReceiver Adress: {to}",
-        "USE_CREDITS": "{money} € degerindeki kredimi kullan."
+        "USE_CREDITS": "{money} € degerinde kredi kullan.",
+        "ADD_NEW_CARD": "Add new card"
       },
       "SEARCH_DRIVER": {
         "STATUS": "Status: Waiting for carrier for your order.",
@@ -194,5 +198,13 @@
     "JOB_SETTINGS": {
       "CANCEL_JOB" : "Yolculugu iptal et"
     }
+  },
+  "PAYMENTMETHODSENUM": {
+    "CREDITS": "Credits",
+    "CASH": "Cash",
+    "PAYPAL": "PayPal",
+    "CREDIT_CARD": "Credit Card",
+    "APPLE_PAY": "Apple Pay",
+    "KLARNA": "Sofort Überweisung"
   }
 }

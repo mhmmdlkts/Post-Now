@@ -1,4 +1,5 @@
 import 'package:firebase_database/firebase_database.dart';
+import 'package:postnow/models/CreditCard.dart';
 
 class User {
   String key;

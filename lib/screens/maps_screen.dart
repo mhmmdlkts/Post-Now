@@ -6,7 +6,9 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:postnow/dialogs/address_manager_dialog.dart';
 import 'package:postnow/dialogs/custom_alert_dialog.dart';
 import 'package:postnow/dialogs/settings_dialog.dart';
+import 'package:postnow/enums/payment_methods_enum.dart';
 import 'package:postnow/enums/permission_typ_enum.dart';
+import 'package:postnow/models/CreditCard.dart';
 import 'package:postnow/models/address.dart';
 import 'package:postnow/models/draft_order.dart';
 import 'package:postnow/models/settings_item.dart';
@@ -37,6 +39,7 @@ import 'package:postnow/models/job.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:oktoast/oktoast.dart';
+import 'package:postnow/widgets/payment_methods.dart';
 import 'package:screen/screen.dart';
 import '../bottom_card.dart';
 import 'chat_screen.dart';
@@ -56,6 +59,7 @@ class _MapsScreenState extends State<MapsScreen> {
   final GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: GOOGLE_DIRECTIONS_API_KEY);
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   final AudioCache _audioPlayer = AudioCache();
+  final List<CreditCard> _creditCards = List();
   final GlobalKey _mapKey = GlobalKey();
   final List<Driver> _drivers = List();
   final User _user;
@@ -141,6 +145,14 @@ class _MapsScreenState extends State<MapsScreen> {
       _nextInitializeDone('3');
     })});
 
+    _mapsService.userRef.child("creditCards").onValue.listen((Event e){
+      _creditCards.clear();
+      e.snapshot.value.forEach((key, value) {
+        _creditCards.add(CreditCard.fromJson(value));
+      });
+      setState(() {});
+    });
+
     _originTextController = new TextEditingController(text: '');
     _destinationTextController = new TextEditingController(text: '');
 
@@ -152,9 +164,8 @@ class _MapsScreenState extends State<MapsScreen> {
 
     FirebaseFirestore.instance.collection('users').doc(_user.uid).snapshots().listen((snapshot) {
       setState(() {
-        if (!snapshot.exists || snapshot["credit"] == null)
-          _credit = 0.0;
-        else
+        _credit = 0.0;
+        if (snapshot.exists && snapshot.data().keys.contains("credit"))
           _credit = snapshot["credit"] + 0.0;
       });
     });
@@ -268,16 +279,20 @@ class _MapsScreenState extends State<MapsScreen> {
     });
   }
 
-  _navigateToPaymentsAndGetResult(BuildContext context, bool useCredits) async {
+  _navigateToPaymentsAndGetResult(bool useCredits, PaymentMethodsEnum paymentMethod, CreditCard creditCard) async {
     setState(() {
       _changeMenuTyp(MenuTyp.PAYMENT_WAITING);
     });
 
-    PaymentService().openPayMenu(_draft.price.total, _user.uid, _draft.key, useCredits, _credit).then((transactionIds) => {
-      setState(() {
-        print (transactionIds);
-        if (transactionIds == null)
+    PaymentService().pay(_draft.price.total, _user.uid, _draft.key, useCredits, _credit, paymentMethod, creditCard).then((success) => {
+      if (!success)
+        setState(() {
           _changeMenuTyp(MenuTyp.PAYMENT_DECLINED);
+        })
+    }).catchError((onError) => {
+      print(onError),
+      setState(() {
+        _changeMenuTyp(MenuTyp.PAYMENT_DECLINED);
       })
     });
   }
@@ -1066,8 +1081,6 @@ class _MapsScreenState extends State<MapsScreen> {
           key: GlobalKey(),
           maxHeight: _mapKey.currentContext.size.height,
           floatingActionButton: _positionFloatingActionButton(),
-          headerText: 'MAPS.PRICE'.tr(namedArgs: {'price': _draft.price.total.toString()}),
-          checkboxText: _credit == null? null: 'MAPS.BOTTOM_MENUS.CONFIRM.USE_CREDITS'.tr(namedArgs: {'money': _credit.toStringAsFixed(2)}),
           onCancelButtonPressed: () {
             setState(() {
               _polyLines.clear();
@@ -1075,15 +1088,11 @@ class _MapsScreenState extends State<MapsScreen> {
                 _changeMenuTyp(MenuTyp.FROM_OR_TO);
             });
           },
-          mainButtonText: 'ACCEPT'.tr(),
-          onMainButtonPressed: () {
-            setState(() {
-              //menuTyp = MenuTyp.PAY;
-              if (_draft.price.total == 0)
-                return;
-              _navigateToPaymentsAndGetResult(context, true);
-            });
-          },
+          body: PaymentMethods(_user, _creditCards, (PaymentMethodsEnum paymentMethod, bool useCredits, CreditCard creditCard) {
+            if (_draft.price.total == 0)
+              return;
+            _navigateToPaymentsAndGetResult(useCredits, paymentMethod, creditCard);
+          }, _draft.price.total, _credit),
           shrinkWrap: false,
           showFooter: false,
         );

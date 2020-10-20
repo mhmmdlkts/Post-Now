@@ -6,6 +6,7 @@ class StatefulWrapper extends StatefulWidget {
   StatefulWrapper({Key key, this.onInit, this.child}) : super(key: key);
   _StatefulWrapperState createState() => _StatefulWrapperState();
 }
+
 class _StatefulWrapperState extends State<StatefulWrapper> {
   @override
   void initState() {

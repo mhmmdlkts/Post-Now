@@ -10,6 +10,7 @@ class Job {
   Address destinationAddress;
   Address originAddress;
   String brainTreeTransactionId;
+  String payMethod;
   String customTransactionId;
   DateTime acceptTime;
   DateTime finishTime;
@@ -43,6 +44,7 @@ class Job {
   Job.fromSnapshot(DataSnapshot snapshot) {
     key = snapshot.key;
     name = snapshot.value["name"];
+    payMethod = snapshot.value["payMethod"];
     driverId = snapshot.value["driver-id"];
     userId = snapshot.value["user-id"];
     sign = snapshot.value["sign"];
@@ -159,6 +161,7 @@ class Job {
     'key': key,
     'name': name,
     'driver-id': driverId,
+    'payMethod': payMethod,
     'user-id': userId,
     'sign': sign,
     'customTransactionId': customTransactionId,
@@ -180,6 +183,7 @@ class Job {
     driverId = json["driver-id"];
     userId = json["user-id"];
     sign = json["sign"];
+    payMethod = json["payMethod"];
     customTransactionId = json["customTransactionId"];
     brainTreeTransactionId = json["brainTreeTransactionId"];
     price = Price.fromJson(json["price"]);
@@ -190,25 +194,6 @@ class Job {
     startTime = stringToDateTime(json["start-time"]);
     acceptTime = stringToDateTime(json["accept-time"]);
     finishTime = stringToDateTime(json["finish-time"]);
-  }
-
-  Map toMap() {
-    Map toReturn = new Map();
-    if (name != null) toReturn['name'] = name;
-    if (driverId != null) toReturn['driver-id'] = driverId;
-    if (userId != null) toReturn['user-id'] = userId;
-    if (sign != null) toReturn['sign'] = sign;
-    if (price != null) toReturn['price'] = price.toMap();
-    if (customTransactionId != null) toReturn['customTransactionId'] = customTransactionId;
-    if (brainTreeTransactionId != null) toReturn['brainTreeTransactionId'] = brainTreeTransactionId;
-    if (status != null) toReturn['status'] = statusToString(status);
-    if (vehicle != null) toReturn['vehicle'] = vehicleToString(vehicle);
-    if (originAddress != null) toReturn['origin-address'] = originAddress.toMap();
-    if (destinationAddress != null) toReturn['destination-address'] = destinationAddress.toMap();
-    if (startTime != null) toReturn['start-time'] = dateTimeToString(startTime);
-    if (acceptTime != null) toReturn['accept-time'] = dateTimeToString(acceptTime);
-    if (finishTime != null) toReturn['finish-time'] = dateTimeToString(finishTime);
-    return toReturn;
   }
 
   bool isJobAccepted() {

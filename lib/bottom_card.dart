@@ -1,23 +1,22 @@
 import 'dart:async';
 
-import 'package:circular_check_box/circular_check_box.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:postnow/dialogs/settings_dialog.dart';
 import 'package:postnow/enums/job_status_enum.dart';
 import 'package:postnow/models/job.dart';
-import 'package:postnow/models/settings_item.dart';
+import 'package:postnow/presentation/my_flutter_app_icons.dart';
 import 'package:postnow/screens/chat_screen.dart';
 import 'package:postnow/services/chat_service.dart';
 import 'package:postnow/services/global_service.dart';
 import 'package:swipebuttonflutter/swipebuttonflutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-
 class BottomCard extends StatefulWidget {
   final FloatingActionButton floatingActionButton;
   final double maxHeight;
   final Widget centerWidget;
+  final Widget body;
   final bool isCenterWidgetFixed;
   final Job job;
   final bool showOriginAddress;
@@ -27,7 +26,6 @@ class BottomCard extends StatefulWidget {
   final SettingsDialog settingsDialog;
   final String chatName;
   final String headerText;
-  final String checkboxText;
   final String phone;
   final String mainButtonText;
   final bool isSwipeButton;
@@ -43,11 +41,11 @@ class BottomCard extends StatefulWidget {
     this.centerWidget,
     this.isCenterWidgetFixed = true,
     this.job,
+    this.body,
     this.showOriginAddress = false,
     this.shrinkWrap = true,
     this.headerText,
     this.showDestinationAddress = false,
-    this.checkboxText,
     this.phone,
     this.chatName,
     this.mainButtonText,
@@ -142,15 +140,16 @@ class BottomState extends State<BottomCard> {
                 physics: const NeverScrollableScrollPhysics(),
                 children: [
                   _getHeader(),
+                  _getSubHeader(),
                   _addressWidget(false),
                   widget.showOriginAddress ? Container(height: 10) : Container(),
                   _addressWidget(true),
                   (widget.showOriginAddress || widget.showDestinationAddress) && widget.onMainButtonPressed != null ? Divider(thickness: 1, height: 25,) : Container(),
-                  _getCheckBox(),
+                  _getBody(),
                   _getMainButton(widget.isSwipeButton),
                   widget.job != null && widget.showFooter ? Divider(thickness: 1, height: 25,) : Container(),
                   _getCustomerName(),
-                  Container(height: 10 + MediaQuery.of(context).padding.bottom),
+                  Container(height: widget.body==null?10 + MediaQuery.of(context).padding.bottom:0),
                 ],
               ),
             ),
@@ -198,20 +197,20 @@ class BottomState extends State<BottomCard> {
                 bottom:  _offset.dy - 45 - 10,
                 child: Material(
                   child: InkWell(
-                    key: _settingsMenuKey,
-                    customBorder: CircleBorder(),
-                    onTap: () {
-                      showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return widget.settingsDialog;
-                          }
-                      );
-                    },
-                    child: Padding(
-                      padding: EdgeInsets.all(10),
-                      child: Icon(Icons.more_horiz, size: 35,),
-                    )
+                      key: _settingsMenuKey,
+                      customBorder: CircleBorder(),
+                      onTap: () {
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return widget.settingsDialog;
+                            }
+                        );
+                      },
+                      child: Padding(
+                        padding: EdgeInsets.all(10),
+                        child: Icon(Icons.more_horiz, size: 35,),
+                      )
                   ),
                   color: Colors.transparent,
                 )
@@ -327,12 +326,31 @@ class BottomState extends State<BottomCard> {
             Visibility(
               visible: widget.isLoading,
               child: Container(
-                padding: EdgeInsets.all(20),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                  child: LinearProgressIndicator(minHeight: 20,),
-                )
+                  padding: EdgeInsets.all(20),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                    child: LinearProgressIndicator(minHeight: 20,),
+                  )
               ),
+            )
+          ],
+        )
+    );
+  }
+
+  Widget _getSubHeader() {
+    if (widget.job == null || widget.job.price.toBePaid > 0 || widget.job.status == Status.WAITING)
+      return Container();
+    return Container(
+        margin: EdgeInsets.only(bottom: 30, top: 20),
+        padding: EdgeInsets.symmetric(horizontal: 10),
+        child: Row(
+          children: [
+            Icon(MyFlutterApp.money_bill_alt, color: Colors.green,),
+            Container(width: 20,),
+            Expanded(
+              child: Text('MAPS.BOTTOM_MENUS.ON_JOB.CASH'.tr(namedArgs: {'cash': widget.job.price.toBePaid.toStringAsFixed(2)}),
+                  style: TextStyle(color: Colors.green, fontSize: 20)),
             )
           ],
         )
@@ -359,17 +377,10 @@ class BottomState extends State<BottomCard> {
     );
   }
 
-  Widget _getCheckBox() {
-    return widget.checkboxText == null ? Container() : Row (
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        CircularCheckBox(
-          disabledColor: Colors.blueAccent,
-          value: true,
-        ),
-        Text(widget.checkboxText)
-      ],
-    );
+  Widget _getBody() {
+    if (widget.body == null)
+      return Container();
+    return widget.body;
   }
 
   Widget _getMainButton(bool isSwipeButton) {

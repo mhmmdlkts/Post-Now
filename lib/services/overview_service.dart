@@ -33,13 +33,15 @@ class OverviewService {
   Future<void> initOrderList() async {
     List<Future> futures = List<Future>();
     await _userRef.child("orders").once().then((snapshot) => {
-      snapshot.value.forEach((k1, v1) {
-        v1.forEach((k2, v2) {
-          v2.forEach((k3, v3) {
-            futures.add(_findJob(k1, k2, v3));
+      if (snapshot.value != null) {
+        snapshot.value.forEach((k1, v1) {
+          v1.forEach((k2, v2) {
+            v2.forEach((k3, v3) {
+              futures.add(_findJob(k1, k2, v3));
+            });
           });
-        });
-      })
+        })
+      }
     });
     await Future.wait(futures);
   }

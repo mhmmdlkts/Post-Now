@@ -1,14 +1,8 @@
-import 'package:firebase_database/firebase_database.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:google_maps_webservice/places.dart';
-
-import 'job.dart';
-
 class Price {
   double total;
   double voucher;
   double payed;
+  double toBePaid;
   double driverBecomes;
 
   Price.fromJson(Map json) {
@@ -18,6 +12,8 @@ class Price {
       voucher = json["voucher"] + 0.0;
     if (json["payed"] != null)
       payed = json["payed"] + 0.0;
+    if (json["toBePaid"] != null)
+      toBePaid = json["toBePaid"] + 0.0;
     if (json["driverBecomes"] != null)
       driverBecomes = json["driverBecomes"] + 0.0;
   }
@@ -26,6 +22,7 @@ class Price {
     "total": total,
     "voucher": voucher,
     "payed": payed,
+    "toBePaid": toBePaid,
     "driverBecomes": driverBecomes
   };
 }

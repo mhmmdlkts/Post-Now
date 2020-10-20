@@ -8,7 +8,6 @@ import 'package:postnow/services/chat_service.dart';
 
 import 'camera_screen.dart';
 
-
 class ChatScreen extends StatefulWidget {
   final String _jobId, _name;
   final bool _isDriverApp;
