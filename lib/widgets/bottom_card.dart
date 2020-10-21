@@ -23,6 +23,7 @@ class BottomCard extends StatefulWidget {
   final bool showDestinationAddress;
   final bool shrinkWrap;
   final bool showFooter;
+  final bool showCash;
   final SettingsDialog settingsDialog;
   final String chatName;
   final String headerText;
@@ -54,6 +55,7 @@ class BottomCard extends StatefulWidget {
     this.onMainButtonPressed,
     this.onCancelButtonPressed,
     this.showFooter = true,
+    this.showCash = false,
     this.settingsDialog,
     this.isLoading = false
   }) : super(key: key);
@@ -339,7 +341,7 @@ class BottomState extends State<BottomCard> {
   }
 
   Widget _getSubHeader() {
-    if (widget.job == null || widget.job.price.toBePaid > 0 || widget.job.status == Status.WAITING)
+    if (!widget.showCash || widget.job == null || widget.job.price.toBePaid <= 0 || widget.job.status == Status.WAITING)
       return Container();
     return Container(
         margin: EdgeInsets.only(bottom: 30, top: 20),

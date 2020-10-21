@@ -6,11 +6,12 @@ class User {
   String name;
   String phone;
   String email;
-  String languageCode;
   String token;
   GlobalSettings settings;
 
-  User({this.name, this.phone, this.token, this.email, this.languageCode});
+  User({this.name, this.phone, this.token, this.email}) {
+    settings = GlobalSettings();
+  }
 
   User.fromSnapshot(DataSnapshot snapshot) {
     key = snapshot.key;
@@ -18,7 +19,6 @@ class User {
     phone = snapshot.value["phone"];
     email = snapshot.value["email"];
     token = snapshot.value["token"];
-    languageCode = snapshot.value["lang"];
     if (snapshot.value["settings"] != null)
       settings = GlobalSettings.fromJson(snapshot.value["settings"]);
   }
@@ -29,7 +29,6 @@ class User {
     if (phone != null) data['phone'] = this.phone;
     if (email != null) data['email'] = this.email;
     if (token != null) data['token'] = this.token;
-    if (languageCode != null) data['lang'] = this.languageCode;
     if (settings != null) data['settings'] = this.settings.toJson();
     return data;
   }

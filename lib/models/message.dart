@@ -1,4 +1,5 @@
 import 'package:firebase_database/firebase_database.dart';
+import 'package:postnow/services/time_service.dart';
 
 class Message implements Comparable {
   String key;
@@ -34,18 +35,6 @@ class Message implements Comparable {
     message = json["message"];
     img = json["img"];
     send_time = stringToDateTime(json["send-time"]);
-  }
-
-  static DateTime stringToDateTime(String dateTime_string) {
-    if (dateTime_string == null)
-      return null;
-    return DateTime.parse(dateTime_string);
-  }
-
-  static String dateTimeToString(DateTime dateTime) {
-    if (dateTime == null)
-      return null;
-    return dateTime.toString();
   }
 
   Map toMap() {

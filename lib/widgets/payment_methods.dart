@@ -3,7 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:postnow/enums/payment_methods_enum.dart';
-import 'package:postnow/models/CreditCard.dart';
+import 'package:postnow/models/credit_card.dart';
 import 'package:postnow/presentation/my_flutter_app_icons.dart';
 import 'dart:io' show Platform;
 import 'dart:math';

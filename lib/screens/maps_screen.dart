@@ -8,7 +8,7 @@ import 'package:postnow/dialogs/custom_alert_dialog.dart';
 import 'package:postnow/dialogs/settings_dialog.dart';
 import 'package:postnow/enums/payment_methods_enum.dart';
 import 'package:postnow/enums/permission_typ_enum.dart';
-import 'package:postnow/models/CreditCard.dart';
+import 'package:postnow/models/credit_card.dart';
 import 'package:postnow/models/address.dart';
 import 'package:postnow/models/draft_order.dart';
 import 'package:postnow/models/settings_item.dart';
@@ -41,8 +41,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:postnow/widgets/payment_methods.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:screen/screen.dart';
-import '../bottom_card.dart';
+import '../widgets/bottom_card.dart';
 import 'chat_screen.dart';
 import 'dart:async';
 
@@ -133,6 +134,11 @@ class _MapsScreenState extends State<MapsScreen> {
       _packageLocationIcon = BitmapDescriptor.fromBytes(value);
       _nextInitializeDone('1');
     })});
+
+    _initCount++;
+    initializeDateFormatting().then((value) => {
+      _nextInitializeDone('0.0'),
+    });
 
     _initCount++;
     _mapsService.getBytesFromAsset('assets/driver_map_marker.png', 150).then((value) => { setState((){

@@ -7,7 +7,7 @@ class SignUpService {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   sendUserInfo(User u, email) async {
     String token = await _firebaseMessaging.getToken();
-    myUser.User user = new myUser.User(name: u.displayName, phone: u.phoneNumber, email: email, token: token);
+    myUser.User user = new myUser.User(name: u.displayName, phone: u.phoneNumber, email: email, token: token, );
     FirebaseDatabase.instance.reference().child('users').child(u.uid).update(user.toJson());
   }
 }

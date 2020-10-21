@@ -4,7 +4,7 @@ import 'package:credit_card/credit_card_widget.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:postnow/models/CreditCard.dart';
+import 'package:postnow/models/credit_card.dart';
 import 'package:postnow/services/add_credit_card_service.dart';
 
 class AddCreditCardScreen extends StatefulWidget {

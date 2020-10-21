@@ -4,7 +4,7 @@ import 'package:flutter_braintree/flutter_braintree.dart';
 import 'package:http/http.dart' as http;
 import 'package:postnow/enums/payment_methods_enum.dart';
 import 'package:postnow/environment/api_keys.dart';
-import 'package:postnow/models/CreditCard.dart';
+import 'package:postnow/models/credit_card.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io' show Platform;
 

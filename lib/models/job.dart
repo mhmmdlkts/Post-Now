@@ -4,6 +4,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:postnow/enums/job_status_enum.dart';
 import 'package:postnow/enums/job_vehicle_enum.dart';
 import 'package:postnow/models/price.dart';
+import 'package:postnow/services/time_service.dart';
 import 'address.dart';
 
 class Job {
@@ -25,20 +26,7 @@ class Job {
   String key;
 
   Job({this.name, this.userId, this.price, this.driverId, this.vehicle, this.customTransactionId, this.brainTreeTransactionId, this.originAddress, this.destinationAddress}) {
-    setStartTime();
     status = Status.WAITING;
-  }
-
-  setStartTime() {
-    startTime = DateTime.now();
-  }
-
-  setAcceptTime() {
-    acceptTime = DateTime.now();
-  }
-
-  setFinishTime() {
-    finishTime = DateTime.now();
   }
 
   Job.fromSnapshot(DataSnapshot snapshot) {
@@ -133,18 +121,6 @@ class Job {
     if (latLng == null)
       return null;
     return "${latLng.latitude},${latLng.longitude}";
-  }
-
-  static DateTime stringToDateTime(String dateTimeString) {
-    if (dateTimeString == null)
-      return null;
-    return DateTime.parse(dateTimeString);
-  }
-
-  static String dateTimeToString(DateTime dateTime) {
-    if (dateTime == null)
-      return null;
-    return dateTime.toString();
   }
 
   RouteMode getRouteMode() {

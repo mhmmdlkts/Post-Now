@@ -44,7 +44,7 @@ class AuthService {
 
     sendUserInfo(User u) async {
       String token = await _firebaseMessaging.getToken();
-      myUser.User user = new myUser.User(token: token, languageCode: ui.window.locale.languageCode, phone: u.phoneNumber);
+      myUser.User user = new myUser.User(token: token, phone: u.phoneNumber);
       FirebaseDatabase.instance.reference().child('users').child(u.uid).update(user.toJson());
     }
 
