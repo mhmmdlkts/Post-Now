@@ -51,6 +51,7 @@ class Driver implements Comparable{
 
   Marker getMarker(BitmapDescriptor bitmapDescriptor) {
     return Marker(
+      zIndex: 1,
       markerId: MarkerId(key),
       position: LatLng(lat, long),
       icon: bitmapDescriptor,

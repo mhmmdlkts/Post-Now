@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_braintree/flutter_braintree.dart';
 import 'package:http/http.dart' as http;
 import 'package:postnow/enums/payment_methods_enum.dart';
@@ -8,9 +9,12 @@ import 'package:postnow/models/credit_card.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io' show Platform;
 
+import 'global_service.dart';
+
 class PaymentService {
   SharedPreferences prefs;
   static const String PREFS_CUSTOMER_ID = "Braintree_CustomerId";
+  static const platform = const MethodChannel('$POSTNOW_PACKAGE_NAME/payments');
 
   Future<bool> pay(double amount, String uid, String draftId, bool useCredits, double credits, PaymentMethodsEnum paymentMethod, CreditCard creditCard) async {
 
@@ -36,14 +40,17 @@ class PaymentService {
         params.add('paymentMethod=${3}');
         if (!Platform.isIOS)
           return false;
+        String result = await _callNativeApplePayCode(amount.toString());
+        print ("Result Apple Pay: " + result);
+        return false;
         // TODO implementire Apple Pay
         break;
       case PaymentMethodsEnum.PAYPAL:
         params.add('paymentMethod=${4}');
         final request = BraintreePayPalRequest(
-        amount: amount.toString(),
-        displayName: 'APP_NAME'.tr(),
-        currencyCode: 'EUR',
+          amount: amount.toString(),
+          displayName: 'APP_NAME'.tr(),
+          currencyCode: 'EUR',
         );
         final result = await Braintree.requestPaypalNonce(await _getBrainTreeToken(), request);
         params.add("nonce=" + result.nonce);
@@ -80,8 +87,17 @@ class PaymentService {
     }
   }
 
+  Future<String> _callNativeApplePayCode(String amount) async {
+    try {
+      return (await platform.invokeMethod('applePay', {"amount":amount, "authorization": BRAINTREE_TOKENIZATION_KEY})).toString();
+    } on PlatformException catch (e) {
+      print("Apple Pay Failed: '${e.message}'.");
+    }
+    return null;
+  }
+
   Future<String> _getBrainTreeToken() async {
-    String customerId = await getCustomerId();
+    String customerId = await _getCustomerId();
     var url = "https://europe-west1-post-now-f3c53.cloudfunctions.net/braintree_getToken" + (customerId == null ? "" : "?customerId=" + customerId);
     String token;
     try {
@@ -95,12 +111,12 @@ class PaymentService {
     return token;
   }
 
-  Future<String> getCustomerId() async {
+  Future<String> _getCustomerId() async {
     prefs = await SharedPreferences.getInstance();
-    return prefs.getString(PREFS_CUSTOMER_ID) ?? await createCustomerId();
+    return prefs.getString(PREFS_CUSTOMER_ID) ?? await _createCustomerId();
   }
 
-  Future<String> createCustomerId() async {
+  Future<String> _createCustomerId() async {
     if (prefs == null)
       prefs = await SharedPreferences.getInstance();
     User user = FirebaseAuth.instance.currentUser;

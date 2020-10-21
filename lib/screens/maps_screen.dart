@@ -44,6 +44,7 @@ import 'package:postnow/widgets/payment_methods.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:screen/screen.dart';
 import '../widgets/bottom_card.dart';
+import 'dart:io' show Platform;
 import 'chat_screen.dart';
 import 'dart:async';
 
@@ -63,7 +64,6 @@ class _MapsScreenState extends State<MapsScreen> {
   final AudioCache _audioPlayer = AudioCache();
   final List<CreditCard> _creditCards = List();
   final GlobalKey _mapKey = GlobalKey();
-  final List<Driver> _drivers = List();
   final User _user;
   OverviewService _overviewService;
   String _driverPhone;
@@ -94,13 +94,15 @@ class _MapsScreenState extends State<MapsScreen> {
   }
 
   goToPayButtonPressed() {
-    setState(() {
-      /*if (!isOnlineDriverAvailable()) { TODO activate me
-        _changeMenuTyp(MenuTyp.NO_DRIVER_AVAILABLE);
-        return;
-      }*/
-      _changeMenuTyp(MenuTyp.CALCULATING_DISTANCE);
-      getRoute();
+    _mapsService.isOnlineDriverAvailable().then((value) => {
+      setState(() {
+        if (!value) {
+          _changeMenuTyp(MenuTyp.NO_DRIVER_AVAILABLE);
+          return;
+        }
+        _changeMenuTyp(MenuTyp.CALCULATING_DISTANCE);
+        getRoute();
+      })
     });
   }
 
@@ -129,8 +131,10 @@ class _MapsScreenState extends State<MapsScreen> {
         print("Force init");
     });
 
+    final markerSize = Platform.isIOS?130:80;
+
     _initCount++;
-    _mapsService.getBytesFromAsset('assets/package_map_marker.png', 130).then((value) => { setState((){
+    _mapsService.getBytesFromAsset('assets/package_map_marker.png', markerSize).then((value) => { setState((){
       _packageLocationIcon = BitmapDescriptor.fromBytes(value);
       _nextInitializeDone('1');
     })});
@@ -141,13 +145,13 @@ class _MapsScreenState extends State<MapsScreen> {
     });
 
     _initCount++;
-    _mapsService.getBytesFromAsset('assets/driver_map_marker.png', 150).then((value) => { setState((){
+    _mapsService.getBytesFromAsset('assets/driver_map_marker.png', (markerSize*1.15).round()).then((value) => { setState((){
       _driverLocationIcon = BitmapDescriptor.fromBytes(value);
       _nextInitializeDone('2');
     })});
 
     _initCount++;
-    _mapsService.getBytesFromAsset('assets/home_map_marker.png', 130).then((value) => { setState((){
+    _mapsService.getBytesFromAsset('assets/home_map_marker.png', markerSize).then((value) => { setState((){
       _homeLocationIcon = BitmapDescriptor.fromBytes(value);
       _nextInitializeDone('3');
     })});
@@ -162,11 +166,7 @@ class _MapsScreenState extends State<MapsScreen> {
 
     _originTextController = new TextEditingController(text: '');
     _destinationTextController = new TextEditingController(text: '');
-
-    _mapsService.driverRef.onChildAdded.listen(_onDriversDataAdded);
-    _mapsService.driverRef.onChildChanged.listen(_onDriversDataChanged);
-
-
+    
     _mapsService.jobsRef.onChildAdded.listen(_onJobsDataAdded);
 
     FirebaseFirestore.instance.collection('users').doc(_user.uid).snapshots().listen((snapshot) {
@@ -229,13 +229,6 @@ class _MapsScreenState extends State<MapsScreen> {
     return true;
   }
 
-  void _onDriversDataAdded(Event event) {
-    setState(() {
-      Driver snapshot = Driver.fromSnapshot(event.snapshot);
-      _drivers.add(snapshot);
-    });
-  }
-
   void _onJobsDataAdded(Event event) async {
     Job snapshot = Job.fromSnapshot(event.snapshot);
     if (snapshot == _job) {
@@ -245,6 +238,12 @@ class _MapsScreenState extends State<MapsScreen> {
 
   _onMyJobChanged(Job j) {
     _job = j;
+
+    _addAddressMarker(null, null);
+    _addAddressMarker(j.destinationAddress.coordinates, true);
+    if (_job.status != Status.PACKAGE_PICKED)
+      _addAddressMarker(j.originAddress.coordinates, false);
+    _mapsService.driverRef.child(j.driverId).onValue.listen(_onMyDriverDataChanged);
     _getDriverInfo();
     switch (_job.status) {
       case Status.ON_ROAD:
@@ -266,12 +265,9 @@ class _MapsScreenState extends State<MapsScreen> {
     }
   }
 
-  void _onDriversDataChanged(Event event) {
-    var old = _drivers.singleWhere((entry) {
-      return entry.key == event.snapshot.key;
-    });
+  void _onMyDriverDataChanged(Event event) {
     setState(() {
-      _drivers[_drivers.indexOf(old)] = Driver.fromSnapshot(event.snapshot);
+      _myDriver = Driver.fromSnapshot(event.snapshot);
     });
   }
 
@@ -413,17 +409,8 @@ class _MapsScreenState extends State<MapsScreen> {
 
   Set<Marker> _createMarker() {
     Set markers = Set<Marker>();
-    for (Driver driver in _drivers) {
-      if (_menuTyp != MenuTyp.ACCEPTED) {
-        if (driver.isOnline) {
-          markers.add(driver.getMarker(_driverLocationIcon));
-        }
-      } else {
-        if (driver.isMyDriver) {
-          markers.add(driver.getMarker(_driverLocationIcon));
-        }
-      }
-    }
+    if (_myDriver != null && _job.status != Status.WAITING)
+      markers.add(_myDriver.getMarker(_driverLocationIcon));
     if (_packageMarker != null)
       markers.add(_packageMarker);
     if (_destinationMarker != null)
@@ -461,36 +448,34 @@ class _MapsScreenState extends State<MapsScreen> {
     setState(() {
       _polyLines.clear();
       LatLng chosen = pos;
+      _addAddressMarker(chosen, _isDestinationButtonChosen);
       if (_isDestinationButtonChosen) {
         _destinationAddress = Address.fromLatLng(chosen);
-        _destinationMarker = Marker(
-            markerId: MarkerId("package"),
-            position: chosen,
-            icon: _homeLocationIcon,
-            onTap: () => {
-              setState(() {
-                _isDestinationButtonChosen = true;
-              })
-            }
-        );
         _setPlaceForDestination(address: address, houseNumber: houseNumber);
       } else {
         _originAddress = Address.fromLatLng(chosen);
-        _packageMarker = Marker(
-            markerId: MarkerId("destination"),
-            position: chosen,
-            icon: _packageLocationIcon,
-            onTap: () => {
-              setState(() {
-                _isDestinationButtonChosen = false;
-              })
-            }
-        );
         _setPlaceForOrigin(address: address, houseNumber: houseNumber);
       }
       if (_isDestinationButtonChosen? _originAddress == null : _destinationAddress == null)
         _isDestinationButtonChosen = !_isDestinationButtonChosen;
     });
+  }
+
+  void _addAddressMarker(LatLng position, bool isDestination) {
+    if (isDestination == null) {
+      _destinationMarker = null;
+      _packageMarker = null;
+      return;
+    }
+    Marker marker = Marker(
+        markerId: MarkerId(isDestination?"destination":"package"),
+        position: position,
+        icon: isDestination?_homeLocationIcon:_packageLocationIcon,
+    );
+    if (isDestination)
+      _destinationMarker = marker;
+    else
+      _packageMarker = marker;
   }
 
   Widget getTopMenu() {
@@ -1214,14 +1199,6 @@ class _MapsScreenState extends State<MapsScreen> {
     );
   }
 
-  bool isOnlineDriverAvailable() {
-    for (int i = 0; i < _drivers.length; i++) {
-      if (_drivers[i].isOnline)
-        return true;
-    }
-    return false;
-  }
-
   FloatingActionButton _goToPayFloatingActionButton() => FloatingActionButton(
     heroTag: "btn",
     onPressed: goToPayButtonPressed,
@@ -1234,7 +1211,6 @@ class _MapsScreenState extends State<MapsScreen> {
       _clearDestinationAddress();
       _clearOriginAddress();
       _polyLines.clear();
-      _packageMarker = null;
       _isDestinationButtonChosen = false;
       _draft = null;
       _myDriver = null;
@@ -1328,7 +1304,6 @@ class _MapsScreenState extends State<MapsScreen> {
         _mapsService.jobsRef.child(jobId.toString()).onValue.listen((Event e){
           print(e.snapshot.value["status"]);
           Job j = Job.fromSnapshot(e.snapshot);
-          _job = j;
           _onMyJobChanged(j);
         });
       } else {

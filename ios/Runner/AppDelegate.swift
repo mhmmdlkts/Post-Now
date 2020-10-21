@@ -6,10 +6,12 @@ import FirebaseCore
 import GoogleMaps
 import UserNotifications
 import Braintree
+import PassKit
+
 
 
  @UIApplicationMain
- @objc class AppDelegate: FlutterAppDelegate {
+@objc class AppDelegate: FlutterAppDelegate {
      
    override func application(
      _ application: UIApplication,
@@ -18,7 +20,7 @@ import Braintree
      BTAppSwitch.setReturnURLScheme("com.mali.postnow.payments")
      GMSServices.provideAPIKey("AIzaSyDuKAn_iQ-QIFWxgf1AZD34yMZLMw7RP-c");
      GeneratedPluginRegistrant.register(with: self)
-     paymentFlutter();
+     //paymentFlutter();
      if FirebaseApp.app() == nil {
          FirebaseApp.configure()
      }
@@ -53,26 +55,74 @@ import Braintree
        }
    }
    
-    func paymentFlutter() {
+    /*func paymentFlutter() {
         let controller : FlutterViewController = window?.rootViewController as! FlutterViewController
         let paymentChannel = FlutterMethodChannel(name: "com.mali.postnow/payments",
                                                   binaryMessenger: controller.binaryMessenger)
         paymentChannel.setMethodCallHandler({
           (call: FlutterMethodCall, result: @escaping FlutterResult) -> Void in
-            guard call.method == "openPayMenu" else {
+            guard call.method == "applePay" else {
               result(FlutterMethodNotImplemented)
               return
             }
-            guard let args = call.arguments as? Dictionary<String, Double>, let amount = args["amount"] else {
-                result(FlutterError.init(code: "PAYMENU_NO_AMOUNT", message: "Failed to pay, there is no amount.", details: nil))
+            guard let args = call.arguments as? Dictionary<String, String>, let amount = args["amount"], let clientAuthorization = args["authorization"] else {
+                result(FlutterError.init(code: "PAYMENU_INVALID_ARGUMENT", message: "Failed to pay, invalid arguments.", details: nil))
               return
             }
-            self.payWithApplePay(amount: amount, result: result)
+            self.payWithApplePay(amount: amount, authorization: clientAuthorization, result: result)
         })
     }
+    var braintreeClient: BTAPIClient?
     
-    private func payWithApplePay(amount: Double, result: FlutterResult) {
-        result(-amount)
+    private func payWithApplePay(amount: String, authorization: String, result: FlutterResult) {
+        braintreeClient = BTAPIClient(authorization: authorization)
+        self.setupPaymentRequest(completion: self.setupPaymentCompletion(paymentRequest:error:))
+        result(amount)
     }
+    
+    func setupPaymentCompletion(paymentRequest: PKPaymentRequest?, error: Error?) {
+        guard error == nil else {
+            print("Error: Payment request is invalid.")
+           return
+        }
+        if let paymentRequest = paymentRequest {
+            if let vc = PKPaymentAuthorizationViewController(paymentRequest: paymentRequest)
+                as PKPaymentAuthorizationViewController?
+            {
+                vc.delegate = self
+                // present(vc, animated: true, completion: nil)
+            } else {
+                print("Error: Payment request is invalid.")
+            }
+        } else {
+            print("Error: Payment request is invalid.")
+        }
+    }
+        
+    func setupPaymentRequest(completion: @escaping (PKPaymentRequest?, Error?) -> Void) {
+        
+        if let braintreeClient = self.braintreeClient {
+            let price = "6.60"
+            let applePayClient = BTApplePayClient(apiClient: braintreeClient)
 
+            applePayClient.paymentRequest { (paymentRequest, error) in
+                guard let paymentRequest = paymentRequest else {
+                    completion(nil, error)
+                    return
+                }
+
+                if #available(iOS 11.0, *) {
+                    paymentRequest.requiredBillingContactFields = [.postalAddress]
+                }
+                paymentRequest.merchantCapabilities = .capability3DS
+                paymentRequest.paymentSummaryItems =
+                [
+                    PKPaymentSummaryItem(label: "Post Now", amount: NSDecimalNumber(string: price)),
+                ]
+                completion(paymentRequest, nil)
+            }
+        } else {
+            print("Error: Payment token request is invalid.")
+        }
+    }*/
  }

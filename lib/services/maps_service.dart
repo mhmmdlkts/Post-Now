@@ -145,4 +145,13 @@ class MapsService with WidgetsBindingObserver {
     }
     return rtnVal;
   }
+
+  Future<bool> isOnlineDriverAvailable() async {
+    String url = 'https://europe-west1-post-now-f3c53.cloudfunctions.net/getStatistik';
+    http.Response response = await http.get(url);
+    if (response.statusCode != 200)
+      throw('Status code: ' + response.statusCode.toString());
+    dynamic obj = json.decode(response.body);
+    return obj["onlineDrivers"] > 0;
+  }
 }
