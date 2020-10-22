@@ -1,53 +1,50 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import 'global_settings.dart';
+
 class Driver implements Comparable{
   double distance;
   String key;
   String name;
+  String surname;
   String token;
   double lat;
   double long;
   bool isOnline;
-  bool isMyDriver = false;
+  String email;
+  String phone;
+  GlobalSettings settings;
 
-  Driver({this.name, this.isOnline, this.lat, this.long, this.token});
+  Driver({this.name, this.surname, this.email, this.phone, this.isOnline, this.lat, this.long, this.token}) {
+    settings = GlobalSettings();
+  }
 
   Driver.fromSnapshot(DataSnapshot snapshot) {
-    try {
-      key = snapshot.key;
-      name = snapshot.value["name"];
-      token = snapshot.value["token"];
-      isOnline = snapshot.value["isOnline"];
-      lat = snapshot.value["lat"] + 0.0;
-      long = snapshot.value["long"] + 0.0;
-    } catch (e) {
-      print("Driver can't tranform from snapshot");
-    }
+    key = snapshot.key;
+    name = snapshot.value["name"];
+    token = snapshot.value["token"];
+    isOnline = snapshot.value["isOnline"];
+    lat = snapshot.value["lat"] + 0.0;
+    long = snapshot.value["long"] + 0.0;
+    surname = snapshot.value["surname"];
+    email = snapshot.value["email"];
+    phone = snapshot.value["phone"];
+    if (snapshot.value["settings"] != null)
+      settings = GlobalSettings.fromJson(snapshot.value["settings"]);
   }
 
-  Driver.fromJson(Map<String, dynamic> json) {
-    name = json['name'];
-    token = json['token'];
-    isOnline = json['isOnline'];
-    lat = json['lat'];
-    long = json['long'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.name != null)
-      data['name'] = this.name;
-    if (this.token != null)
-      data['token'] = this.token;
-    if (this.isOnline != null)
-      data['isOnline'] = this.isOnline;
-    if (this.lat != null)
-      data['lat'] = this.lat;
-    if (this.long != null)
-      data['long'] = this.long;
-    return data;
-  }
+  Map<String, dynamic> toJson() => {
+    'name': this.name,
+    'token': this.token,
+    'isOnline': this.isOnline,
+    'lat': this.lat,
+    'long': this.long,
+    'surname': this.surname,
+    'email': this.email,
+    'phone': this.phone,
+    'settings': this.settings.toJson()
+  };
 
   Marker getMarker(BitmapDescriptor bitmapDescriptor) {
     return Marker(
@@ -69,10 +66,6 @@ class Driver implements Comparable{
       return 1;
     else
       return -1;
-  }
-
-  String getName() {
-    return name == null? "Name" : name;
   }
 
   LatLng getLatLng() => LatLng(lat, long);

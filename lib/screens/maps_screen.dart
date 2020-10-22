@@ -66,8 +66,6 @@ class _MapsScreenState extends State<MapsScreen> {
   final GlobalKey _mapKey = GlobalKey();
   final User _user;
   OverviewService _overviewService;
-  String _driverPhone;
-  String _driverName;
   bool _isInitialized = false;
   bool _isInitDone = false;
   int _initCount = 0;
@@ -244,7 +242,6 @@ class _MapsScreenState extends State<MapsScreen> {
     if (_job.status != Status.PACKAGE_PICKED)
       _addAddressMarker(j.originAddress.coordinates, false);
     _mapsService.driverRef.child(j.driverId).onValue.listen(_onMyDriverDataChanged);
-    _getDriverInfo();
     switch (_job.status) {
       case Status.ON_ROAD:
         _changeMenuTyp(MenuTyp.ACCEPTED);
@@ -268,6 +265,7 @@ class _MapsScreenState extends State<MapsScreen> {
   void _onMyDriverDataChanged(Event event) {
     setState(() {
       _myDriver = Driver.fromSnapshot(event.snapshot);
+      _refreshBottomCard();
     });
   }
 
@@ -561,10 +559,12 @@ class _MapsScreenState extends State<MapsScreen> {
         await drawPolylineHelper(colorIndex, firstColor, colors[colorIndex++ % colors.length], _draft.routes);
         await new Future.delayed(Duration(milliseconds : 500));
       }
-      _polyLines.clear();
+      setState(() {
+        _polyLines.clear();
+      });
     }
 
-    bool isDrawableRoute() => _menuTyp == MenuTyp.CONFIRM || _menuTyp == MenuTyp.CALCULATING_DISTANCE;
+    bool isDrawableRoute() => _menuTyp != MenuTyp.PACKAGE_PICKED && _menuTyp != MenuTyp.ACCEPTED && _menuTyp != MenuTyp.COMPLETED;
 
     drawPolylineHelper(int id, Color firstColor, Color color, List<LatLng> routeCoords) async {
 
@@ -1078,10 +1078,7 @@ class _MapsScreenState extends State<MapsScreen> {
           maxHeight: _mapKey.currentContext.size.height,
           floatingActionButton: _positionFloatingActionButton(),
           onCancelButtonPressed: () {
-            setState(() {
-              _polyLines.clear();
-              _changeMenuTyp(MenuTyp.FROM_OR_TO);
-            });
+            _changeMenuTyp(MenuTyp.FROM_OR_TO);
           },
           body: PaymentMethods(_user, _creditCards, (PaymentMethodsEnum paymentMethod, bool useCredits, CreditCard creditCard) {
             if (_draft.price.total == 0)
@@ -1138,9 +1135,9 @@ class _MapsScreenState extends State<MapsScreen> {
           floatingActionButton: _positionFloatingActionButton(),
           showDestinationAddress: true,
           showOriginAddress: true,
-          chatName: _driverName,
-          phone: _driverPhone,
-          headerText: _driverName,
+          chatName: _myDriver==null?null:_myDriver.name,
+          phone: _myDriver==null?null:_myDriver.phone,
+          headerText: _myDriver==null?null:_myDriver.name,
           defaultOpen: true,
           shrinkWrap: true,
           showFooter: false,
@@ -1155,9 +1152,9 @@ class _MapsScreenState extends State<MapsScreen> {
           floatingActionButton: _positionFloatingActionButton(),
           showDestinationAddress: true,
           showOriginAddress: false,
-          chatName: _driverName,
-          phone: _driverPhone,
-          headerText: _driverName,
+          chatName: _myDriver==null?null:_myDriver.name,
+          phone: _myDriver==null?null:_myDriver.phone,
+          headerText: _myDriver==null?null:_myDriver.name,
           defaultOpen: true,
           shrinkWrap: true,
           showFooter: false,
@@ -1287,14 +1284,6 @@ class _MapsScreenState extends State<MapsScreen> {
         position: ToastPosition.top,
         handleTouch: true
     );
-  }
-
-  _getDriverInfo() async {
-    await Future.wait([
-      _mapsService.getPhoneNumberFromDriver(_job).then((value) => { _driverPhone = value }),
-      _mapsService.getNameFromDriver(_job).then((value) => { _driverName = value })
-    ]);
-    _refreshBottomCard();
   }
 
   Future<void> _myJobListener() async {

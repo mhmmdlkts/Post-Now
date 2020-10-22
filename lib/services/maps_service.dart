@@ -20,7 +20,6 @@ import 'package:postnow/models/job.dart';
 class MapsService with WidgetsBindingObserver {
   final DatabaseReference jobsChatRef = FirebaseDatabase.instance.reference().child('jobs_chat');
   final DatabaseReference driverRef = FirebaseDatabase.instance.reference().child('drivers');
-  final DatabaseReference driverInfoRef = FirebaseDatabase.instance.reference().child('drivers_info');
   final DatabaseReference jobsRef = FirebaseDatabase.instance.reference().child('jobs');
   final DatabaseReference draftRef = FirebaseDatabase.instance.reference().child('draft_order');
   DatabaseReference userRef;
@@ -75,23 +74,6 @@ class MapsService with WidgetsBindingObserver {
     ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(), targetWidth: width);
     ui.FrameInfo fi = await codec.getNextFrame();
     return (await fi.image.toByteData(format: ui.ImageByteFormat.png)).buffer.asUint8List();
-  }
-
-  Future<String> getPhoneNumberFromDriver(Job j) async {
-    String phone;
-    await driverInfoRef.child(j.driverId).child("phone").once().then((value) => {
-      if (value != null)
-        phone = value.value
-    });
-    return phone;
-  }
-
-  Future<String> getNameFromDriver(Job j) async {
-    String name;
-    await driverRef.child(j.driverId).child("name").once().then((value) => {
-      name = value.value,
-    });
-    return name;
   }
 
   Future<double> getCredit() async {

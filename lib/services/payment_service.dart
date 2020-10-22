@@ -77,7 +77,6 @@ class PaymentService {
     params.forEach((element) {
       url += "&" + element;
     });
-    print(url);
     try {
       http.Response response = await http.get(url);
       return response.body.toLowerCase().trim() == 'true';
