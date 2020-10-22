@@ -5,6 +5,7 @@ import 'package:google_map_polyline/google_map_polyline.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:postnow/dialogs/address_manager_dialog.dart';
 import 'package:postnow/dialogs/custom_alert_dialog.dart';
+import 'package:postnow/dialogs/order_details_dialog.dart';
 import 'package:postnow/dialogs/settings_dialog.dart';
 import 'package:postnow/enums/payment_methods_enum.dart';
 import 'package:postnow/enums/permission_typ_enum.dart';
@@ -286,10 +287,13 @@ class _MapsScreenState extends State<MapsScreen> {
     });
 
     PaymentService().pay(_draft.price.total, _user.uid, _draft.key, useCredits, _credit, paymentMethod, creditCard).then((success) => {
-      if (!success)
+      if (!success) {
         setState(() {
           _changeMenuTyp(MenuTyp.PAYMENT_DECLINED);
         })
+      } else {
+        _showOrderDetailDialog(_draft.key)
+      }
     }).catchError((onError) => {
       print(onError),
       setState(() {
@@ -1324,6 +1328,16 @@ class _MapsScreenState extends State<MapsScreen> {
       context: context,
       builder: (BuildContext context) {
         return AddressManager(address);
+      }
+    );
+  }
+
+  Future<String> _showOrderDetailDialog(jobId) async {
+    return await showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return OrderDetailDialog(jobId);
       }
     );
   }

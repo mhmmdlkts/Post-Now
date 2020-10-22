@@ -8,6 +8,7 @@
   "CLOSE": "Close",
   "SETTINGS": "Settings",
   "SEND_MESSAGE": "Send a message",
+  "SEND": "Send",
   "SAVE": "Save",
   "GO_BACK": "Go back",
   "CHECKOUT": "Checkout",
@@ -221,6 +222,12 @@
         "MESSAGE": "Bu alani degiistirmeye ihtiyaciniz varsa bizimle letisime gecin",
         "CONTACT": "Iletisime gec"
       }
+    },
+    "ORDER_DETAILS": {
+      "ERROR_MESSAGES": {
+        "MESSAGE_IS_EMPTY": "Buraya bir mesaj giriniz"
+      },
+      "MESSAGE": "Bizden istediginiz hizmeti kisaca anlatin"
     }
   },
   "PAYMENTMETHODSENUM": {

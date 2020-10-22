@@ -50,6 +50,10 @@ class ChatService {
     _chatRef.push().set(message.toMap());
   }
 
+  static sendMessageStatic(String jobId, Message message) {
+    FirebaseDatabase.instance.reference().child('jobs_chat').child(jobId).push().set(message.toMap());
+  }
+
   readMessage(int index) {
     Message msg = chat.messages[index];
     if (msg.from_driver != _isDriverApp){
