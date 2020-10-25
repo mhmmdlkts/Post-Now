@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:postnow/decoration/my_colors.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({
@@ -10,11 +11,6 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +25,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Widget _buildBody() {
     return new Scaffold(
-      backgroundColor: Color.fromARGB(255, 41, 171, 226),
+      backgroundColor: primaryBlue,
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,

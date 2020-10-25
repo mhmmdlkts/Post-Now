@@ -174,6 +174,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                   children: <Widget>[
                     Expanded(
                       child: TextField(
+                        textCapitalization: TextCapitalization.sentences,
                         controller: _textEditingController,
                         style: TextStyle(color: Colors.white),
                         decoration: InputDecoration(

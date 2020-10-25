@@ -120,6 +120,7 @@ class _AddressManager extends State<AddressManager> {
                       ],
                     ),
                     TextField(
+                      textCapitalization: TextCapitalization.words,
                       maxLength: 25,
                       autofocus: Address.isStringNotEmpty(_address.houseNumber) && Address.isStringNotEmpty(_address.doorNumber) && !Address.isStringNotEmpty(_address.doorName),
                       controller: _doorNameController,

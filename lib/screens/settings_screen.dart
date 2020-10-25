@@ -49,7 +49,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       CupertinoSettings(
         items: <Widget>[
           CSHeader('SETTINGS_SCREEN.ACCOUNT.TITLE'.tr()),
-          CupertinoTextField(readOnly: true, decoration: BoxDecoration( color: Colors.black12), onTap: _showAreYouCantChangeDialog, controller: _settingsService.accountNameCtrl, placeholder: "SETTINGS_SCREEN.ACCOUNT.NAME_HINT".tr()),
+          CupertinoTextField(readOnly: true, decoration: BoxDecoration( color: Colors.black12), onTap: _showAreYouCantChangeDialog, controller: _settingsService.accountNameCtrl, placeholder: "SETTINGS_SCREEN.ACCOUNT.NAME_HINT".tr(), textCapitalization: TextCapitalization.words),
           CupertinoTextField(readOnly: true, decoration: BoxDecoration( color: Colors.black12), onTap: _showAreYouCantChangeDialog, controller: _settingsService.accountEmailCtrl, placeholder: "SETTINGS_SCREEN.ACCOUNT.EMAIL_HINT".tr()),
           CupertinoTextField(readOnly: true, decoration: BoxDecoration( color: Colors.black12), onTap: _showAreYouCantChangeDialog, controller: _settingsService.accountPhoneCtrl, placeholder: "SETTINGS_SCREEN.ACCOUNT.PHONE_HINT".tr()),
           CSHeader('SETTINGS_SCREEN.INVOICE.TITLE'.tr()),
@@ -69,6 +69,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             child: Column(
               children: [
                 CupertinoTextField(controller: _settingsService.settings.invoiceNameCtrl, placeholder: "SETTINGS_SCREEN.INVOICE.NAME_HINT".tr(),
+    textCapitalization: TextCapitalization.words,
                     onChanged: (val) {
                       if (!_customInvoiceNeedsSave)
                         setState(() {
@@ -76,6 +77,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         });
                     }),
                 CupertinoTextField(controller: _settingsService.settings.invoiceAddressCtrl, placeholder: "SETTINGS_SCREEN.INVOICE.ADDRESS_HINT".tr(),
+    textCapitalization: TextCapitalization.sentences,
                   onChanged: (val) {
                     if (!_customInvoiceNeedsSave)
                       setState(() {
