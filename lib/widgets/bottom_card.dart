@@ -29,6 +29,7 @@ class BottomCard extends StatefulWidget {
   final String headerText;
   final String phone;
   final String mainButtonText;
+  final String imageUrl;
   final bool isSwipeButton;
   final bool isLoading;
   final bool defaultOpen;
@@ -37,6 +38,7 @@ class BottomCard extends StatefulWidget {
 
   BottomCard({
     key,
+    this.imageUrl,
     this.maxHeight,
     this.floatingActionButton,
     this.centerWidget,
@@ -172,6 +174,7 @@ class BottomState extends State<BottomCard> {
                     backgroundColor: Colors.redAccent,
                   ),
                 ),
+                widget.imageUrl != null ?_circularImage(widget.imageUrl): Container(),
                 widget.phone == null? Container() : Container(
                   margin: EdgeInsets.only(right: 14),
                   child: FloatingActionButton(
@@ -467,41 +470,55 @@ class BottomState extends State<BottomCard> {
   }
 
   Widget _sendMessageFab(int count) {
-    return FloatingActionButton(
-      heroTag: "send_message_fab",
-      child: Stack(
-        children: [
-          Align(
-            alignment: Alignment.center,
-            child: Icon(Icons.message, color: Colors.white,),
-          ),
-          (count > 0) ?
-          Align(
-
-            alignment: Alignment.bottomRight,
-            child: Container(
-              width: 24,
-              height: 24,
-              child: Center(
-                child: Text(count.toString(),style: TextStyle(color: Colors.white),),
-              ),
-              decoration: new BoxDecoration(
-                color: Colors.redAccent,
-                borderRadius: new BorderRadius.all(const Radius.circular(50)),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.5),
-                    spreadRadius: 5,
-                    blurRadius: 7,
-                    offset: Offset(0, 3), // changes position of shadow
-                  ),
-                ],
-              ),
+    return Container(
+      margin: EdgeInsets.only(right: 14),
+      child: FloatingActionButton(
+        heroTag: "send_message_fab",
+        child: Stack(
+          children: [
+            Align(
+              alignment: Alignment.center,
+              child: Icon(Icons.message, color: Colors.white,),
             ),
-          ) : Container(),
-        ],
+            (count > 0) ?
+            Align(
+
+              alignment: Alignment.bottomRight,
+              child: Container(
+                width: 24,
+                height: 24,
+                child: Center(
+                  child: Text(count.toString(),style: TextStyle(color: Colors.white),),
+                ),
+                decoration: new BoxDecoration(
+                  color: Colors.redAccent,
+                  borderRadius: new BorderRadius.all(const Radius.circular(50)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 5,
+                      blurRadius: 7,
+                      offset: Offset(0, 3), // changes position of shadow
+                    ),
+                  ],
+                ),
+              ),
+            ) : Container(),
+          ],
+        ),
+        onPressed: _openMessageScreen,
+      )
+    );
+  }
+
+  Widget _circularImage(String imgUrl) {
+    return Container(
+      margin: EdgeInsets.only(right: 14),
+      child: CircleAvatar(
+        radius: 30.0,
+        backgroundImage: NetworkImage(imgUrl),
+        backgroundColor: Colors.transparent,
       ),
-      onPressed: _openMessageScreen,
     );
   }
 }

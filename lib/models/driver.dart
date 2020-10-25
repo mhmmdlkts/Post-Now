@@ -14,6 +14,7 @@ class Driver implements Comparable{
   bool isOnline;
   String email;
   String phone;
+  String image;
   GlobalSettings settings;
 
   Driver({this.name, this.surname, this.email, this.phone, this.isOnline, this.lat, this.long, this.token}) {
@@ -30,6 +31,7 @@ class Driver implements Comparable{
     surname = snapshot.value["surname"];
     email = snapshot.value["email"];
     phone = snapshot.value["phone"];
+    image = snapshot.value["image"];
     if (snapshot.value["settings"] != null)
       settings = GlobalSettings.fromJson(snapshot.value["settings"]);
   }

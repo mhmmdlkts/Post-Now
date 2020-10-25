@@ -1137,6 +1137,7 @@ class _MapsScreenState extends State<MapsScreen> {
         _bottomCard = new BottomCard(
           key: GlobalKey(),
           job: _job,
+          imageUrl: _myDriver.image,
           maxHeight: _mapKey.currentContext.size.height,
           floatingActionButton: _positionFloatingActionButton(),
           showDestinationAddress: true,
@@ -1154,6 +1155,7 @@ class _MapsScreenState extends State<MapsScreen> {
         _bottomCard = new BottomCard(
           key: GlobalKey(),
           job: _job,
+          imageUrl: _myDriver.image,
           maxHeight: _mapKey.currentContext.size.height,
           floatingActionButton: _positionFloatingActionButton(),
           showDestinationAddress: true,
