@@ -8,6 +8,9 @@ import 'dart:ui' as ui;
 
 void main() async {
   runApp(
+    Container(color: Colors.red, width: 100, height: 100,)
+  );
+  /*runApp(
       EasyLocalization(
           supportedLocales: [Locale('en', ''), Locale('de', ''), Locale('tr', '')],
           path: 'assets/translations',
@@ -16,7 +19,7 @@ void main() async {
           useOnlyLangCode: true,
           child: MyApp()
       ),
-  );
+  );*/
 }
 
 class MyApp extends StatelessWidget {

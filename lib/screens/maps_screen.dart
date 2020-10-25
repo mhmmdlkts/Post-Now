@@ -157,10 +157,12 @@ class _MapsScreenState extends State<MapsScreen> {
 
     _mapsService.userRef.child("creditCards").onValue.listen((Event e){
       _creditCards.clear();
-      e.snapshot.value.forEach((key, value) {
-        _creditCards.add(CreditCard.fromJson(value));
-      });
-      setState(() {});
+      if (e.snapshot.value != null) {
+        e.snapshot.value.forEach((key, value) {
+          _creditCards.add(CreditCard.fromJson(value));
+        });
+        setState(() {});
+      }
     });
 
     _originTextController = new TextEditingController(text: '');

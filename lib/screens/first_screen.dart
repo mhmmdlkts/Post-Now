@@ -34,11 +34,7 @@ class _FirstScreen extends State<FirstScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (prefs == null)
-      return SplashScreen();
-    if (needsUpdate == null)
-      return SplashScreen();
-    if (needsUpdate)
+    if (prefs == null || needsUpdate == null || needsUpdate)
       return SplashScreen();
 
     if (widget.snapshot.hasData) {
@@ -51,9 +47,8 @@ class _FirstScreen extends State<FirstScreen> {
           });
         });
       return MapsScreen(widget.snapshot.data);
-    } else {
-      return AuthScreen();
     }
+    return AuthScreen();
   }
 
   checkUpdates() async {

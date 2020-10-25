@@ -50,6 +50,7 @@ class _ContactFormState extends State<ContactFormScreen> {
             shrinkWrap: true,
             children: [
               TextFormField(
+                textCapitalization: TextCapitalization.words,
                 onChanged: _validator,
                 controller: _nameFieldController,
                 decoration:_getInputDecoration('CONTACT_FORM.NAME.LABEL', 'CONTACT_FORM.NAME.HINT_LABEL', Icons.person),
@@ -68,12 +69,14 @@ class _ContactFormState extends State<ContactFormScreen> {
               ),
               Container(height: _space),
               TextFormField(
+                textCapitalization: TextCapitalization.words,
                 onChanged: _validator,
                 controller: _subjectFieldController,
                 decoration:_getInputDecoration('CONTACT_FORM.SUBJECT.LABEL', 'CONTACT_FORM.SUBJECT.HINT_LABEL', Icons.short_text),
               ),
               Container(height: _space),
               TextFormField(
+                  textCapitalization: TextCapitalization.sentences,
                 onChanged: _validator,
                 controller: _contentFieldController,
                 maxLines: null,

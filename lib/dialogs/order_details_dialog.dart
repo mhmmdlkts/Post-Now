@@ -60,6 +60,7 @@ class _OrderDetailDialogState extends State<OrderDetailDialog> {
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     TextField(
+                      textCapitalization: TextCapitalization.sentences,
                       onChanged: (c){setState(() {
 
                       });},

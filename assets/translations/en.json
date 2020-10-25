@@ -28,20 +28,29 @@
     }
   },
   "LOGIN": {
-    "NAME_FIELD_HINT": "Your name",
-    "NAME_FIELD_VALIDATOR_ENTER_NAME": "Please enter your name.",
-    "PHONE_FIELD_HINT": "6601231212",
+    "TITLE": "Welcome Back",
+    "SUBTITLE": "Hello there...",
+    "PHONE_FIELD_TITLE": "Mobile Number",
+    "PHONE_FIELD_HINT": "Your phone number",
     "PHONE_FIELD_VALIDATOR_ENTER_NAME": "Please enter your phone number.",
-    "SMS_CODE_FIELD_HINT": "Example: 123456",
+    "SMS_CODE_FIELD_TITLE": "Verification Code",
+    "SMS_CODE_FIELD_HINT": "Sms verification code",
     "SMS_CODE_FIELD_VALIDATOR_ENTER_NAME": "Enter your validation code.",
-    "AGREE_TERMS_AND_POLICY": "By signing up, you agree to our Terms & Privacy Policy",
-    "COUNTRY_NAME_EXAMPLE": "Austria"
+    "AGREE_TERMS_AND_POLICY": "By sign in, you agree to our Terms & Privacy Policy",
+    "CONTINUE_BUTTON": "Continue",
+    "COUNTRY_NAME_EXAMPLE": "Example {countryCode}"
   },
   "SIGN_UP": {
+    "TITLE": "Welcome Back",
+    "SUBTITLE": "Hello there, sign in to continue!",
+    "NAME_FIELD_TITLE": "Name",
     "NAME_FIELD_HINT": "Your name",
     "NAME_FIELD_VALIDATOR_ENTER_NAME": "Please enter your name.",
-    "EMAIL_FIELD_HINT": "Example. mhmmdlkts@gmail.com",
-    "EMAIL_FIELD_VALIDATOR_ENTER_NAME": "Please enter your email address."
+    "EMAIL_FIELD_TITLE": "Email",
+    "EMAIL_FIELD_HINT": "Your email",
+    "EMAIL_FIELD_VALIDATOR_ENTER_NAME": "Please enter your email address.",
+    "AGREE_TERMS_AND_POLICY": "By sign up, you agree to our Terms & Privacy Policy",
+    "CONTINUE_BUTTON": "Sign Up"
   },
   "LEGAL": {
     "TITLE": "Legal",
