@@ -38,7 +38,9 @@
     "SMS_CODE_FIELD_VALIDATOR_ENTER_NAME": "Enter your validation code.",
     "AGREE_TERMS_AND_POLICY": "By sign in, you agree to our Terms & Privacy Policy",
     "CONTINUE_BUTTON": "Continue",
-    "COUNTRY_NAME_EXAMPLE": "Example {countryCode}"
+    "COUNTRY_NAME_EXAMPLE": "Example {countryCode}",
+    "LOGIN_PROBLEMS": "Any problem?",
+    "AUTO_FILL_EMAIL_SUBJECT": "I have a problem by signing in the post now app"
   },
   "SIGN_UP": {
     "TITLE": "Welcome Back",
