@@ -103,7 +103,7 @@ class _VoucherScreen extends State<VoucherScreen> {
 
   @override
   void dispose() {
-    _controller?.dispose();
+    _controller.dispose();
     super.dispose();
   }
 

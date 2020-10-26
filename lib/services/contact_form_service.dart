@@ -2,7 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart' as cloud;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:package_info/package_info.dart';
-import 'package:postnow/models/user.dart' as u;
+
+import 'global_service.dart';
 
 class ContactFormService {
   final cloud.Query query = cloud.FirebaseFirestore.instance.collection('contact');
@@ -11,30 +12,30 @@ class ContactFormService {
   final User user;
   String phone;
   String email;
-  DatabaseReference _usersRef;
-  ContactFormService(this.user) {
-    _usersRef = FirebaseDatabase.instance.reference().child('users').child(user.uid);
-  }
+  String packageName;
+
+  ContactFormService(this.user);
 
   Future<void> init() async {
-    await _usersRef.once().then((DataSnapshot snapshot){
-      u.User me = u.User.fromSnapshot(snapshot);
-      phone = me.phone;
-      email = me.email;
+    packageName = (await PackageInfo.fromPlatform()).packageName;
+    await FirebaseDatabase.instance.reference().child(packageName==POSTNOW_PACKAGE_NAME?'users':'drivers').child(user.uid).once().then((DataSnapshot snapshot){
+      phone = snapshot.value["phone"];
+      email = snapshot.value["email"];
     });
   }
 
-  Future<void> createRequest({name, email, phone, subject, content}) async {
+  Future<void> createRequest({name, email, phone, subject, content, jobId}) async {
     final cloud.DocumentReference postRef = _firestore.collection('contact').doc();
     cloud.WriteBatch writeBatch = _firestore.batch();
 
     writeBatch.set(postRef, {
       'uid' : user.uid,
-      'app_package' : (await PackageInfo.fromPlatform()).packageName,
+      'app_package' : packageName,
       'name' : name,
       'email' : email,
       'phone' : phone,
       'time' : DateTime.now(),
+      'jobId' : jobId,
       'subject' : subject,
       'content' : content,
     });

@@ -103,6 +103,9 @@
     },
     "SEND": "Send"
   },
+  "DIRECT_JOB_OVERVIEW": {
+    "ANY_PROBLEMS": "Any problems with this job?"
+  },
   "MAPS": {
     "NO_AVAILABLE_DRIVER_MESSAGE": "No available driver in your area.",
     "CURRENT_LOCATION": "Current Location",

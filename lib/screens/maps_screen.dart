@@ -359,7 +359,7 @@ class _MapsScreenState extends State<MapsScreen> {
               _thisMethodFixABugButIStillAlwaysABugFixMeDude();
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => OverviewScreen(_user, overviewService: _overviewService)),
+                MaterialPageRoute(builder: (context) => OverviewScreen(_user, _homeLocationIcon, _packageLocationIcon, overviewService: _overviewService)),
               );
             },
           ),

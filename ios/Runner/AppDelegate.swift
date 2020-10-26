@@ -10,7 +10,7 @@ import PassKit
 
 
 
- @UIApplicationMain
+@UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {
      
    override func application(
