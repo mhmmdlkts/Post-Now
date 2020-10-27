@@ -7,6 +7,7 @@ import 'package:postnow/widgets/stateful_wrapper.dart';
 import 'dart:ui' as ui;
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(
       EasyLocalization(
           supportedLocales: [Locale('en', ''), Locale('de', ''), Locale('tr', '')],

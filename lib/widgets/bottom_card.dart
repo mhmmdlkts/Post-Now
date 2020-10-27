@@ -482,7 +482,6 @@ class BottomState extends State<BottomCard> {
             ),
             (count > 0) ?
             Align(
-
               alignment: Alignment.bottomRight,
               child: Container(
                 width: 24,

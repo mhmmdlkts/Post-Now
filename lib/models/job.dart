@@ -10,7 +10,7 @@ import 'address.dart';
 class Job {
   Address destinationAddress;
   Address originAddress;
-  String brainTreeTransactionId;
+  String mollieOrderId;
   String payMethod;
   String customTransactionId;
   DateTime acceptTime;
@@ -25,7 +25,7 @@ class Job {
   String sign;
   String key;
 
-  Job({this.name, this.userId, this.price, this.driverId, this.vehicle, this.customTransactionId, this.brainTreeTransactionId, this.originAddress, this.destinationAddress}) {
+  Job({this.name, this.userId, this.price, this.driverId, this.vehicle, this.customTransactionId, this.mollieOrderId, this.originAddress, this.destinationAddress}) {
     status = Status.WAITING;
   }
 
@@ -36,7 +36,7 @@ class Job {
     driverId = snapshot.value["driver-id"];
     userId = snapshot.value["user-id"];
     sign = snapshot.value["sign"];
-    brainTreeTransactionId = snapshot.value["brainTreeTransactionId"];
+    mollieOrderId = snapshot.value["mollieOrderId"];
     customTransactionId = snapshot.value["customTransactionId"];
     price = Price.fromJson(snapshot.value["price"]);
     status = stringToStatus(snapshot.value["status"]);
@@ -141,7 +141,7 @@ class Job {
     'user-id': userId,
     'sign': sign,
     'customTransactionId': customTransactionId,
-    'brainTreeTransactionId': brainTreeTransactionId,
+    'mollieOrderId': mollieOrderId,
     'price': price.toMap(),
     'status': statusToString(status),
     'vehicle': vehicleToString(vehicle),
@@ -161,7 +161,7 @@ class Job {
     sign = json["sign"];
     payMethod = json["payMethod"];
     customTransactionId = json["customTransactionId"];
-    brainTreeTransactionId = json["brainTreeTransactionId"];
+    mollieOrderId = json["mollieOrderId"];
     price = Price.fromJson(json["price"]);
     status = stringToStatus(json["status"]);
     vehicle = stringToVehicle(json["vehicle"]);

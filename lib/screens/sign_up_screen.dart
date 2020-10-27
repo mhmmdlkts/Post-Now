@@ -152,7 +152,7 @@ class _SignUpScreen extends State<SignUpScreen> {
                               constraints: const BoxConstraints(minWidth: double.infinity),
                               child: FlatButton(
                                   onPressed: () async {
-                                    LegalService.openPrivacyPolicy();
+                                    LegalService.openPrivacyPolicy(context);
                                   },
                                   child: Text(
                                     "LOGIN.AGREE_TERMS_AND_POLICY".tr(),

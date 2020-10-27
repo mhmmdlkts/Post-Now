@@ -403,6 +403,8 @@ PODS:
     - Braintree/PayPal (~> 4.34.0)
     - BraintreeDropIn (= 8.1.0)
     - Flutter
+  - flutter_inappwebview (0.0.1):
+    - Flutter
   - "geolocator (5.3.2+2)":
     - Flutter
   - google_maps_flutter (0.0.1):
@@ -518,6 +520,7 @@ DEPENDENCIES:
   - firebase_storage (from `.symlinks/plugins/firebase_storage/ios`)
   - Flutter (from `Flutter`)
   - flutter_braintree (from `.symlinks/plugins/flutter_braintree/ios`)
+  - flutter_inappwebview (from `.symlinks/plugins/flutter_inappwebview/ios`)
   - geolocator (from `.symlinks/plugins/geolocator/ios`)
   - google_maps_flutter (from `.symlinks/plugins/google_maps_flutter/ios`)
   - image_picker (from `.symlinks/plugins/image_picker/ios`)
@@ -595,6 +598,8 @@ EXTERNAL SOURCES:
     :path: Flutter
   flutter_braintree:
     :path: ".symlinks/plugins/flutter_braintree/ios"
+  flutter_inappwebview:
+    :path: ".symlinks/plugins/flutter_inappwebview/ios"
   geolocator:
     :path: ".symlinks/plugins/geolocator/ios"
   google_maps_flutter:
@@ -661,6 +666,7 @@ SPEC CHECKSUMS:
   FirebaseStorage: f4f39ae834a7145963b913f54e2f24a9db1d8fac
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
   flutter_braintree: 993827357efe3a1a05f229f2e62fd5026b3a7f4b
+  flutter_inappwebview: 69dfbac46157b336ffbec19ca6dfd4638c7bf189
   geolocator: f7622e0e7e2a24718285b73916d60c4a54b9f5b6
   google_maps_flutter: c7f9c73576de1fbe152a227bfd6e6c4ae8088619
   GoogleAppMeasurement: 67458367830514fb20fd9e233496f1eef9d90185

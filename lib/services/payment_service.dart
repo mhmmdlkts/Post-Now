@@ -1,12 +1,17 @@
+import 'dart:convert';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_braintree/flutter_braintree.dart';
 import 'package:http/http.dart' as http;
 import 'package:postnow/enums/payment_methods_enum.dart';
 import 'package:postnow/environment/api_keys.dart';
 import 'package:postnow/models/credit_card.dart';
+import 'package:postnow/screens/web_view_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'dart:io' show Platform;
 
 import 'global_service.dart';
@@ -16,7 +21,7 @@ class PaymentService {
   static const String PREFS_CUSTOMER_ID = "Braintree_CustomerId";
   static const platform = const MethodChannel('$POSTNOW_PACKAGE_NAME/payments');
 
-  Future<bool> pay(double amount, String uid, String draftId, bool useCredits, double credits, PaymentMethodsEnum paymentMethod, CreditCard creditCard) async {
+  Future<bool> pay(BuildContext context, double amount, String uid, String draftId, bool useCredits, double credits, PaymentMethodsEnum paymentMethod, CreditCard creditCard) async {
 
     if (useCredits) {
       if (credits < amount)
@@ -26,7 +31,7 @@ class PaymentService {
     }
     Set<String> params = Set();
     params.add("draftId=" + draftId);
-    params.add("nonceAmount=" + amount.toString());
+    params.add("nonceAmount=" + amount.toStringAsFixed(2));
     params.add("userId=" + uid);
     params.add("useCredits=" + useCredits.toString());
     switch (paymentMethod) {
@@ -38,38 +43,42 @@ class PaymentService {
         break;
       case PaymentMethodsEnum.APPLE_PAY:
         params.add('paymentMethod=${3}');
-        if (!Platform.isIOS)
-          return false;
-        String result = await _callNativeApplePayCode(amount.toString());
-        print ("Result Apple Pay: " + result);
-        return false;
-        // TODO implementire Apple Pay
-        break;
+        return await _callPayApiMollie(params, null);
       case PaymentMethodsEnum.PAYPAL:
         params.add('paymentMethod=${4}');
-        final request = BraintreePayPalRequest(
-          amount: amount.toString(),
-          displayName: 'APP_NAME'.tr(),
-          currencyCode: 'EUR',
-        );
-        final result = await Braintree.requestPaypalNonce(await _getBrainTreeToken(), request);
-        params.add("nonce=" + result.nonce);
         break;
       case PaymentMethodsEnum.CREDIT_CARD:
         params.add('paymentMethod=${5}');
-        if (creditCard == null)
-          return false;
-        BraintreePaymentMethodNonce result = await Braintree.tokenizeCreditCard(
-            await _getBrainTreeToken(), creditCard.createBraintreeCreditCardRequest());
-        params.add("nonce=" + result.nonce);
         break;
       case PaymentMethodsEnum.KLARNA:
         params.add('paymentMethod=${6}');
-        return false;
-        // TODO implementire Apple Pay
         break;
     }
-    return await _callPayApi(params);
+    return await _callPayApiMollie(params, context);
+  }
+
+  Future<bool> _callPayApiMollie(Set<String> params, BuildContext context) async{
+    String url = "https://europe-west1-post-now-f3c53.cloudfunctions.net/mollie?";
+    params.forEach((element) { url += "&" + element; });
+    print(url);
+    try {
+      http.Response response = await http.get(url);
+      final  molliePayUrl = json.decode(response.body)["href"];
+      print(molliePayUrl);
+
+      if (context != null) {
+        final result = await Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => WebViewScreen(molliePayUrl, (){}, popOnLoad: "postnow.at",)),
+        );
+        if (result == true)
+          return true;
+      } else {
+        launch(molliePayUrl);
+      }
+    } catch (e) {
+    }
+    return false;
   }
 
   Future<bool> _callPayApi(Set<String> params) async{

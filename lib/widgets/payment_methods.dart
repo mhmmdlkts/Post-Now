@@ -79,7 +79,7 @@ class _PaymentMethodsState extends State<PaymentMethods> {
               child: _getButton(_addNewCardPressed, icon: Icon(MyFlutterApp.credit_card_with_add_button, color: Colors.indigo,), label: "MAPS.BOTTOM_MENUS.CONFIRM.ADD_NEW_CARD"),
             );
           CreditCard card = widget.creditCards[index - 1];
-          return _getButton((){_payWithCreditCard(card);}, creditCard: card);
+          return _getButton((){_payWithCreditCard(creditCard: card);}, creditCard: card);
         },
       ),
     );
@@ -93,7 +93,7 @@ class _PaymentMethodsState extends State<PaymentMethods> {
         widget.credits >= widget.amount ? _getButton(_payWithCredits, icon: Icon(MyFlutterApp.coins, color: Colors.orange,), label: PaymentMethodsEnum.CREDITS, disable: _getPrice() != 0) : Container(),
         _getButton(_payWithCash, icon: Icon(MyFlutterApp.money_bill_alt, color: Colors.teal,),label: PaymentMethodsEnum.CASH, disable: _getPrice() == 0),
         _getButton(_payWithPaypal, icon: Icon(MyFlutterApp.paypal, color: Colors.blueAccent,), label: PaymentMethodsEnum.PAYPAL, disable: _getPrice() == 0),
-        _getButton(() { setState(() { _showCreditCards = true; }); }, icon: Icon(MyFlutterApp.credit_card_alt, color: Colors.indigo,), label: PaymentMethodsEnum.CREDIT_CARD, disable: _getPrice() == 0),
+        _getButton(_payWithCreditCard, icon: Icon(MyFlutterApp.credit_card_alt, color: Colors.indigo,), label: PaymentMethodsEnum.CREDIT_CARD, disable: _getPrice() == 0),
         _getButton(_payWithKlarna, icon: Icon(MyFlutterApp.klarna__2_, color: Colors.pinkAccent,), label: PaymentMethodsEnum.KLARNA, disable: _getPrice() == 0),
         Platform.isIOS ? _getButton(_payWithApplePay, icon: Icon(MyFlutterApp.apple_pay, color: Colors.black), label: PaymentMethodsEnum.APPLE_PAY, disable: _getPrice() == 0) : Container()
       ],
@@ -148,7 +148,7 @@ class _PaymentMethodsState extends State<PaymentMethods> {
 
   double _getPrice() => widget.amount - (_useCredits ?widget.credits:0.0);
 
-  void _payWithCreditCard(CreditCard creditCard) {
+  void _payWithCreditCard({CreditCard creditCard}) {
     widget.callback.call(PaymentMethodsEnum.CREDIT_CARD, _useCredits, creditCard);
   }
 
@@ -179,7 +179,7 @@ class _PaymentMethodsState extends State<PaymentMethods> {
     );
     if (result != null) {
       widget.creditCards.add(result);
-      _payWithCreditCard(result);
+      _payWithCreditCard(creditCard: result);
       if (mounted)
         setState(() { });
     }

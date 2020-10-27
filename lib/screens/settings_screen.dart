@@ -96,7 +96,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             'SETTINGS_SCREEN.INVOICE.DESCRIPTION'.tr(),
           ),
           CSSpacer(showBorder: false),
-          CSButton(CSButtonType.DEFAULT_CENTER, "SETTINGS_SCREEN.SOFTWARE_LICENCES".tr(), (){ LegalService.openLicences();}),
+          CSButton(CSButtonType.DEFAULT_CENTER, "SETTINGS_SCREEN.SOFTWARE_LICENCES".tr(), (){ LegalService.openLicences(context);}),
           CSSpacer(showBorder: false),
           CSButton(CSButtonType.DESTRUCTIVE, "SETTINGS_SCREEN.SIGN_OUT".tr(),  (){ AuthService().signOut();})
         ],

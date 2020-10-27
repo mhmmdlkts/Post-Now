@@ -1,4 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:postnow/screens/web_view_screen.dart';
 import 'package:postnow/services/global_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -9,25 +11,24 @@ const String POST_NOW_REGISTER_DRIVER = "https://postnow.at/register-driver/";
 
 class LegalService {
 
-  static void openPrivacyPolicy() async {
+  static void openPrivacyPolicy(BuildContext context) async {
     String url = (await GlobalService.isDriverApp())?POST_NOW_DRIVER_PRIVACY_POLICY_URL:POST_NOW_PRIVACY_POLICY_URL;
-    openWeb(url);
+    openWeb(url, context);
   }
 
-  static void openLicences() async {
-    openWeb(POST_NOW_SOFTWARE_LICENCES_URL);
+  static void openLicences(BuildContext context) async {
+    openWeb(POST_NOW_SOFTWARE_LICENCES_URL, context);
   }
 
-  static void openRegisterDriver() async {
-    openWeb(POST_NOW_REGISTER_DRIVER);
+  static void openRegisterDriver(BuildContext context) async {
+    openWeb(POST_NOW_REGISTER_DRIVER, context);
   }
 
-  static void openWeb(String url) async {
-    try {
-      await launch(url);
-    } catch (e) {
-      print("Can not launch " + e);
-    }
+  static void openWeb(String url, BuildContext context) async {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => WebViewScreen(url, (){})),
+    );
   }
 
   static void openWriteMail() async {

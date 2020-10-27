@@ -17,6 +17,7 @@ import 'package:postnow/screens/contact_form_screen.dart';
 import 'package:postnow/screens/overview_screen.dart';
 import 'package:postnow/screens/settings_screen.dart';
 import 'package:postnow/screens/voucher_screen.dart';
+import 'package:postnow/screens/web_view_screen.dart';
 import 'package:postnow/services/global_service.dart';
 import 'package:postnow/services/legal_service.dart';
 import 'package:postnow/services/overview_service.dart';
@@ -288,7 +289,7 @@ class _MapsScreenState extends State<MapsScreen> {
       _changeMenuTyp(MenuTyp.PAYMENT_WAITING);
     });
 
-    PaymentService().pay(_draft.price.total, _user.uid, _draft.key, useCredits, _credit, paymentMethod, creditCard).then((success) => {
+    PaymentService().pay(context, _draft.price.total, _user.uid, _draft.key, useCredits, _credit, paymentMethod, creditCard).then((success) => {
       if (!success) {
         setState(() {
           _changeMenuTyp(MenuTyp.PAYMENT_DECLINED);
@@ -302,6 +303,7 @@ class _MapsScreenState extends State<MapsScreen> {
         _changeMenuTyp(MenuTyp.PAYMENT_DECLINED);
       })
     });
+
   }
 
   @override
@@ -377,7 +379,7 @@ class _MapsScreenState extends State<MapsScreen> {
             title: Text('MAPS.SIDE_MENU.PRIVACY_POLICY'.tr()),
             onTap: () {
               _thisMethodFixABugButIStillAlwaysABugFixMeDude();
-              LegalService.openPrivacyPolicy();
+              LegalService.openPrivacyPolicy(context);
             },
           ),
           ListTile(
@@ -1194,6 +1196,7 @@ class _MapsScreenState extends State<MapsScreen> {
     return FloatingActionButton(
       heroTag: "btn",
       onPressed: () {
+
         if (_myPosition == null)
           return;
         LatLng pos = LatLng(_myPosition.latitude, _myPosition.longitude);

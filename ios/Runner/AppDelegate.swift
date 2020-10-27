@@ -5,7 +5,7 @@ import FirebaseAuth
 import FirebaseCore
 import GoogleMaps
 import UserNotifications
-import Braintree
+//import Braintree
 import PassKit
 
 
@@ -17,7 +17,7 @@ import PassKit
      _ application: UIApplication,
      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
    ) -> Bool {
-     BTAppSwitch.setReturnURLScheme("com.mali.postnow.payments")
+     //BTAppSwitch.setReturnURLScheme("com.mali.postnow.payments")
      GMSServices.provideAPIKey("AIzaSyDuKAn_iQ-QIFWxgf1AZD34yMZLMw7RP-c");
      GeneratedPluginRegistrant.register(with: self)
      //paymentFlutter();
@@ -40,12 +40,12 @@ import PassKit
               }
    }
     
-    override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+    /*override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
         if url.scheme?.localizedCaseInsensitiveCompare("com.mali.postnow.payments") == .orderedSame {
             return BTAppSwitch.handleOpen(url, options: options)
         }
         return false
-    }
+    }*/
    
    func registerForPushNotifications() {
      UNUserNotificationCenter.current()
@@ -54,6 +54,19 @@ import PassKit
            print("Permission granted: \(granted)")
        }
    }
+    
+    override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+      if (url.host! == "payment-return") {
+          let queryItems = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems
+          let paymentId = queryItems?.filter({$0.name == "id"}).first
+
+          // Optional: Do stuff with the payment ID
+
+          return true;
+      }
+
+      return false;
+    }
    
     /*func paymentFlutter() {
         let controller : FlutterViewController = window?.rootViewController as! FlutterViewController
