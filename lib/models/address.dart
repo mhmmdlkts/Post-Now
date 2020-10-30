@@ -141,6 +141,19 @@ class Address {
 
   bool hasDoorNumber() => isStringNotEmpty(doorNumber);
 
+  bool alakadar(String searchText) {
+    return searchText == null || searchText.isEmpty ||
+      country?.toLowerCase()?.contains(searchText) ?? false ||
+        city?.toLowerCase()?.contains(searchText) ?? false ||
+        area?.toLowerCase()?.contains(searchText) ?? false ||
+        locality?.toLowerCase()?.contains(searchText) ?? false ||
+        subLocality?.toLowerCase()?.contains(searchText) ?? false ||
+        postalCode?.toLowerCase()?.contains(searchText) ?? false ||
+        street?.toLowerCase()?.contains(searchText) ?? false ||
+        houseNumber?.toLowerCase()?.contains(searchText) ?? false ||
+        doorNumber?.toLowerCase()?.contains(searchText) ?? false;
+  }
+
   @override
   bool operator == (covariant Address other) => coordinates == other.coordinates;
 

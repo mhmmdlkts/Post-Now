@@ -12,22 +12,31 @@ class OverviewService {
     _userRef = FirebaseDatabase.instance.reference().child('users').child(uid);
   }
 
-  List<Address> getLastAddresses(int c, bool isDestination) {
-    List<Address> address = List();
-    for(int i = 0, y = 0; i < orders.length && y < orders.length && y < c; i++) {
-      Address tmp = orders[y].getAddress(isDestination);
-      y++;
+  List<Address> getLastAddresses(String searchText) {
+    List<Address> addresses = List();
+
+    checkAddress(Address tmp) {
+      if (!tmp.alakadar(searchText))
+        return;
       bool check = true;
-      for (int x = 0; x < address.length; x++) {
-        if (address[x] == tmp) {
+      for (int x = 0; x < addresses.length; x++) {
+        if (addresses[x] == tmp) {
           check = false;
           break;
         }
       }
       if (check)
-        address.add(tmp);
+        addresses.add(tmp);
     }
-    return address;
+
+    for(int i = 0; i < orders.length; i++) {
+      Address tmp = orders[i].getAddress(true);
+      Address tmp2 = orders[i].getAddress(false);
+      checkAddress(tmp);
+      checkAddress(tmp2);
+    }
+
+    return addresses;
   }
 
   Future<void> initOrderList() async {

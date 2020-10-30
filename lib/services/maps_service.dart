@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_map_polyline/src/route_mode.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_maps_webservice/places.dart';
 import 'package:postnow/environment/global_variables.dart';
 import 'dart:ui' as ui;
 import 'package:http/http.dart' as http;
@@ -16,6 +17,7 @@ import 'package:postnow/models/address.dart';
 import 'package:postnow/models/draft_order.dart';
 
 import 'package:postnow/models/job.dart';
+import 'package:postnow/environment/api_keys.dart';
 
 class MapsService with WidgetsBindingObserver {
   final DatabaseReference jobsChatRef = FirebaseDatabase.instance.reference().child('jobs_chat');
@@ -128,12 +130,28 @@ class MapsService with WidgetsBindingObserver {
     return rtnVal;
   }
 
-  Future<bool> isOnlineDriverAvailable() async {
-    String url = 'https://europe-west1-post-now-f3c53.cloudfunctions.net/getStatistik';
+  Future<bool> isOnlineDriverAvailable(LatLng origin, LatLng destination) async {
+    String url = 'https://europe-west1-post-now-f3c53.cloudfunctions.net/checkAvailableDriver?origin=${origin.latitude},${origin.longitude}';
     http.Response response = await http.get(url);
     if (response.statusCode != 200)
       throw('Status code: ' + response.statusCode.toString());
-    dynamic obj = json.decode(response.body);
-    return obj["onlineDrivers"] > 0;
+    return response.body.trim().toLowerCase() == 'true';
+  }
+
+  Future<List<Prediction>> getAutoCompleter(String autoCompleterText) async {
+    const String baseUrl = "https://maps.googleapis.com/maps/api/place/autocomplete/json";
+    const String SalzburgCenterLoc = "47.8262658,13.0127823";
+    final String request = '$baseUrl?input=${Uri.encodeComponent(autoCompleterText)}&location=$SalzburgCenterLoc&radius=1000&key=$GOOGLE_DIRECTIONS_API_KEY';
+    List<Prediction> predictions = List();
+    try {
+      http.Response response = await http.get(request);
+      dynamic obj = json.decode(response.body);
+      for (int i = 0; i < obj["predictions"].length; i++) {
+        predictions.add(Prediction.fromJson(obj["predictions"][i]));
+      }
+    } catch (e) {
+      print(e);
+    }
+    return predictions;
   }
 }

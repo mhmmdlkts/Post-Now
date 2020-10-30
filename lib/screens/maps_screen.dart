@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:google_map_polyline/google_map_polyline.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:postnow/decoration/my_colors.dart';
 import 'package:postnow/dialogs/address_manager_dialog.dart';
 import 'package:postnow/dialogs/custom_alert_dialog.dart';
 import 'package:postnow/dialogs/order_details_dialog.dart';
@@ -49,6 +50,7 @@ import '../widgets/bottom_card.dart';
 import 'dart:io' show Platform;
 import 'chat_screen.dart';
 import 'dart:async';
+import 'dart:math';
 
 
 class MapsScreen extends StatefulWidget {
@@ -66,6 +68,10 @@ class _MapsScreenState extends State<MapsScreen> {
   final AudioCache _audioPlayer = AudioCache();
   final List<CreditCard> _creditCards = List();
   final GlobalKey _mapKey = GlobalKey();
+  final GlobalKey _toolbarKey = GlobalKey();
+  final GlobalKey _addressBarKey = GlobalKey();
+  final GlobalKey _drawerKey = GlobalKey();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
   final User _user;
   OverviewService _overviewService;
   bool _isInitialized = false;
@@ -87,6 +93,21 @@ class _MapsScreenState extends State<MapsScreen> {
   Driver _myDriver;
   double _credit;
   bool _isDestinationButtonChosen = false;
+  double _mapBottomPoint = 0;
+  double _mapHeight = 0;
+  double _toolbarHeight = 0;
+  double _drawerWidth = 0;
+  double _drawerPosition = 0;
+  double _addressFieldHeight = 0;
+  final FocusNode _receiverFieldFocusNode = FocusNode();
+  final FocusNode _senderFieldFocusNode = FocusNode();
+  bool _visibleReceiverField = true;
+  bool _visibleSenderField = true;
+  Duration _mapsCloseOpenDur = Duration(milliseconds: 800);
+  String _addressSearchField = "";
+  List<Prediction> _predictions = List();
+  List<Address> _oldAddresses = List();
+  bool isDrawerOpen = false;
 
   _MapsScreenState(this._user) {
     _mapsService = MapsService(_user.uid);
@@ -94,7 +115,8 @@ class _MapsScreenState extends State<MapsScreen> {
   }
 
   goToPayButtonPressed() {
-    _mapsService.isOnlineDriverAvailable().then((value) => {
+    _changeMenuTyp(MenuTyp.PLEASE_WAIT);
+    _mapsService.isOnlineDriverAvailable(_getOrigin(), _getDestination()).then((value) => {
       setState(() {
         if (!value) {
           _changeMenuTyp(MenuTyp.NO_DRIVER_AVAILABLE);
@@ -207,6 +229,30 @@ class _MapsScreenState extends State<MapsScreen> {
     _myJobListener();
 
     _nextInitializeDone('6');
+
+    _initCount++;
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) {
+          setState(() {
+            _toolbarHeight = _toolbarKey.currentContext.size.height;
+            _addressFieldHeight = _addressBarKey.currentContext.size.height;
+            _drawerWidth = _drawerKey.currentContext.size.width;
+            _drawerPosition = -_drawerWidth;
+            _mapHeight = MediaQuery.of(context).size.height - _toolbarHeight - MediaQuery.of(context).padding.top;
+          });
+          _nextInitializeDone('7');
+    });
+
+    onFocusChanged(FocusNode focusNode) {
+      _closeOpenMap(!focusNode.hasFocus);
+    }
+
+    _receiverFieldFocusNode.addListener(() {
+      onFocusChanged(_receiverFieldFocusNode);
+    });
+    _senderFieldFocusNode.addListener(() {
+      onFocusChanged(_senderFieldFocusNode);
+    });
   }
 
   void _nextInitializeDone(String code) {
@@ -284,6 +330,84 @@ class _MapsScreenState extends State<MapsScreen> {
     });
   }
 
+  Widget _getNewSearchWidget(bool isDestination) {
+    _getTextFieldController() => isDestination ? _destinationTextController : _originTextController;
+    _clearField() {
+      setState(() {
+        if (isDestination) {
+          _destinationAddress = null;
+          _setPlaceForDestination();
+        } else {
+          _originAddress = null;
+          _setPlaceForOrigin();
+        }
+        _isDestinationButtonChosen = isDestination;
+      });
+    }
+    double horizontalPadding = 20;
+    return AnimatedContainer(
+      width: MediaQuery.of(context).size.width - horizontalPadding*2,
+      duration: Duration(milliseconds: 2000),
+      margin: EdgeInsets.symmetric(horizontal: horizontalPadding),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(100)),
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.2),
+            spreadRadius: 5,
+            blurRadius: 7,
+            offset: Offset(0, 3), // changes position of shadow
+          ),
+        ],
+      ),
+      child: Stack(
+        alignment: Alignment.centerRight,
+        children: <Widget>[
+          TextField(
+            onChanged: (e) => _onAddressFieldChanged(e),
+            textAlignVertical: TextAlignVertical.center,
+            focusNode: isDestination?_receiverFieldFocusNode:_senderFieldFocusNode,
+            controller: _getTextFieldController(),
+            onTap: () async {
+              _getAddressesList("");
+              _onTapButton(isDestination);
+            },
+            decoration: InputDecoration(
+              contentPadding: EdgeInsets.only(right: 40),
+              border: InputBorder.none,
+              prefixIcon: Icon(Icons.location_on, color: isDestination?secondaryPurple:primaryBlue),
+              hintText: isDestination
+                  ? "MAPS.DESTINATION_ADDRESS".tr()
+                  : "MAPS.PACKAGE_ADDRESS".tr(),
+            ),
+          ),
+          ClipRRect(
+            borderRadius: BorderRadius.all(Radius.circular(100)),
+            child: Material(
+              color: Colors.transparent,
+              child: _getTextFieldController().text.isEmpty && !_visibleAllList()? IconButton(
+                icon: Icon(Icons.my_location, color: Colors.black38,),
+                onPressed: () {
+                  _receiverFieldFocusNode.unfocus();
+                  _senderFieldFocusNode.unfocus();
+                  _setMarker(LatLng(_myPosition.latitude, _myPosition.longitude));
+                },
+              ) : IconButton(
+                  icon: Icon(Icons.cancel, color: Colors.black38,),
+                  onPressed: () {
+                    _receiverFieldFocusNode.unfocus();
+                    _senderFieldFocusNode.unfocus();
+                    _clearField();
+                  }
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   _navigateToPaymentsAndGetResult(bool useCredits, PaymentMethodsEnum paymentMethod, CreditCard creditCard) async {
     setState(() {
       _changeMenuTyp(MenuTyp.PAYMENT_WAITING);
@@ -310,112 +434,232 @@ class _MapsScreenState extends State<MapsScreen> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        _content(),
+        Stack(
+          children: [
+            Scaffold(
+              backgroundColor: primaryBlue,
+            ),
+            Material(
+              color: primaryBlue,
+              child: _content(),
+            ),
+            Positioned(
+              bottom: 30,
+              right: 20,
+              child: _getFloatingButton(),
+            ),
+            Positioned.fill(
+              child: Visibility(
+                visible: 0 == _drawerPosition,
+                child: AnimatedOpacity(
+                  curve: Curves.easeInOutQuart,
+                  duration: Duration(milliseconds: 200),
+                  opacity: 0 == _drawerPosition?1:0,
+                  child: GestureDetector(
+                    onTap: () => setState((){
+                      _drawerPosition = -_drawerWidth;
+                    }),
+                    child: Container(
+                      color: Colors.black45,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            AnimatedPositioned(
+              curve: Curves.easeInOutQuart,
+              duration: Duration(milliseconds: 200),
+              top: 0,
+              bottom: 0,
+              left: _drawerPosition,
+              child: _myDrawer()
+            ),
+          ],
+        ),
         _isInitialized ? Container() : SplashScreen(),
       ],
     );
   }
+  bool _test = true;
 
-  Widget _content() => new Scaffold(
-    appBar: AppBar(
-      title: Text(("APP_NAME".tr()), style: TextStyle(color: Colors.white)),
-      brightness: Brightness.dark,
-      iconTheme:  IconThemeData(color: Colors.white),
-    ),
-    body:Stack(
-        children: <Widget> [
-          googleMapsWidget(),
-          getTopMenu(),
-          _bottomCard == null? Container() : _bottomCard, // TODO
-        ]
-    ),
-    drawer: Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: <Widget>[
-          DrawerHeader(
-            child: Stack(
-              children: <Widget>[
-                Text("SETTINGS".tr(), style: TextStyle(fontSize: 20, color: Colors.white)),
-                Positioned(
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(_user.displayName, style: TextStyle(fontSize: 22, color: Colors.white)),
-                      _credit == null? Container() : Text(_credit.toStringAsFixed(2) + " €", style: TextStyle(fontSize: 18, color: Colors.white))
-                    ],
+  Widget _myDrawer() => Drawer(
+    key: _drawerKey,
+    child: ListView(
+      shrinkWrap: true,
+      padding: EdgeInsets.zero,
+      children: <Widget>[
+        DrawerHeader(
+          child: Stack(
+            children: <Widget>[
+              Row(
+                children: [
+                  Material(
+                    color: Colors.transparent,
+                    child: IconButton(
+                        alignment: Alignment.centerLeft,
+                        icon: Icon(Icons.arrow_back_rounded, color: Colors.white,),
+                        onPressed: () => setState(() {
+                          _drawerPosition = -_drawerWidth;
+                        })
+                    ),
                   ),
-                )
-              ],
-            ),
-            decoration: BoxDecoration(
-              color: Colors.blue,
-            ),
+                  Text("SETTINGS".tr(), style: TextStyle(fontSize: 20, color: Colors.white)),
+                ],
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              ),
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(_user.displayName, style: TextStyle(fontSize: 22, color: Colors.white)),
+                    _credit == null? Container() : Text(_credit.toStringAsFixed(2) + " €", style: TextStyle(fontSize: 18, color: Colors.white))
+                  ],
+                ),
+              )
+            ],
           ),
-          ListTile(
-            title: Text('MAPS.SIDE_MENU.MY_ORDERS'.tr()),
-            onTap: () {
-              _thisMethodFixABugButIStillAlwaysABugFixMeDude();
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => OverviewScreen(_user, _homeLocationIcon, _packageLocationIcon, overviewService: _overviewService)),
-              );
-            },
+          decoration: BoxDecoration(
+            color: primaryBlue,
           ),
-          ListTile(
-            title: Text('MAPS.SIDE_MENU.VOUCHER'.tr()),
-            onTap: () {
-              _thisMethodFixABugButIStillAlwaysABugFixMeDude();
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => VoucherScreen(_user.uid)),
-              );
-            },
-          ),
-          ListTile(
-            title: Text('MAPS.SIDE_MENU.PRIVACY_POLICY'.tr()),
-            onTap: () {
-              _thisMethodFixABugButIStillAlwaysABugFixMeDude();
-              LegalService.openPrivacyPolicy(context);
-            },
-          ),
-          ListTile(
-            title: Text('MAPS.SIDE_MENU.CONTACT'.tr()),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ContactFormScreen(_user)),
-              );
-            },
-          ),
-          ListTile(
-            title: Text('SETTINGS'.tr()),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => SettingsScreen(_user)),
-              );
-            },
-          ),
-          ListTile(
-            title: Text('MAPS.SIDE_MENU.SIGN_OUT'.tr(), style: TextStyle(color: Colors.redAccent),),
-            onTap: () {
-              _thisMethodFixABugButIStillAlwaysABugFixMeDude();
-              AuthService().signOut();
-            },
-          ),
-        ],
-      ),
+        ),
+        ListTile(
+          title: Text('MAPS.SIDE_MENU.MY_ORDERS'.tr()),
+          onTap: () {
+            _thisMethodFixABugButIStillAlwaysABugFixMeDude();
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => OverviewScreen(_user, _homeLocationIcon, _packageLocationIcon, overviewService: _overviewService)),
+            );
+          },
+        ),
+        ListTile(
+          title: Text('MAPS.SIDE_MENU.VOUCHER'.tr()),
+          onTap: () {
+            _thisMethodFixABugButIStillAlwaysABugFixMeDude();
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => VoucherScreen(_user.uid)),
+            );
+          },
+        ),
+        ListTile(
+          title: Text('MAPS.SIDE_MENU.PRIVACY_POLICY'.tr()),
+          onTap: () {
+            _thisMethodFixABugButIStillAlwaysABugFixMeDude();
+            LegalService.openPrivacyPolicy(context);
+          },
+        ),
+        ListTile(
+          title: Text('MAPS.SIDE_MENU.CONTACT'.tr()),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ContactFormScreen(_user)),
+            );
+          },
+        ),
+        ListTile(
+          title: Text('SETTINGS'.tr()),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => SettingsScreen(_user)),
+            );
+          },
+        ),
+        ListTile(
+          title: Text('MAPS.SIDE_MENU.SIGN_OUT'.tr(), style: TextStyle(color: Colors.redAccent),),
+          onTap: () {
+            _thisMethodFixABugButIStillAlwaysABugFixMeDude();
+            AuthService().signOut();
+          },
+        ),
+      ],
     ),
-    floatingActionButton: _getFloatingButton(),
+  );
+
+  Widget _content() => Stack(
+    children: [
+      AnimatedPositioned(
+        curve: Curves.ease,
+        duration: _mapsCloseOpenDur,
+        bottom: -_mapBottomPoint,
+        child: _googleMapsWidget(),
+      ),
+      Positioned(
+        top: MediaQuery.of(context).padding.top,
+        child: _toolbar(),
+      ),
+      Positioned(
+        key: _addressBarKey,
+        top: MediaQuery.of(context).padding.top + _toolbarHeight + 20,
+        child: Visibility(
+          visible: _visibleReceiverField,
+          child: _getNewSearchWidget(false),
+        ),
+      ),
+      AnimatedPositioned(
+        duration: _mapsCloseOpenDur,
+        curve: Curves.easeOutCirc,
+        top: MediaQuery.of(context).padding.top + _toolbarHeight + (!_visibleReceiverField?10:(_addressFieldHeight + 30)),
+        child:  Visibility(
+          visible: _visibleSenderField,
+          child: _getNewSearchWidget(true),
+        ),
+      ),
+      AnimatedPositioned(
+        duration: _mapsCloseOpenDur,
+        curve: Curves.easeOutCirc,
+        top: _visibleAllList()?MediaQuery.of(context).padding.top + _toolbarHeight + _addressFieldHeight + 30:MediaQuery.of(context).size.height,
+        child: _addressList(),
+      ),
+      _bottomCard == null? Container() : _bottomCard, // TODO
+    ],
+  );
+
+  void _closeOpenMap(bool open) {
+    setState(() {
+      _mapBottomPoint = !open?_mapHeight:0;
+      if (!_senderFieldFocusNode.hasFocus && !_receiverFieldFocusNode.hasFocus) {
+        _visibleSenderField = true;
+        _visibleReceiverField = true;
+        return;
+      }
+      if (_receiverFieldFocusNode.hasFocus) {
+        _visibleReceiverField = false;
+        _visibleSenderField = true;
+      }
+      if (_senderFieldFocusNode.hasFocus) {
+        setState(() {
+          _visibleSenderField = false;
+          _visibleReceiverField = true;
+        });
+      }
+    });
+  }
+
+  Widget _toolbar() => Container(
+    width: MediaQuery.of(context).size.width,
+    key: _toolbarKey,
+    child: Container(
+      padding: EdgeInsets.symmetric(vertical: 2),
+      child: Row(
+        children: [
+          IconButton(icon: Icon(Icons.menu, color: Colors.white,), onPressed: ()=> setState((){_drawerPosition = 0;})),
+          Text("APP_NAME".tr(), style: TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold,), textAlign: TextAlign.center,),
+          Opacity(opacity: 0, child: IconButton(icon: Icon(Icons.stream)),) // placeholder
+        ],
+        mainAxisAlignment: MainAxisAlignment.spaceBetween ,
+      ),
+    )
   );
 
   Set<Marker> _createMarker() {
     Set markers = Set<Marker>();
-    if (_myDriver != null && _job.status != Status.WAITING)
+    if (_myDriver != null && _job != null && _job.status != Status.WAITING)
       markers.add(_myDriver.getMarker(_driverLocationIcon));
     if (_packageMarker != null)
       markers.add(_packageMarker);
@@ -424,25 +668,25 @@ class _MapsScreenState extends State<MapsScreen> {
     return markers;
   }
 
-  Widget googleMapsWidget() => SizedBox(
+  Widget _googleMapsWidget() => Container(
+    width: MediaQuery.of(context).size.width,
+    height: _mapHeight,
     key: _mapKey,
-    width: MediaQuery.of(context).size.width,  // or use fixed size like 200
-    height: MediaQuery.of(context).size.height,
-    child: GoogleMap(
-      mapType: MapType.normal,
-      initialCameraPosition: CameraPosition(
-        target: LatLng(47.0, 13.0),
-        zoom: 4
+    child: ClipRRect(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+      child: GoogleMap(
+        mapType: MapType.normal,
+        initialCameraPosition: CameraPosition(
+            target: LatLng(47.0, 13.0),
+            zoom: 4
+        ),
+        onMapCreated: _onMapCreated,
+        zoomControlsEnabled: false,
+        myLocationEnabled: _myPosition != null,
+        myLocationButtonEnabled: false,
+        polylines: _polyLines,
+        markers: _createMarker(),
       ),
-      onMapCreated: _onMapCreated,
-      zoomControlsEnabled: false,
-      myLocationEnabled: _myPosition != null,
-      myLocationButtonEnabled: false,
-      polylines: _polyLines,
-      markers: _createMarker(),
-      onTap: (t) {
-        _setMarker(t);
-      },
     ),
   );
 
@@ -474,75 +718,15 @@ class _MapsScreenState extends State<MapsScreen> {
       return;
     }
     Marker marker = Marker(
-        markerId: MarkerId(isDestination?"destination":"package"),
-        position: position,
-        icon: isDestination?_homeLocationIcon:_packageLocationIcon,
+      markerId: MarkerId(isDestination?"destination":"package"),
+      position: position,
+      icon: isDestination?_homeLocationIcon:_packageLocationIcon
     );
     if (isDestination)
       _destinationMarker = marker;
     else
       _packageMarker = marker;
   }
-
-  Widget getTopMenu() {
-    if (_menuTyp != null && _menuTyp != MenuTyp.FROM_OR_TO)
-      return Container();
-    return Positioned(
-      top: 0,
-      width: MediaQuery
-          .of(context)
-          .size
-          .width,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          _getDesOrOriginButton("assets/marker_buttons/package_selected.png",
-              "assets/marker_buttons/package_not_selected.png",
-              "assets/marker_buttons/package_selected_onPressed.png",
-              "assets/marker_buttons/package_not_selected_onPressed.png", false),
-          _getDesOrOriginButton("assets/marker_buttons/home_selected.png",
-              "assets/marker_buttons/home_not_selected.png",
-              "assets/marker_buttons/home_selected_onPressed.png",
-              "assets/marker_buttons/home_not_selected_onPressed.png", true),
-        ],
-      ),
-    );
-  }
-
-    Widget jobCompleted() => Positioned(
-        bottom: 0,
-        child: SizedBox(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height/4,
-            child: Column(
-                children: <Widget>[
-                  Card(
-
-                    child: Column(
-                      mainAxisSize: MainAxisSize.max,
-                      children: <Widget>[
-                        ListTile(
-                          leading: Icon(Icons.directions_car),
-                          title: Text('MAPS.BOTTOM_MENUS.PACKAGE_PICKED.PACKAGE_DELIVERED'.tr()),
-                        ),
-                        ButtonBar(
-                          children: <Widget>[
-                            FlatButton(
-                              child: Text('OK'.tr()),
-                              onPressed: () {
-                                _clearJob();
-                              },
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ]
-            )
-        )
-    );
 
     initPolyline(Color color) {
       setState(() {
@@ -746,17 +930,102 @@ class _MapsScreenState extends State<MapsScreen> {
       return _originAddress.coordinates;
     }
 
-    _getDesOrOriginButton(String activePath, String notActivePath, String activePathPressed, String notActivePathPressed, bool isDestination) {
+    void _getAddressesList(String e) async {
+      _oldAddresses = _overviewService.getLastAddresses(_addressSearchField);
+      if (e.isEmpty) {
+        setState(() {
+          _predictions.clear();
+        });
+        return;
+      }
+      _mapsService.getAutoCompleter(e).then((value) => setState((){
+        _predictions = value;
+      }));
+    }
 
-      onTapButton() {
-        _mapsService.setNewCameraPosition(_mapController, isDestination? _getDestination() : _getOrigin(), null, true);
-        if (_isDestinationButtonChosen != isDestination) {
-          setState(() {
-            _isDestinationButtonChosen = isDestination;
-          });
-        }
+    Widget _addressList() {
+
+      int getIndex(int i) => _oldAddresses.length==0?i:i%_oldAddresses.length;
+
+      predictionAddressListElement(int i) {
+        return Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () async {
+              _receiverFieldFocusNode.unfocus();
+              _senderFieldFocusNode.unfocus();
+              Address address;
+              if (i >= _oldAddresses.length) {
+                address = await _predictionToAddress(_predictions[getIndex(i)]);
+              } else {
+                address =_oldAddresses[i];
+              }
+              _setMarker(address.coordinates, address: address);
+            },
+            child: Padding(
+              padding: EdgeInsets.all(15),
+              child: Text(i >= _oldAddresses.length?_predictions[getIndex(i)].description:_oldAddresses[i].getAddress(), style: TextStyle(fontSize: 16),),
+            ),
+          ),
+        );
       }
 
+      return Container(
+        width: MediaQuery.of(context).size.width,
+        alignment: Alignment.center,
+        child: ClipRRect(
+          borderRadius: BorderRadius.all(Radius.circular(20)),
+          child: Container(
+            width: MediaQuery.of(context).size.width - 40,
+            color: Colors.white,
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(context).size.height - (MediaQuery.of(context).viewInsets.bottom + MediaQuery.of(context).padding.top + _toolbarHeight + _addressFieldHeight +40),
+              ),
+              child: ListView.separated(
+                padding: EdgeInsets.zero,
+                shrinkWrap: true,
+                itemCount: _predictions.length + _oldAddresses.length,
+                separatorBuilder: (context, index) => Divider(
+                  height: 1,
+                  color: Colors.black38,
+                ),
+                itemBuilder: (context, index) {
+                  return predictionAddressListElement(index);
+                }
+              )
+            ),
+          )
+        ),
+      );
+    }
+
+  _onTapButton(bool isDestination) async {
+      return;
+    _mapsService.setNewCameraPosition(_mapController, isDestination? _getDestination() : _getOrigin(), null, true);
+    if (_isDestinationButtonChosen != isDestination) {
+      setState(() {
+        _isDestinationButtonChosen = isDestination;
+      });
+    }
+    Prediction p = await PlacesAutocomplete.show(
+        startText: _isDestinationButtonChosen? _getDestinationAddress() : _getOriginAddress(),
+        hint: "MAPS.TYPE_ADDRESS".tr(),
+        // startText: isDestination ? destinationTextController.text : originTextController.text,
+        context: context,
+        apiKey: GOOGLE_DIRECTIONS_API_KEY,
+        logo: Image.asset("assets/none.png"),
+        mode: Mode.overlay, // Mode.fullscreen
+        language: 'de',
+        components: [new Component(Component.country, "at")]
+    );
+    if (p == null)
+      return;
+    Address address = await _predictionToAddress(p);
+    _setMarker(address.coordinates, address: address);
+  }
+
+    _getDesOrOriginButton(String activePath, String notActivePath, String activePathPressed, String notActivePathPressed, bool isDestination) {
       return Padding(
           padding: EdgeInsets.all(10.0),
           child: Column(
@@ -775,7 +1044,7 @@ class _MapsScreenState extends State<MapsScreen> {
                     child: InkWell(
                       onTap: () {
                         FocusScope.of(context).unfocus();
-                        onTapButton();
+                        _onTapButton(isDestination);
                       }, // handle your image tap here
                       child: Image.asset(
                         (isDestination
@@ -826,7 +1095,7 @@ class _MapsScreenState extends State<MapsScreen> {
                   child: TextField(
                     readOnly: true,
                     onTap: () async {
-                      onTapButton();
+                      _onTapButton(isDestination);
                       Prediction p = await PlacesAutocomplete.show(
                         startText: _isDestinationButtonChosen? _getDestinationAddress() : _getOriginAddress(),
                         hint: "MAPS.TYPE_ADDRESS".tr(),
@@ -948,7 +1217,9 @@ class _MapsScreenState extends State<MapsScreen> {
       if (_originAddress != null)
         _originTextController.text = _originAddress.getAddress();
       else
-        _clearOriginAddress();
+        setState(() {
+          _clearOriginAddress();
+        });
     }
 
     void _setPlaceForDestination({Address address, String houseNumber}) async {
@@ -977,7 +1248,9 @@ class _MapsScreenState extends State<MapsScreen> {
       if (_destinationAddress != null)
         _destinationTextController.text = _destinationAddress.getAddress();
       else
-        _clearDestinationAddress();
+        setState(() {
+          _clearDestinationAddress();
+        });
     }
 
     void _commonPiece() {
@@ -986,14 +1259,18 @@ class _MapsScreenState extends State<MapsScreen> {
       });
     }
 
-  FloatingActionButton _getFloatingButton() {
+    bool _visibleAllList() => _mapBottomPoint == _mapHeight;
+
+  Widget _getFloatingButton() {
+      if (_visibleAllList())
+        return Container();
       if (_menuTyp == null)
         return _positionFloatingActionButton();
       switch (_menuTyp) {
         case MenuTyp.FROM_OR_TO:
           return _goToPayFloatingActionButton();
       }
-      return null;
+      return Container();
   }
 
   void _changeMenuTyp(menuTyp, {bool forceRefresh = false}) async {
@@ -1060,6 +1337,17 @@ class _MapsScreenState extends State<MapsScreen> {
           onMainButtonPressed: _clearJob,
           shrinkWrap: false,
           isSwipeButton: false,
+        );
+        break;
+      case MenuTyp.PLEASE_WAIT:
+        _bottomCard = new BottomCard(
+          key: GlobalKey(),
+          maxHeight: _mapKey.currentContext.size.height,
+          floatingActionButton: _positionFloatingActionButton(),
+          isLoading: true,
+          headerText: 'MAPS.BOTTOM_MENUS.PLEASE_WAIT.PLEASE_WAIT'.tr(),
+          shrinkWrap: false,
+          showFooter: false,
         );
         break;
       case MenuTyp.CALCULATING_DISTANCE:
@@ -1192,11 +1480,10 @@ class _MapsScreenState extends State<MapsScreen> {
 
   _positionFloatingActionButton() {
     if (_myPosition == null)
-      return null;
+      return Container();
     return FloatingActionButton(
       heroTag: "btn",
       onPressed: () {
-
         if (_myPosition == null)
           return;
         LatLng pos = LatLng(_myPosition.latitude, _myPosition.longitude);
@@ -1244,7 +1531,7 @@ class _MapsScreenState extends State<MapsScreen> {
   Widget _getLastAddress(bool isDestination) {
     if (isDestination != _isDestinationButtonChosen)
       return Container();
-    List<Address> addresses = _overviewService.getLastAddresses(2, isDestination);
+    List<Address> addresses = _overviewService.getLastAddresses("");
     List<Widget> addressContentWidget = List();
     for (int i = 0; i < addresses.length; i++) {
       addressContentWidget.add(_getLastAddressContentWidget(addresses[i]));
@@ -1333,6 +1620,7 @@ class _MapsScreenState extends State<MapsScreen> {
   Future<Address> _showAddressManagerDialog(Address address) async {
     return await showDialog(
       context: context,
+
       builder: (BuildContext context) {
         return AddressManager(address);
       }
@@ -1345,7 +1633,7 @@ class _MapsScreenState extends State<MapsScreen> {
       context: context,
       builder: (BuildContext context) {
         return OrderDetailDialog(jobId);
-      }
+      },
     );
   }
 
@@ -1368,4 +1656,15 @@ class _MapsScreenState extends State<MapsScreen> {
         SettingsItem(textKey: "CLOSE", onPressed: () {}, icon: Icons.close, color: Colors.redAccent),
       ]
   );
+
+  Timer _throttle;
+  _onAddressFieldChanged(String e) async {
+    setState(() {
+      _addressSearchField = e;
+    });
+    if (_throttle?.isActive ?? false) _throttle.cancel();
+    _throttle = Timer(Duration(milliseconds: 500), () {
+      _getAddressesList(e);
+    });
+  }
 }

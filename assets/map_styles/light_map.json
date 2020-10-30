@@ -1,15 +1,15 @@
 [
   {
-    "featureType": "administrative",
-    "elementType": "geometry",
+    "featureType": "poi",
+    "elementType": "geometry.fill",
     "stylers": [
       {
-        "visibility": "off"
+        "color": "#d1e5f0"
       }
     ]
   },
   {
-    "featureType": "administrative.land_parcel",
+    "featureType": "poi",
     "elementType": "labels",
     "stylers": [
       {
@@ -18,33 +18,19 @@
     ]
   },
   {
-    "featureType": "poi",
+    "featureType": "road.highway",
+    "elementType": "geometry",
     "stylers": [
       {
-        "visibility": "off"
+        "color": "#ffffff"
+      },
+      {
+        "weight": 0.5
       }
     ]
   },
   {
-    "featureType": "poi",
-    "elementType": "labels.text",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "road",
-    "elementType": "labels.icon",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "road.local",
+    "featureType": "road.highway",
     "elementType": "labels",
     "stylers": [
       {
@@ -54,6 +40,24 @@
   },
   {
     "featureType": "transit",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  },
+  {
+    "featureType": "transit.line",
+    "elementType": "geometry.fill",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  },
+  {
+    "featureType": "transit.station",
+    "elementType": "labels",
     "stylers": [
       {
         "visibility": "off"
