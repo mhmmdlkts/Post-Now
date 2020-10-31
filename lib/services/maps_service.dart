@@ -131,7 +131,7 @@ class MapsService with WidgetsBindingObserver {
   }
 
   Future<bool> isOnlineDriverAvailable(LatLng origin, LatLng destination) async {
-    String url = 'https://europe-west1-post-now-f3c53.cloudfunctions.net/checkAvailableDriver?origin=${origin.latitude},${origin.longitude}';
+    String url = 'https://europe-west1-post-now-f3c53.cloudfunctions.net/checkAvailableDriver?origin=${origin.latitude},${origin.longitude}&destination=${destination.latitude},${destination.longitude}';
     http.Response response = await http.get(url);
     if (response.statusCode != 200)
       throw('Status code: ' + response.statusCode.toString());

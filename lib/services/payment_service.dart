@@ -60,11 +60,9 @@ class PaymentService {
   Future<bool> _callPayApiMollie(Set<String> params, BuildContext context) async{
     String url = "https://europe-west1-post-now-f3c53.cloudfunctions.net/mollie?";
     params.forEach((element) { url += "&" + element; });
-    print(url);
     try {
       http.Response response = await http.get(url);
       final  molliePayUrl = json.decode(response.body)["href"];
-      print(molliePayUrl);
 
       if (context != null) {
         final result = await Navigator.push(

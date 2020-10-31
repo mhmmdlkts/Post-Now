@@ -48,7 +48,7 @@ class _OverviewScreen extends State<OverviewScreen> {
     return Scaffold (
         appBar: AppBar(
           iconTheme: IconThemeData(
-            color: Colors.white, //change your color here
+            color: Colors.white,
           ),
           title: Text("OVERVIEW.TITLE".tr()),
           centerTitle: false,

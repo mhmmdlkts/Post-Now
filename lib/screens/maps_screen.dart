@@ -203,7 +203,6 @@ class _MapsScreenState extends State<MapsScreen> {
 
 
     _firebaseMessaging.configure(onMessage: (Map<String, dynamic> message) {
-      print('onResume: $message');
       final data = message["data"];
       if (data == null)
         return;
@@ -212,7 +211,6 @@ class _MapsScreenState extends State<MapsScreen> {
           _showMessageToast(data["key"], data["name"], data["message"]);
           break;
       }
-
       return;
     }, onResume: (Map<String, dynamic> message) {
       print('onResume: $message');
@@ -225,8 +223,6 @@ class _MapsScreenState extends State<MapsScreen> {
     _overviewService.initOrderList().then((value) => {
       setState((){})
     });
-
-    _myJobListener();
 
     _nextInitializeDone('6');
 
@@ -259,6 +255,7 @@ class _MapsScreenState extends State<MapsScreen> {
     // print(code);
     _initDone++;
     if (_initCount == _initDone) {
+      _myJobListener();
       _initIsDone();
     }
   }
@@ -438,6 +435,9 @@ class _MapsScreenState extends State<MapsScreen> {
           children: [
             Scaffold(
               backgroundColor: primaryBlue,
+              appBar: AppBar(
+                brightness: Brightness.dark,
+              ),
             ),
             Material(
               color: primaryBlue,
@@ -467,12 +467,12 @@ class _MapsScreenState extends State<MapsScreen> {
               ),
             ),
             AnimatedPositioned(
-              curve: Curves.easeInOutQuart,
-              duration: Duration(milliseconds: 200),
-              top: 0,
-              bottom: 0,
-              left: _drawerPosition,
-              child: _myDrawer()
+                curve: Curves.easeInOutQuart,
+                duration: Duration(milliseconds: 200),
+                top: 0,
+                bottom: 0,
+                left: _drawerPosition,
+                child: _myDrawer()
             ),
           ],
         ),
@@ -581,18 +581,8 @@ class _MapsScreenState extends State<MapsScreen> {
     ),
   );
 
-  Widget _content() => Stack(
+  Widget _topMenu() => Stack(
     children: [
-      AnimatedPositioned(
-        curve: Curves.ease,
-        duration: _mapsCloseOpenDur,
-        bottom: -_mapBottomPoint,
-        child: _googleMapsWidget(),
-      ),
-      Positioned(
-        top: MediaQuery.of(context).padding.top,
-        child: _toolbar(),
-      ),
       Positioned(
         key: _addressBarKey,
         top: MediaQuery.of(context).padding.top + _toolbarHeight + 20,
@@ -616,7 +606,22 @@ class _MapsScreenState extends State<MapsScreen> {
         top: _visibleAllList()?MediaQuery.of(context).padding.top + _toolbarHeight + _addressFieldHeight + 30:MediaQuery.of(context).size.height,
         child: _addressList(),
       ),
-      _bottomCard == null? Container() : _bottomCard, // TODO
+    ],
+  );
+
+  Widget _content() => Stack(
+    children: [
+      AnimatedPositioned(
+        curve: Curves.ease,
+        duration: _mapsCloseOpenDur,
+        bottom: -_mapBottomPoint,
+        child: _googleMapsWidget(),
+      ),
+      Positioned(
+        top: MediaQuery.of(context).padding.top,
+        child: _toolbar(),
+      ),
+      _bottomCard != null? _bottomCard:_topMenu(),
     ],
   );
 
@@ -1425,16 +1430,15 @@ class _MapsScreenState extends State<MapsScreen> {
         break;
       case MenuTyp.ACCEPTED:
         _bottomCard = new BottomCard(
-          key: GlobalKey(),
           job: _job,
-          imageUrl: _myDriver.image,
+          imageUrl: _myDriver?.image,
           maxHeight: _mapKey.currentContext.size.height,
           floatingActionButton: _positionFloatingActionButton(),
           showDestinationAddress: true,
           showOriginAddress: true,
           chatName: _myDriver==null?null:_myDriver.name,
-          phone: _myDriver==null?null:_myDriver.phone,
-          headerText: _myDriver==null?null:_myDriver.name,
+          phone: _myDriver?.phone,
+          headerText: _myDriver?.name,
           defaultOpen: true,
           shrinkWrap: true,
           showFooter: false,
@@ -1445,14 +1449,14 @@ class _MapsScreenState extends State<MapsScreen> {
         _bottomCard = new BottomCard(
           key: GlobalKey(),
           job: _job,
-          imageUrl: _myDriver.image,
+          imageUrl: _myDriver?.image,
           maxHeight: _mapKey.currentContext.size.height,
           floatingActionButton: _positionFloatingActionButton(),
           showDestinationAddress: true,
           showOriginAddress: false,
-          chatName: _myDriver==null?null:_myDriver.name,
-          phone: _myDriver==null?null:_myDriver.phone,
-          headerText: _myDriver==null?null:_myDriver.name,
+          chatName: _myDriver?.name,
+          phone: _myDriver?.phone,
+          headerText: _myDriver?.name,
           defaultOpen: true,
           shrinkWrap: true,
           showFooter: false,

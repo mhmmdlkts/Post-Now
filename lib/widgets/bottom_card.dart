@@ -13,11 +13,9 @@ import 'package:swipebuttonflutter/swipebuttonflutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class BottomCard extends StatefulWidget {
-  final FloatingActionButton floatingActionButton;
+  final Widget floatingActionButton;
   final double maxHeight;
-  final Widget centerWidget;
   final Widget body;
-  final bool isCenterWidgetFixed;
   final Job job;
   final bool showOriginAddress;
   final bool showDestinationAddress;
@@ -41,8 +39,6 @@ class BottomCard extends StatefulWidget {
     this.imageUrl,
     this.maxHeight,
     this.floatingActionButton,
-    this.centerWidget,
-    this.isCenterWidgetFixed = true,
     this.job,
     this.body,
     this.showOriginAddress = false,
@@ -71,65 +67,34 @@ class BottomState extends State<BottomCard> {
   final GlobalKey _containerKey = GlobalKey();
   final GlobalKey _contentKey = GlobalKey();
   final GlobalKey _headerKey = GlobalKey();
-  bool _isVisible = true;
-  double _minHeight;
-  double _maxHeight;
-  Offset _offset;
   ChatService _chatService;
+  double _height = -100;
 
   BottomState();
 
   @override
   void initState() {
     super.initState();
-    _initSize();
 
     if (widget.job != null)
       _chatService = ChatService(widget.job.key, _onNewMessage);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => Future.delayed(Duration(milliseconds: 300), ()=> setState(() {
+      _height = _contentKey.currentContext.size.height;
+    })));
   }
 
   @override
   Widget build(BuildContext context) {
-    return Opacity(
-      opacity: _isVisible?1.0:0.0,
-      child: Stack(
+    return Positioned(
+      bottom: 0,
+      child: Container(
+        width: MediaQuery.of(context).size.width,
         alignment: Alignment.bottomCenter,
-        children: <Widget>[
-          Visibility(
-            visible: widget.centerWidget != null,
-            child: Positioned(
-                bottom:  (widget.isCenterWidgetFixed?_minHeight:_offset.dy) + 36,
-                child: widget.centerWidget
-            ),
-          ),
-          Align(),
-          GestureDetector(
-            onPanEnd: (details) {
-              if (!widget.shrinkWrap)
-                return;
-              if (details.velocity.pixelsPerSecond.dy > 0)
-                _open();
-              else if (details.velocity.pixelsPerSecond.dy < 0)
-                _close();
-            },
-            onPanUpdate: (details) {
-              if (!widget.shrinkWrap)
-                return;
-              _offset = Offset(0, _offset.dy - details.delta.dy * 4);
-              const double tmp = 30;
-              if (_offset.dy < _minHeight) {
-                _offset = Offset(0, _minHeight);
-              } else if (_offset.dy > _maxHeight) {
-                _offset = Offset(0, _maxHeight);
-              }
-              setState(() {});
-            },
-            child: AnimatedContainer(
-              key: _containerKey,
-              duration: Duration.zero,
-              curve: Curves.easeOut,
-              height: _offset.dy,
-              alignment: Alignment.center,
+        child: Stack(
+          children: [
+            Container(
+              margin: EdgeInsets.only(top: 70),
               decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.vertical(
@@ -157,100 +122,73 @@ class BottomState extends State<BottomCard> {
                 ],
               ),
             ),
-          ),
-          Positioned(
-            left: 28,
-            bottom: _offset.dy - 28,
-            child: Row(
-              children: [
-                widget.onCancelButtonPressed == null? Container() : Container(
-                  margin: EdgeInsets.only(right: 14),
-                  child: FloatingActionButton(
-                    heroTag: "cancel_fab",
-                    child: Icon(Icons.close, color: Colors.white,),
-                    onPressed: () {
-                      widget.onCancelButtonPressed.call();
-                    },
-                    backgroundColor: Colors.redAccent,
-                  ),
-                ),
-                widget.imageUrl != null ?_circularImage(widget.imageUrl): Container(),
-                widget.phone == null? Container() : Container(
-                  margin: EdgeInsets.only(right: 14),
-                  child: FloatingActionButton(
-                    heroTag: "call_customer_fab",
-                    child: Icon(Icons.phone, color: Colors.white,),
-                    onPressed: _callCustomer,
-                  ),
-                ),
-                widget.chatName != null ?_sendMessageFab(_chatService.getUnreadMessageCount()): Container(),
-              ],
-            ),
-          ),
-          Visibility(
-            visible: widget.floatingActionButton != null,
-            child: Positioned(
-                right: 14,
-                bottom:  _offset.dy + 14,
-                child: widget.floatingActionButton
-            ),
-          ),
-          Visibility(
-            visible: widget.settingsDialog != null,
-            child: Positioned(
-                right: 10,
-                bottom:  _offset.dy - 45 - 10,
-                child: Material(
-                  child: InkWell(
-                      key: _settingsMenuKey,
-                      customBorder: CircleBorder(),
-                      onTap: () {
-                        showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return widget.settingsDialog;
-                            }
-                        );
+            Positioned(
+              left: 28,
+              top: 42,
+              child: Row(
+                children: [
+                  widget.onCancelButtonPressed == null? Container() : Container(
+                    margin: EdgeInsets.only(right: 14),
+                    child: FloatingActionButton(
+                      heroTag: "cancel_fab",
+                      child: Icon(Icons.close, color: Colors.white,),
+                      onPressed: () {
+                        widget.onCancelButtonPressed.call();
                       },
-                      child: Padding(
-                        padding: EdgeInsets.all(10),
-                        child: Icon(Icons.more_horiz, size: 35,),
-                      )
+                      backgroundColor: Colors.redAccent,
+                    ),
                   ),
-                  color: Colors.transparent,
-                )
+                  widget.imageUrl != null ?_circularImage(widget.imageUrl): Container(),
+                  widget.phone == null? Container() : Container(
+                    margin: EdgeInsets.only(right: 14),
+                    child: FloatingActionButton(
+                      heroTag: "call_customer_fab",
+                      child: Icon(Icons.phone, color: Colors.white,),
+                      onPressed: _callCustomer,
+                    ),
+                  ),
+                  widget.chatName != null ?_sendMessageFab(_chatService.getUnreadMessageCount()): Container(),
+                ],
+              ),
             ),
-          ),
-        ],
+            Visibility(
+              visible: widget.settingsDialog != null,
+              child: Positioned(
+                  right: 10,
+                  top:  64,
+                  child: Material(
+                    child: InkWell(
+                        key: _settingsMenuKey,
+                        customBorder: CircleBorder(),
+                        onTap: () {
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return widget.settingsDialog;
+                              }
+                          );
+                        },
+                        child: Padding(
+                          padding: EdgeInsets.all(10),
+                          child: Icon(Icons.more_horiz, size: 35,),
+                        )
+                    ),
+                    color: Colors.transparent,
+                  )
+              ),
+            ),
+            Visibility(
+              visible: widget.floatingActionButton != null,
+              child: Positioned(
+                  right: 14,
+                  top: 0,
+                  child: widget.floatingActionButton
+              ),
+            ),
+          ],
+        ),
       ),
     );
-  }
-
-  void _initSize() {
-    setState(() {
-      _isVisible = false;
-    });
-    _minHeight = 50;
-    _maxHeight = widget.maxHeight;
-
-    _offset = Offset(0, _maxHeight);
-
-    WidgetsBinding.instance.addPostFrameCallback((_) => _setMaxMin());
-  }
-
-  _setMaxMin() async {
-    await Future.delayed(Duration(milliseconds: 300)); // Todo dont know why this is needed
-    if (_contentKey.currentContext == null && _containerKey.currentContext.size.height != widget.maxHeight) {
-      Future.delayed(Duration(milliseconds: 50), _setMaxMin);
-      return;
-    }
-    _setMaxHeight(_contentKey.currentContext.size.height);
-    _setMinHeight(widget.shrinkWrap?_headerKey.currentContext.size.height:_maxHeight);
-
-    if (widget.defaultOpen)
-      _close(ms: 0);
-    else
-      _open(ms: 0);
   }
 
   void _callCustomer() async {
@@ -268,57 +206,10 @@ class BottomState extends State<BottomCard> {
     );
   }
 
-  _setMaxHeight(double h) {
-    setState(() {
-      _maxHeight = h;
-      if (_offset.dy > h) {
-        _offset = Offset(0, h);
-      }
-    });
-  }
-
-  _setMinHeight(double h) {
-    setState(() {
-      _minHeight = h;
-      if (_offset.dy < h) {
-        _offset = Offset(0, h);
-      }
-    });
-  }
-
   _onNewMessage() {
     setState(() {
 
     });
-  }
-
-  void _open({int ms = 15}) {
-    Timer.periodic(Duration(milliseconds: ms), (timer) {
-      double value = _offset.dy - 10; // we decrement the height by 10 here
-      _offset = Offset(0, value);
-      if (_offset.dy < _minHeight) {
-        _offset = Offset(0, _minHeight); // makes sure it doesn't go beyond minHeight
-        _isVisible = true;
-        timer.cancel();
-      }
-      setState(() {});
-    });
-    //_setMaxHeight(_contentKey.currentContext.size.height+ 50);
-    setState(() { });
-  }
-
-  void _close({int ms = 15}) {
-    Timer.periodic(Duration(milliseconds: ms), (timer) {
-      double value = _offset.dy + 10; // we increment the height of the Container by 10 every 5ms
-      _offset = Offset(0, value);
-      if (_offset.dy > _maxHeight) {
-        _offset = Offset(0, _maxHeight); // makes sure it does't go above maxHeight
-        _isVisible = true;
-        timer.cancel();
-      }
-      setState(() {});
-    });
-    setState(() { });
   }
 
   Widget _getHeader() {
@@ -450,13 +341,13 @@ class BottomState extends State<BottomCard> {
             ),
           ),
           Visibility(
-              visible: isVisible(),
-              child: Expanded(
-                child: Opacity(
-                    opacity: enabled?1.0:opacity,
-                    child: Text(text)
-                ),
-              )
+            visible: isVisible(),
+            child: Expanded(
+              child: Opacity(
+                  opacity: enabled?1.0:opacity,
+                  child: Text(text)
+              ),
+            )
           )
         ],
       );
