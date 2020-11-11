@@ -123,6 +123,9 @@
     },
     "BOTTOM_MENUS": {
       "YOUR_DRIVER": "Your Carrier: {name}",
+      "ACCEPTED": {
+        "MESSAGE" : "Diger auftraglar bitince soför sizin auftragi halledecek"
+      },
       "ON_JOB": {
         "STATUS": "Status: The carrier is on the way to pick up the package.",
         "PACKAGE_ADDRESS": "Sender adress: {address}\nAsagi gelecek\nPacket will gived by Name: {name}",

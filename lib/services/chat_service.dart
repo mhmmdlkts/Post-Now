@@ -35,9 +35,8 @@ class ChatService {
   Future<String> startUpload(imagePath) async {
     assert(!!imagePath);
     final dbImagePath = 'chat/images/$_jobId/${DateTime.now()}.png';
-    final StorageUploadTask _uploadTask = _storage.ref().child(dbImagePath).putFile(i.File(imagePath));
-    final snapshot = await _uploadTask.onComplete;
-    return await snapshot.ref.getDownloadURL();
+    final UploadTask _uploadTask = _storage.ref().child(dbImagePath).putFile(i.File(imagePath));
+    return await _uploadTask.snapshot.ref.getDownloadURL();
   }
 
   int getUnreadMessageCount() {

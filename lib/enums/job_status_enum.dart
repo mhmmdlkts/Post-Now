@@ -1,5 +1,6 @@
 enum Status {
   WAITING,
+  ACCEPTED,
   ON_ROAD,
   PACKAGE_PICKED,
   FINISHED,

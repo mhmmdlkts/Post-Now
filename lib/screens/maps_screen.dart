@@ -18,7 +18,6 @@ import 'package:postnow/screens/contact_form_screen.dart';
 import 'package:postnow/screens/overview_screen.dart';
 import 'package:postnow/screens/settings_screen.dart';
 import 'package:postnow/screens/voucher_screen.dart';
-import 'package:postnow/screens/web_view_screen.dart';
 import 'package:postnow/services/global_service.dart';
 import 'package:postnow/services/legal_service.dart';
 import 'package:postnow/services/overview_service.dart';
@@ -290,8 +289,11 @@ class _MapsScreenState extends State<MapsScreen> {
       _addAddressMarker(j.originAddress.coordinates, false);
     _mapsService.driverRef.child(j.driverId).onValue.listen(_onMyDriverDataChanged);
     switch (_job.status) {
-      case Status.ON_ROAD:
+      case Status.ACCEPTED:
         _changeMenuTyp(MenuTyp.ACCEPTED);
+        break;
+      case Status.ON_ROAD:
+        _changeMenuTyp(MenuTyp.ON_ROAD);
         break;
       case Status.WAITING:
         _changeMenuTyp(MenuTyp.SEARCH_DRIVER);
@@ -410,21 +412,11 @@ class _MapsScreenState extends State<MapsScreen> {
       _changeMenuTyp(MenuTyp.PAYMENT_WAITING);
     });
 
-    PaymentService().pay(context, _draft.price.total, _user.uid, _draft.key, useCredits, _credit, paymentMethod, creditCard).then((success) => {
-      if (!success) {
-        setState(() {
-          _changeMenuTyp(MenuTyp.PAYMENT_DECLINED);
-        })
-      } else {
-        _showOrderDetailDialog(_draft.key)
-      }
-    }).catchError((onError) => {
-      print(onError),
-      setState(() {
-        _changeMenuTyp(MenuTyp.PAYMENT_DECLINED);
-      })
+    final bool result = await PaymentService().pay(context, _draft.price.total, _user.uid, _draft.key, useCredits, _credit, paymentMethod, creditCard);
+    setState(() {
+      if (result)
+        _changeMenuTyp(MenuTyp.SEARCH_DRIVER);
     });
-
   }
 
   @override
@@ -1429,6 +1421,27 @@ class _MapsScreenState extends State<MapsScreen> {
         );
         break;
       case MenuTyp.ACCEPTED:
+        _bottomCard = new BottomCard(
+          job: _job,
+          imageUrl: _myDriver?.image,
+          maxHeight: _mapKey.currentContext.size.height,
+          floatingActionButton: _positionFloatingActionButton(),
+          showDestinationAddress: true,
+          showOriginAddress: true,
+          chatName: _myDriver==null?null:_myDriver.name,
+          phone: _myDriver?.phone,
+          headerText: _myDriver?.name,
+          body: Container(
+            padding: EdgeInsets.symmetric(vertical: 20),
+            child: Text("MAPS.BOTTOM_MENUS.ACCEPTED.MESSAGE".tr()),
+          ),
+          defaultOpen: true,
+          shrinkWrap: true,
+          showFooter: false,
+          settingsDialog: _getSettingsDialog(),
+        );
+        break;
+      case MenuTyp.ON_ROAD:
         _bottomCard = new BottomCard(
           job: _job,
           imageUrl: _myDriver?.image,

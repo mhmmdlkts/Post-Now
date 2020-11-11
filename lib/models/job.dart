@@ -54,6 +54,8 @@ class Job {
         return Status.WAITING;
       case "on_the_road":
         return Status.ON_ROAD;
+      case "accepted":
+        return Status.ACCEPTED;
       case "package_picked":
         return Status.PACKAGE_PICKED;
       case "finished":
@@ -74,6 +76,8 @@ class Job {
         return "waiting";
       case Status.ON_ROAD:
         return "on_the_road";
+      case Status.ACCEPTED:
+        return "accepted";
       case Status.PACKAGE_PICKED:
         return "package_picked";
       case Status.FINISHED:
