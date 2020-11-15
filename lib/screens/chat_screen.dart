@@ -97,7 +97,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   Widget _conversationField() => Container(
       height: MediaQuery.of(context).size.height,
       child: new ListView.builder (
-          padding: EdgeInsets.only(bottom: _footerHeight),
+          padding: EdgeInsets.only(bottom: _footerHeight + MediaQuery.of(context).padding.bottom),
           controller: _listViewController,
           itemCount: _chatService.messageCount(),
           itemBuilder: (BuildContext ctxt, int index) {

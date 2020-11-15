@@ -1,10 +1,8 @@
 import 'dart:convert';
 
-import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_braintree/flutter_braintree.dart';
 import 'package:http/http.dart' as http;
 import 'package:postnow/enums/payment_methods_enum.dart';
 import 'package:postnow/environment/api_keys.dart';
@@ -12,7 +10,6 @@ import 'package:postnow/models/credit_card.dart';
 import 'package:postnow/screens/web_view_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'dart:io' show Platform;
 
 import 'global_service.dart';
 
