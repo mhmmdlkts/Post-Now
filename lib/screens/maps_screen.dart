@@ -416,6 +416,8 @@ class _MapsScreenState extends State<MapsScreen> {
     setState(() {
       if (result)
         _changeMenuTyp(MenuTyp.SEARCH_DRIVER);
+      else
+        _changeMenuTyp(MenuTyp.CONFIRM);
     });
   }
 
