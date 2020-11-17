@@ -1,21 +1,28 @@
 import 'package:circular_check_box/circular_check_box.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_maps_webservice/places.dart';
+import 'package:postnow/environment/api_keys.dart';
 import 'package:postnow/models/address.dart';
+import 'package:postnow/services/maps_service.dart';
 
 class AddressManager extends StatefulWidget {
+  final MapsService mapsService;
   final Address address;
   final double borderRadius;
-  AddressManager(this.address, {this.borderRadius = 15, Key key}) : super(key: key);
+  AddressManager(this.address, this.mapsService, {this.borderRadius = 15, Key key}) : super(key: key);
 
   @override
   _AddressManager createState() => _AddressManager(address);
 }
 
 class _AddressManager extends State<AddressManager> {
+  final GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: GOOGLE_DIRECTIONS_API_KEY);
   final Address _address;
   String _errorMessage = "";
   bool _extraService = true;
+  bool _mapsService = true;
   TextEditingController _houseNumberController, _doorNumberController, _doorNameController;
 
   _AddressManager(this._address) : assert(_address != null);
@@ -163,12 +170,23 @@ class _AddressManager extends State<AddressManager> {
     );
   }
 
-  _onAcceptButtonClick() {
+  _changePos() async {
+    final List<Prediction> p = await widget.mapsService.getAutoCompleter(_address.getAddress(withDoorNumber: false));
+    if (p?.isEmpty??false)
+      return;
+    PlacesDetailsResponse detail = await _places.getDetailsByPlaceId(p.first.placeId);
+    final double lat = detail.result.geometry.location.lat;
+    final double lng = detail.result.geometry.location.lng;
+    _address.coordinates = LatLng(lat, lng);
+  }
+
+  _onAcceptButtonClick() async {
     setState(() {
       _errorMessage = _getErrorMessage();
     });
     if (_errorMessage.length != 0)
       return;
+    await _changePos();
     Navigator.pop(context, _address);
   }
 

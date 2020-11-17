@@ -189,7 +189,7 @@ class _MapsScreenState extends State<MapsScreen> {
 
     _originTextController = new TextEditingController(text: '');
     _destinationTextController = new TextEditingController(text: '');
-    
+
     _mapsService.jobsRef.onChildAdded.listen(_onJobsDataAdded);
 
     FirebaseFirestore.instance.collection('users').doc(_user.uid).snapshots().listen((snapshot) {
@@ -336,9 +336,11 @@ class _MapsScreenState extends State<MapsScreen> {
         if (isDestination) {
           _destinationAddress = null;
           _setPlaceForDestination();
+          _setMarker(_destinationAddress.coordinates, address: _destinationAddress);
         } else {
           _originAddress = null;
           _setPlaceForOrigin();
+          _setMarker(_originAddress.coordinates, address: _originAddress);
         }
         _isDestinationButtonChosen = isDestination;
       });
@@ -697,7 +699,7 @@ class _MapsScreenState extends State<MapsScreen> {
     setState(() {
       _polyLines.clear();
       LatLng chosen = pos;
-      _addAddressMarker(chosen, _isDestinationButtonChosen);
+      _addAddressMarker(chosen, _isDestinationButtonChosen); // here
       if (_isDestinationButtonChosen) {
         _destinationAddress = Address.fromLatLng(chosen);
         _setPlaceForDestination(address: address, houseNumber: houseNumber);
@@ -904,7 +906,7 @@ class _MapsScreenState extends State<MapsScreen> {
           MaterialPageRoute(builder: (context) => ChatScreen(key, name, _isDriverApp))
       );
     }
-    
+
     String _getDestinationAddress() {
       if (_destinationAddress == null)
         return null;
@@ -998,6 +1000,12 @@ class _MapsScreenState extends State<MapsScreen> {
         ),
       );
     }
+
+  _refreshMarkers() {
+    _addAddressMarker(null, null);
+    _addAddressMarker(_originAddress.coordinates, false);
+    _addAddressMarker(_destinationAddress.coordinates, true);
+  }
 
   _onTapButton(bool isDestination) async {
       return;
@@ -1184,8 +1192,6 @@ class _MapsScreenState extends State<MapsScreen> {
         if (regex.hasMatch(houseNumber))
           if (houseNumber.contains("/"))
             return houseNumber.split("/")[1];
-          else
-            return houseNumber;
       }
       return null;
     }
@@ -1216,9 +1222,10 @@ class _MapsScreenState extends State<MapsScreen> {
       if (_originAddress != null)
         _originTextController.text = _originAddress.getAddress();
       else
-        setState(() {
-          _clearOriginAddress();
-        });
+        _clearOriginAddress();
+      setState(() {
+        _refreshMarkers();
+      });
     }
 
     void _setPlaceForDestination({Address address, String houseNumber}) async {
@@ -1247,9 +1254,10 @@ class _MapsScreenState extends State<MapsScreen> {
       if (_destinationAddress != null)
         _destinationTextController.text = _destinationAddress.getAddress();
       else
-        setState(() {
-          _clearDestinationAddress();
-        });
+        _clearDestinationAddress();
+      setState(() {
+        _refreshMarkers();
+      });
     }
 
     void _commonPiece() {
@@ -1276,7 +1284,6 @@ class _MapsScreenState extends State<MapsScreen> {
     if (!forceRefresh && _menuTyp == menuTyp)
       return;
     setState(() {
-      print(menuTyp);
       _menuTyp = menuTyp;
       _changeBottomCard(_menuTyp);
     });
@@ -1608,7 +1615,6 @@ class _MapsScreenState extends State<MapsScreen> {
       final jobId = e.snapshot.value;
       if (jobId != null) {
         _mapsService.jobsRef.child(jobId.toString()).onValue.listen((Event e){
-          print(e.snapshot.value["status"]);
           Job j = Job.fromSnapshot(e.snapshot);
           _onMyJobChanged(j);
         });
@@ -1641,7 +1647,7 @@ class _MapsScreenState extends State<MapsScreen> {
       context: context,
 
       builder: (BuildContext context) {
-        return AddressManager(address);
+        return AddressManager(address, _mapsService);
       }
     );
   }
@@ -1659,7 +1665,7 @@ class _MapsScreenState extends State<MapsScreen> {
   void _thisMethodFixABugButIStillAlwaysABugFixMeDude() {
     if (_originAddress != null || _destinationAddress != null)
       _clearJob(); // TODO
-    }
+  }
 
   _getSettingsDialog() => SettingsDialog(
       [

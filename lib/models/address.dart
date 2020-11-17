@@ -116,13 +116,13 @@ class Address {
       coordinates = LatLng(placeMark.position.latitude, placeMark.position.longitude);
   }
 
-  String getAddress() {
+  String getAddress({bool withDoorNumber = true}) {
     StringBuffer address = StringBuffer();
     if (isStringNotEmpty(street))
       address.write(street);
     if (isStringNotEmpty(houseNumber))
       address.write(" " + houseNumber);
-    if (isStringNotEmpty(doorNumber)) {
+    if (isStringNotEmpty(doorNumber) && withDoorNumber) {
       address.write(isStringNotEmpty(houseNumber)?"/":" ?/");
       address.write(doorNumber);
     }
