@@ -1312,9 +1312,6 @@ class _MapsScreenState extends State<MapsScreen> {
           onMainButtonPressed: () {
             goToPayButtonPressed();
           },
-          onCancelButtonPressed: () {
-            _clearJob();
-          },
           shrinkWrap: false,
           isSwipeButton: false,
         );

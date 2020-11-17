@@ -57,7 +57,10 @@ class _PaymentMethodsState extends State<PaymentMethods> {
               child: _getCreditCards()
           ) : Container(
             margin: EdgeInsets.only(bottom: 10),
-            child: _getAllPayMethods(),
+            child: SafeArea(
+              top: false,
+              child: _getAllPayMethods(),
+            ),
           )
         )
       ],
@@ -91,11 +94,11 @@ class _PaymentMethodsState extends State<PaymentMethods> {
       children: [
         widget.credits > 0 ? _getCheckBox(): Container(height: 20,),
         widget.credits >= widget.amount ? _getButton(_payWithCredits, icon: Icon(MyFlutterApp.coins, color: Colors.orange,), label: PaymentMethodsEnum.CREDITS, disable: _getPrice() != 0) : Container(),
-        _getButton(_payWithCash, icon: Icon(MyFlutterApp.money_bill_alt, color: Colors.teal,),label: PaymentMethodsEnum.CASH, disable: _getPrice() == 0),
+        //_getButton(_payWithCash, icon: Icon(MyFlutterApp.money_bill_alt, color: Colors.teal,),label: PaymentMethodsEnum.CASH, disable: _getPrice() == 0),
         _getButton(_payWithPaypal, icon: Icon(MyFlutterApp.paypal, color: Colors.blueAccent,), label: PaymentMethodsEnum.PAYPAL, disable: _getPrice() == 0),
         _getButton(_payWithCreditCard, icon: Icon(MyFlutterApp.credit_card_alt, color: Colors.indigo,), label: PaymentMethodsEnum.CREDIT_CARD, disable: _getPrice() == 0),
         _getButton(_payWithKlarna, icon: Icon(MyFlutterApp.klarna__2_, color: Colors.pinkAccent,), label: PaymentMethodsEnum.KLARNA, disable: _getPrice() == 0),
-        Platform.isIOS ? _getButton(_payWithApplePay, icon: Icon(MyFlutterApp.apple_pay, color: Colors.black), label: PaymentMethodsEnum.APPLE_PAY, disable: _getPrice() == 0) : Container()
+        Platform.isIOS ? _getButton(_payWithApplePay, icon: Icon(MyFlutterApp.apple_pay, color: Colors.black), label: PaymentMethodsEnum.APPLE_PAY, disable: _getPrice() == 0) : Container(),
       ],
     );
   }
