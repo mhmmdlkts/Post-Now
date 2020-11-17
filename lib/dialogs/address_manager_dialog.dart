@@ -22,7 +22,8 @@ class _AddressManager extends State<AddressManager> {
   final Address _address;
   String _errorMessage = "";
   bool _extraService = true;
-  bool _mapsService = true;
+  bool _isHouseNumberChanged = false;
+  
   TextEditingController _houseNumberController, _doorNumberController, _doorNameController;
 
   _AddressManager(this._address) : assert(_address != null);
@@ -102,6 +103,7 @@ class _AddressManager extends State<AddressManager> {
                               setState(() {
                                 _address.houseNumber = val;
                               });
+                              _isHouseNumberChanged = true;
                             },
                             decoration: InputDecoration(border: InputBorder.none, labelText: 'DIALOGS.ADDRESS_MANAGER.HOUSE_NUMBER'.tr(), hintText: 'DIALOGS.ADDRESS_MANAGER.HOUSE_NUMBER'.tr(), counterText: ""),
                           ),
@@ -171,6 +173,7 @@ class _AddressManager extends State<AddressManager> {
   }
 
   _changePos() async {
+    print('zaaaa');
     final List<Prediction> p = await widget.mapsService.getAutoCompleter(_address.getAddress(withDoorNumber: false));
     if (p?.isEmpty??false)
       return;
@@ -186,7 +189,8 @@ class _AddressManager extends State<AddressManager> {
     });
     if (_errorMessage.length != 0)
       return;
-    await _changePos();
+    if (_isHouseNumberChanged)
+      await _changePos();
     Navigator.pop(context, _address);
   }
 

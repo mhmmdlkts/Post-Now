@@ -126,6 +126,10 @@
       "ACCEPTED": {
         "MESSAGE" : "Diger auftraglar bitince soför sizin auftragi halledecek"
       },
+      "FROM_OR_TO": {
+        "TITLE": "Calculate Price",
+        "MAIN_BUTTON": "Calculate"
+      },
       "ON_JOB": {
         "STATUS": "Status: The carrier is on the way to pick up the package.",
         "PACKAGE_ADDRESS": "Sender adress: {address}\nAsagi gelecek\nPacket will gived by Name: {name}",

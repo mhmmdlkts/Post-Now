@@ -336,11 +336,9 @@ class _MapsScreenState extends State<MapsScreen> {
         if (isDestination) {
           _destinationAddress = null;
           _setPlaceForDestination();
-          _setMarker(_destinationAddress.coordinates, address: _destinationAddress);
         } else {
           _originAddress = null;
           _setPlaceForOrigin();
-          _setMarker(_originAddress.coordinates, address: _originAddress);
         }
         _isDestinationButtonChosen = isDestination;
       });
@@ -577,7 +575,10 @@ class _MapsScreenState extends State<MapsScreen> {
     ),
   );
 
-  Widget _topMenu() => Stack(
+  Widget _topMenu() {
+    if (_bottomCard != null && _menuTyp != MenuTyp.FROM_OR_TO)
+      return Container();
+    return Stack(
     children: [
       Positioned(
         key: _addressBarKey,
@@ -604,6 +605,7 @@ class _MapsScreenState extends State<MapsScreen> {
       ),
     ],
   );
+  }
 
   Widget _content() => Stack(
     children: [
@@ -617,7 +619,8 @@ class _MapsScreenState extends State<MapsScreen> {
         top: MediaQuery.of(context).padding.top,
         child: _toolbar(),
       ),
-      _bottomCard != null? _bottomCard:_topMenu(),
+      _topMenu(),
+      _bottomCard != null? _bottomCard:Container(),
     ],
   );
 
@@ -1008,6 +1011,7 @@ class _MapsScreenState extends State<MapsScreen> {
   }
 
   _onTapButton(bool isDestination) async {
+    _isDestinationButtonChosen = isDestination;
       return;
     _mapsService.setNewCameraPosition(_mapController, isDestination? _getDestination() : _getOrigin(), null, true);
     if (_isDestinationButtonChosen != isDestination) {
@@ -1274,8 +1278,6 @@ class _MapsScreenState extends State<MapsScreen> {
       if (_menuTyp == null)
         return _positionFloatingActionButton();
       switch (_menuTyp) {
-        case MenuTyp.FROM_OR_TO:
-          return _goToPayFloatingActionButton();
       }
       return Container();
   }
@@ -1299,7 +1301,23 @@ class _MapsScreenState extends State<MapsScreen> {
     switch (menuTyp)
     {
       case MenuTyp.FROM_OR_TO:
-        _bottomCard = null;
+        _bottomCard = new BottomCard(
+          key: GlobalKey(),
+          maxHeight: _mapKey.currentContext.size.height,
+          floatingActionButton: _positionFloatingActionButton(),
+          showDestinationAddress: false,
+          showOriginAddress: false,
+          headerText: 'MAPS.BOTTOM_MENUS.FROM_OR_TO.TITLE'.tr(),
+          mainButtonText: 'MAPS.BOTTOM_MENUS.FROM_OR_TO.MAIN_BUTTON'.tr(),
+          onMainButtonPressed: () {
+            goToPayButtonPressed();
+          },
+          onCancelButtonPressed: () {
+            _clearJob();
+          },
+          shrinkWrap: false,
+          isSwipeButton: false,
+        );
         break;
       case MenuTyp.NO_DRIVER_AVAILABLE:
         _bottomCard = new BottomCard(
@@ -1519,13 +1537,6 @@ class _MapsScreenState extends State<MapsScreen> {
       backgroundColor: Colors.lightBlueAccent,
     );
   }
-
-  FloatingActionButton _goToPayFloatingActionButton() => FloatingActionButton(
-    heroTag: "btn",
-    onPressed: goToPayButtonPressed,
-    child: Icon(Icons.arrow_forward, color: Colors.white,),
-    backgroundColor: Colors.redAccent,
-  );
 
   void _clearJob() {
     setState(() {
