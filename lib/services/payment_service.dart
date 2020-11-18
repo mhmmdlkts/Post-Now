@@ -72,6 +72,7 @@ class PaymentService {
         launch(molliePayUrl);
       }
     } catch (e) {
+      print("error 85: " + e);
     }
     return false;
   }

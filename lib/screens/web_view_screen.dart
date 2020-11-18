@@ -59,7 +59,6 @@ class _WebViewScreen extends State<WebViewScreen> {
       onLoadStop: (InAppWebViewController controller, String url) async {
         if (widget.popOnLoad == null)
           return;
-        print('onLoadStop' + url);
         if (url.contains(widget.popOnLoad))
           Navigator.pop(context, true);
       },

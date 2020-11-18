@@ -132,6 +132,16 @@ class _MapsScreenState extends State<MapsScreen> {
     _mapsService.setNewCameraPosition(
         _mapController, _getOrigin(), _getDestination(), false);
     _draft = await _mapsService.createDraft(_originAddress, _destinationAddress, RouteMode.driving);
+    _mapsService.draftRef.child(_draft.key).child("pay_status").onValue.listen((event) {
+      final String result = event.snapshot.value;
+      if (_menuTyp != MenuTyp.PAYMENT_WAITING)
+        return;
+      if (result == "paid") {
+        _changeMenuTyp(MenuTyp.SEARCH_DRIVER);
+        return;
+      }
+      _changeMenuTyp(MenuTyp.PAYMENT_DECLINED);
+    });
     drawPolyline(Colors.black26, [Colors.blue, Colors.blueAccent]);
 
     _changeMenuTyp(MenuTyp.CONFIRM);
@@ -413,12 +423,6 @@ class _MapsScreenState extends State<MapsScreen> {
     });
 
     final bool result = await PaymentService().pay(context, _draft.price.total, _user.uid, _draft.key, useCredits, _credit, paymentMethod, creditCard);
-    setState(() {
-      if (result)
-        _changeMenuTyp(MenuTyp.SEARCH_DRIVER);
-      else
-        _changeMenuTyp(MenuTyp.CONFIRM);
-    });
   }
 
   @override
@@ -1681,6 +1685,7 @@ class _MapsScreenState extends State<MapsScreen> {
             textKey: "DIALOGS.JOB_SETTINGS.CANCEL_JOB",
             onPressed: () async {
               if (await _showAreYouSureDialog()) {
+                _changeMenuTyp(MenuTyp.PLEASE_WAIT);
                 _mapsService.cancelJob(_job);
               }
             },
