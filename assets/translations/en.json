@@ -196,7 +196,18 @@
     "TYPE_MESSAGE_HERE": "Enter your message..."
   },
   "OVERVIEW": {
-    "TITLE": "Gecmis orders"
+    "TITLE": "Gecmis orders",
+    "MODELS": {
+      "JOB": {
+        "WAITING": "In Process",
+        "ON_ROAD": "In Process",
+        "PACKAGE_PICKED": "In Process",
+        "FINISHED": "Completed",
+        "CANCELLED": "Canceled",
+        "DRIVER_CANCELED": "Driver Canceled",
+        "CUSTOMER_CANCELED": "Customer Canceled"
+      }
+    }
   },
   "VOUCHER": {
     "TITLE": "Voucher",

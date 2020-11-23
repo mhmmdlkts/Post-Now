@@ -54,10 +54,11 @@ class _OverviewScreen extends State<OverviewScreen> {
           centerTitle: false,
           brightness: Brightness.dark,
         ),
-        body: _isLoading?Container():ListView.builder(
+        body: _isLoading?Container():ListView.separated(
           shrinkWrap: true,
           itemCount: _overviewService.orders.length,
           itemBuilder: (BuildContext ctxt, int index) => getOrderWidget(_overviewService.orders[index]),
+          separatorBuilder: (_,i) => Divider(height: 0,thickness: 0.5,),
         )
     );
   }

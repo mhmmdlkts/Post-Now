@@ -15,77 +15,53 @@ class OverviewComponent extends StatelessWidget {
   final double maxHeight;
   final BitmapDescriptor bitmapDescriptorDestination;
   final BitmapDescriptor bitmapDescriptorOrigin;
-  final _textStyle = TextStyle(fontSize: 16);
   final VoidCallback voidCallback;
+  final Color _grey = Colors.black45;
   OverviewComponent(this.job, this.maxWidth, this.maxHeight, this.bitmapDescriptorDestination, this.bitmapDescriptorOrigin, { Key key, this.voidCallback }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return InkWell(
       onTap: voidCallback,
-      child: Column(
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+        child: Column(
           children: [
-            Stack(
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _halfMapsWidget(job, false),
-                _halfMapsWidget(job, true),
+                Text(_getJobStatus(), style: TextStyle(color: _getStatusTextColor(), fontWeight: FontWeight.bold, fontSize: 20),),
+                Text(_getPrice(), style: TextStyle(color: primaryBlue, fontWeight: FontWeight.w500, fontSize: 20),),
               ],
             ),
-            Stack(
-              children: [
-                Container(
-                    padding: EdgeInsets.only(right: voidCallback != null?50:10, left: 10, top: 10, bottom: 10),
-                    width: maxWidth,
-                    color: Colors.grey.shade300,
-                    child: Stack(
-                      children: [
-                        Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Container(
-                                  child: Text(getStartTimeReadable(), style: _textStyle,),
-                                ),
-                                Container(
-                                  child: Text(getPrice(), style: _textStyle,),
-                                )
-                              ],
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Container(
-                                  child: Text(getJobStatus(), style: _textStyle,),
-                                )
-                              ],
-                            ),
-                          ],
-                        ),
-                      ],
-                    )
-                ),
-                Visibility(
-                    visible: voidCallback != null,
-                    child:
-                    Positioned(
-                      bottom: 10,
-                      right: 10,
-                      child: Icon(Icons.arrow_forward_ios, size: 30,),
-                    )
-                )
-              ],
-            )
-          ]
+            Container(height: 15,),
+            _getLineWidget(icon: Icons.date_range, msg: "Order date", val: _getStartDateReadable()),
+            _getLineWidget(icon: Icons.access_time_outlined, msg: "Order time", val: _getStartTimeReadable()),
+            _getLineWidget(icon: Icons.pin_drop_outlined, msg: job.originAddress.getAddress()),
+            _getLineWidget(icon: Icons.person_pin_circle_outlined, msg: job.destinationAddress.getAddress()),
+          ],
+        ),
       ),
     );
   }
 
-  String getPrice() {
-    return job.price.total.toString() + " €";
+  String _getPrice() {
+    return job.price.total.toStringAsFixed(2) + " €";
   }
 
-  String getStartTimeReadable() {
+  String _getStartTimeReadable() {
+    DateTime dt = job.startTime;
+    if (dt == null)
+      return "";
+    dt = dt.toLocal();
+    String h = dt.hour.toString();
+    String min = dt.minute.toString();
+    if (h.length == 1) h = "0$h";
+    if (min.length == 1) min = "0$min";
+    return '$h:$min';
+  }
+
+  String _getStartDateReadable() {
     DateTime dt = job.startTime;
     if (dt == null)
       return "";
@@ -93,84 +69,38 @@ class OverviewComponent extends StatelessWidget {
     String y = dt.year.toString();
     String m = dt.month.toString();
     String d = dt.day.toString();
-    String h = dt.hour.toString();
-    String min = dt.minute.toString();
-    if (d.length == 1) h = "0$d";
-    if (m.length == 1) h = "0$m";
-    if (h.length == 1) h = "0$h";
-    if (min.length == 1) min = "0$min";
-    return '$d.$m.$y $h:$min';
+    if (d.length == 1) d = "0$d";
+    if (m.length == 1) m = "0$m";
+    return '$d.$m.$y';
   }
 
-  String getJobStatus() {
-    String status = "MODELS.JOB." + job.status.toString().split(".")[1];
-    switch(job.status) {
-      case Status.FINISHED:
-        return "";
-    }
+  String _getJobStatus() {
+    String status = "OVERVIEW.MODELS.JOB." + job.status.toString().split(".")[1];
     return status.tr();
   }
 
-  List<Widget> drawLine(length) {
-    List<Widget> lines = List();
-    double filled = 6;
-    double empty = 3;
-    double stroke = 2.5;
-    double  total = 0;
-    Color c = Colors.deepPurple;
-    while (total <= length) {
-      lines.add(Container(color: c, height: stroke, width: filled, margin: EdgeInsets.only(right: empty)));
-      total += filled + empty;
+  Color _getStatusTextColor() {
+    print(job.status.toString());
+    switch (job.status) {
+      case Status.CANCELLED:
+      case Status.DRIVER_CANCELED:
+      case Status.CUSTOMER_CANCELED:
+        return Colors.red;
+      case Status.FINISHED:
+        return primaryBlue;
     }
-    return lines;
+    return Colors.green;
   }
 
-  Widget _halfMapsWidget(Job job, bool isDestination) => Column(
-    children: [
-      Stack(
-        children: [
-          SizedBox(
-            width: maxWidth / (isDestination?2:1),
-            height: maxHeight,
-            child: GestureDetector(
-              onTap: null,
-              child: GoogleMap(
-                onTap: null,
-                mapType: MapType.normal,
-                initialCameraPosition: CameraPosition(
-                    target: _jobToLatlng(job, isDestination), zoom: 14
-                ),
-                zoomControlsEnabled: false,
-                zoomGesturesEnabled: false,
-                compassEnabled: false,
-                myLocationEnabled: false,
-                myLocationButtonEnabled: false,
-                markers: _createMarker(job, isDestination.toString()),
-              ),
-            )
-          ),
-        ],
-      ),
-    ],
+  _getLineWidget({IconData icon, String msg, String val}) => Container(
+    padding: EdgeInsets.symmetric(vertical: 2),
+    child: Row(
+      children: [
+        Icon(icon, color: primaryBlue,),
+        Container(width: 10,),
+        Text(msg + (val == null?"":": "), style: TextStyle(color: _grey),),
+        val!=null?Text(val, style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),):Container(),
+      ],
+    ),
   );
-
-  _createMarker(Job job, String id) {
-    return {
-      Marker(
-        markerId: MarkerId(job.key + id + "1"),
-        position: job.destinationAddress.coordinates,
-        icon: bitmapDescriptorDestination,
-      ),
-      Marker(
-        markerId: MarkerId(job.key + id + "2"),
-        position: job.originAddress.coordinates,
-        icon: bitmapDescriptorOrigin,
-      )
-    };
-  }
-
-  LatLng _jobToLatlng(Job job, bool isDestination) {
-    LatLng centerLatLng = isDestination?job.destinationAddress.coordinates:job.originAddress.coordinates;
-    return LatLng(centerLatLng.latitude, centerLatLng.longitude - (isDestination?0:0.000025*maxWidth));
-  }
 }

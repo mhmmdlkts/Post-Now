@@ -53,6 +53,7 @@ class OverviewService {
       }
     });
     await Future.wait(futures);
+    orders.sort();
   }
 
   Future<void> _findJob(c1, c2, c3) async {

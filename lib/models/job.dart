@@ -8,7 +8,7 @@ import 'package:postnow/models/shopping_item.dart';
 import 'package:postnow/services/time_service.dart';
 import 'address.dart';
 
-class Job {
+class Job implements Comparable {
   Address destinationAddress;
   Address originAddress;
   String mollieOrderId;
@@ -241,4 +241,7 @@ class Job {
     }
     return false;
   }
+
+  @override
+  int compareTo(other) => -startTime.compareTo(other.startTime);
 }
