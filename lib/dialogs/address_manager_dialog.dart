@@ -11,7 +11,8 @@ class AddressManager extends StatefulWidget {
   final MapsService mapsService;
   final Address address;
   final double borderRadius;
-  AddressManager(this.address, this.mapsService, {this.borderRadius = 15, Key key}) : super(key: key);
+  final String name;
+  AddressManager(this.address, this.mapsService, {this.borderRadius = 15, this.name, Key key}) : super(key: key);
 
   @override
   _AddressManager createState() => _AddressManager(address);
@@ -35,6 +36,10 @@ class _AddressManager extends State<AddressManager> {
     _doorNumberController = new TextEditingController(text: _address.doorNumber);
     _doorNameController = new TextEditingController(text: _address.doorName);
     _extraService = _address.doorName == null || _address.doorNumber != null;
+    if (widget.name != null) {
+      _doorNameController.text = widget.name;
+      _address.doorName = widget.name;
+    }
   }
 
   @override
@@ -173,7 +178,6 @@ class _AddressManager extends State<AddressManager> {
   }
 
   _changePos() async {
-    print('zaaaa');
     final List<Prediction> p = await widget.mapsService.getAutoCompleter(_address.getAddress(withDoorNumber: false));
     if (p?.isEmpty??false)
       return;

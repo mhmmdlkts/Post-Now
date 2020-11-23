@@ -34,22 +34,22 @@ class Address {
             break;
           case "route":
             street = value.longName;
-          break;
+            break;
           case "locality":
             locality = value.longName;
-          break;
+            break;
           case "administrative_area_level_1":
             area = value.longName;
-          break;
+            break;
           case "administrative_area_level_2":
-            // TODO understand what this is
-          break;
+          // TODO understand what this is
+            break;
           case "country":
             country = value.longName;
-          break;
+            break;
           case "postal_code":
             postalCode = value.longName;
-          break;
+            break;
         }
       });
     });
@@ -83,21 +83,19 @@ class Address {
     doorName = json["door_name"];
   }
 
-  Map toMap() {
-    Map toReturn = new Map();
-    toReturn['coordinates'] = Job.latLngToString(coordinates);
-    toReturn['country'] = country;
-    toReturn['city'] = city;
-    toReturn['area'] = area;
-    toReturn['locality'] = locality;
-    toReturn['subLocality'] = subLocality;
-    toReturn['postalCode'] = postalCode;
-    toReturn['street'] = street;
-    toReturn['house_number'] = houseNumber;
-    toReturn['door_number'] = doorNumber;
-    toReturn['door_name'] = doorName;
-    return toReturn;
-  }
+  Map toMap() => {
+    'coordinates': Job.latLngToString(coordinates),
+    'country': country,
+    'city': city,
+    'area': area,
+    'locality': locality,
+    'subLocality': subLocality,
+    'postalCode': postalCode,
+    'street': street,
+    'house_number': houseNumber,
+    'door_number': doorNumber,
+    'door_name': doorName,
+  };
 
   Address.fromLatLng(LatLng latLng) {
     coordinates = latLng;
@@ -143,7 +141,7 @@ class Address {
 
   bool alakadar(String searchText) {
     return searchText == null || searchText.isEmpty ||
-      country?.toLowerCase()?.contains(searchText) ?? false ||
+        country?.toLowerCase()?.contains(searchText) ?? false ||
         city?.toLowerCase()?.contains(searchText) ?? false ||
         area?.toLowerCase()?.contains(searchText) ?? false ||
         locality?.toLowerCase()?.contains(searchText) ?? false ||
@@ -159,5 +157,4 @@ class Address {
 
   @override
   int get hashCode => super.hashCode;
-
 }

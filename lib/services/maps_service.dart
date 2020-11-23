@@ -7,6 +7,7 @@ import 'dart:math' show cos, sqrt, asin;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_map_polyline/src/route_mode.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_webservice/places.dart';
@@ -18,6 +19,7 @@ import 'package:postnow/models/draft_order.dart';
 
 import 'package:postnow/models/job.dart';
 import 'package:postnow/environment/api_keys.dart';
+import 'package:postnow/models/shopping_item.dart';
 
 class MapsService with WidgetsBindingObserver {
   final DatabaseReference jobsChatRef = FirebaseDatabase.instance.reference().child('jobs_chat');
@@ -26,9 +28,31 @@ class MapsService with WidgetsBindingObserver {
   final DatabaseReference draftRef = FirebaseDatabase.instance.reference().child('draft_order');
   DatabaseReference userRef;
   final String uid;
+  RemoteConfig _remoteConfig;
 
   MapsService(this.uid) {
     userRef = FirebaseDatabase.instance.reference().child('users').child(uid);
+    RemoteConfig.instance.then((value) => {
+      _remoteConfig = value,
+      _remoteConfig.fetch().then((value) => {
+        _remoteConfig.activateFetched()
+      })
+    });
+  }
+
+  double calculatePrice (Position position, LatLng latLng) {
+    double totalDistance = coordinateDistance(LatLng(position.latitude, position.longitude), latLng);
+    double calcPrice = _remoteConfig.getDouble(FIREBASE_REMOTE_CONFIG_EURO_START_KEY);
+    calcPrice += totalDistance * _remoteConfig.getDouble(FIREBASE_REMOTE_CONFIG_EURO_PER_KM_KEY);
+    return num.parse(calcPrice.toStringAsFixed(2));
+  }
+
+  int getFreeItemCount() => _remoteConfig.getInt(FIREBASE_REMOTE_FREE_SHOPPING_ITEMS_COUNT);
+  double getShoppingItemCost() => _remoteConfig.getDouble(FIREBASE_REMOTE_SHOPPING_ITEMS_COST);
+  double getShoppingSameItemCost() => _remoteConfig.getDouble(FIREBASE_REMOTE_SHOPPING_SAME_ITEMS_COST);
+
+   getTopics() {
+    return List<String>.from(json.decode(_remoteConfig.getValue(FIREBASE_REMOTE_CONFIG_MARKET_TOPICS).asString()));
   }
 
   double coordinateDistance(LatLng latLng1, LatLng latLng2) {
@@ -107,9 +131,9 @@ class MapsService with WidgetsBindingObserver {
     return await rootBundle.loadString("assets/map_styles/light_map.json");
   }
 
-  Future<DraftOrder> createDraft(Address origin, Address destination, RouteMode mode) async {
+  Future<DraftOrder> createDraft(Address origin, Address destination, List<ShoppingItem> shopItems, RouteMode mode) async {
     DraftOrder rtnVal;
-    String url = 'https://europe-west1-post-now-f3c53.cloudfunctions.net/draftOrder?origin=${json.encode(origin.toMap())}&destination=${json.encode(destination.toMap())}&mode=${mode.toString().split(".").last}&uid=${uid}';
+    String url = 'https://europe-west1-post-now-f3c53.cloudfunctions.net/draftOrder?origin=${json.encode(origin.toMap())}&destination=${json.encode(destination.toMap())}&mode=${mode.toString().split(".").last}&uid=${uid}&items=${ShoppingItem.listToString(shopItems)}';
     url = Uri.encodeFull(url);
     try {
       http.Response response = await http.get(url);

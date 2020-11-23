@@ -9,7 +9,11 @@
   "SETTINGS": "Settings",
   "SEND_MESSAGE": "Send a message",
   "SEND": "Send",
+  "TOTAL": "Total",
   "SAVE": "Save",
+  "APPLY": "Apply",
+  "FREE": "Free",
+  "SEARCH": "Search",
   "GO_BACK": "Go back",
   "CHECKOUT": "Checkout",
   "TRY_AGAIN": "Tekrar dene",
@@ -106,6 +110,19 @@
   "DIRECT_JOB_OVERVIEW": {
     "ANY_PROBLEMS": "Any problems with this job?"
   },
+  "SHOPPING_LIST": {
+    "TITLE": "Shopping List"
+  },
+  "SHOPPING_LIST_MAKER": {
+    "TEXT_FIELD_HINT": "Ürünün ismini girin",
+    "TITLE": "Shopping List",
+    "LEGAL": "The first {amount} elements are free, then each additional element costs for {price} €",
+    "DIALOGS": {
+      "BACK": {
+        "CONTENT": "Olusturdugunuz {size} elemanli listeyi firlatip atmak istedigne emin misin abem."
+      }
+    }
+  },
   "MAPS": {
     "NO_AVAILABLE_DRIVER_MESSAGE": "No available driver in your area.",
     "CURRENT_LOCATION": "Current Location",
@@ -113,6 +130,10 @@
     "PACKAGE_ADDRESS": "Sender adress",
     "DESTINATION_ADDRESS": "Recipient adress",
     "TYPE_ADDRESS": "Enter the adress",
+    "TOPIC_SEARCHING": "{topic} searching",
+    "MARKET": {
+      "MARKER": "Ungäfehre Transport Kosten: {around_amount} €"
+    },
     "SIDE_MENU": {
       "MY_ORDERS": "My Orders",
       "VOUCHER": "Voucher",

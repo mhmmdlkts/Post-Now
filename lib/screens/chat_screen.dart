@@ -3,18 +3,23 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:postnow/models/message.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:postnow/screens/shopping_list_view_screen.dart';
 
 import 'package:postnow/services/chat_service.dart';
+import 'package:postnow/services/shopping_list_service.dart';
+import 'package:postnow/models/shopping_item.dart';
 
 import 'camera_screen.dart';
 
+
 class ChatScreen extends StatefulWidget {
   final String _jobId, _name;
-  final bool _isDriverApp;
-  ChatScreen(this._jobId, this._name, this._isDriverApp);
+  final bool isDriverApp;
+  final ShoppingListService listService;
+  ChatScreen(this._jobId, this._name, this.isDriverApp, {this.listService});
 
   @override
-  _ChatScreenState createState() => _ChatScreenState(_jobId, _name, _isDriverApp);
+  _ChatScreenState createState() => _ChatScreenState(_jobId, _name, isDriverApp);
 }
 
 class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
@@ -46,6 +51,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
             _bottomTextInputKey.currentContext.size.height + _bubbleMargin;
       })
     });
+
+    if (widget.listService != null)
+      widget.listService.subscribe(() => setState((){}));
   }
 
   @override
@@ -96,16 +104,80 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
   Widget _conversationField() => Container(
       height: MediaQuery.of(context).size.height,
-      child: new ListView.builder (
-          padding: EdgeInsets.only(bottom: _footerHeight + MediaQuery.of(context).padding.bottom),
-          controller: _listViewController,
-          itemCount: _chatService.messageCount(),
-          itemBuilder: (BuildContext ctxt, int index) {
-            Message msg = _chatService.readMessage(index);
-            return _conversationBubble(msg);
-          }
+      child: ListView(
+        children: [
+          _conversationBubbleShoppingList(widget.listService.shoppingList),
+          ListView.builder (
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              padding: EdgeInsets.only(bottom: _footerHeight + MediaQuery.of(context).padding.bottom),
+              itemCount: _chatService.messageCount(),
+              controller: _listViewController,
+              itemBuilder: (BuildContext ctxt, int index) {
+                Message msg = _chatService.readMessage(index);
+                return _conversationBubble(msg);
+              }
+          )
+        ],
       )
   );
+
+  Widget _conversationBubbleShoppingList(List<ShoppingItem> items) {
+    if (items == null || items.isEmpty)
+      return Container();
+    return Stack(
+      children: [
+        Row(
+          mainAxisAlignment: _isDriverApp ? MainAxisAlignment.end : MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.max,
+          children: <Widget>[
+            Container(
+                constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width/5*4),
+                decoration: new BoxDecoration(
+                    color: _isDriverApp ? Colors.blue : Colors.blueGrey,
+                    borderRadius: new BorderRadius.only(
+                        topLeft: Radius.circular(_isDriverApp ? 12.0 : 0.0),
+                        topRight: Radius.circular(_isDriverApp ? 0.0 : 12.0),
+                        bottomLeft: const Radius.circular(12.0),
+                        bottomRight: const Radius.circular(12.0)
+                    )
+                ),
+                alignment: _isDriverApp ? Alignment.topRight : Alignment.topLeft,
+                margin: EdgeInsets.only(top: _bubbleMargin, right: _isDriverApp? _readWidgetSize : 4, left: 4),
+                child : Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => ShoppingListViewScreen(widget.listService, _isDriverApp))
+                      );
+                    },
+                    child: Container(
+                      margin: EdgeInsets.only(top: 10, bottom: 20, left: 12, right: 12),
+                      child: Column(
+                        verticalDirection: VerticalDirection.up,
+                        crossAxisAlignment: _isDriverApp ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                        children: items.map((e) => Row(
+                          mainAxisAlignment: _isDriverApp ? MainAxisAlignment.end : MainAxisAlignment.start,
+                          children: [
+                            Text(e.name + " x " + e.count.toString(), style: TextStyle(fontSize: 16, color: Colors.white)),
+                            Container(width:15,),
+                            e.isChecked?Icon(Icons.check, color: Colors.white,):Icon(Icons.clear, color: Colors.white,)
+                          ],
+                        )).toList(),
+                      ),
+                    ),
+                  ),
+                )
+            ),
+          ],
+        ),
+        Positioned(child: _isDriverApp? _readWidget(true):Container(), bottom: 0, right: 0,),
+      ],
+    );
+  }
 
   Widget _conversationBubble(Message msg) => Stack(
     children: [
@@ -174,7 +246,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                   children: <Widget>[
                     Expanded(
                       child: TextField(
-                        textCapitalization: TextCapitalization.sentences,
                         controller: _textEditingController,
                         style: TextStyle(color: Colors.white),
                         decoration: InputDecoration(

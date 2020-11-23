@@ -9,6 +9,7 @@ import 'package:postnow/presentation/my_flutter_app_icons.dart';
 import 'package:postnow/screens/chat_screen.dart';
 import 'package:postnow/services/chat_service.dart';
 import 'package:postnow/services/global_service.dart';
+import 'package:postnow/services/shopping_list_service.dart';
 import 'package:swipebuttonflutter/swipebuttonflutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -68,7 +69,7 @@ class BottomState extends State<BottomCard> {
   final GlobalKey _contentKey = GlobalKey();
   final GlobalKey _headerKey = GlobalKey();
   ChatService _chatService;
-  double _height = -100;
+  ShoppingListService _listService;
 
   BottomState();
 
@@ -76,12 +77,10 @@ class BottomState extends State<BottomCard> {
   void initState() {
     super.initState();
 
-    if (widget.job != null)
+    if (widget.job != null) {
       _chatService = ChatService(widget.job.key, _onNewMessage);
-
-    WidgetsBinding.instance.addPostFrameCallback((_) => Future.delayed(Duration(milliseconds: 300), ()=> setState(() {
-      _height = _contentKey.currentContext.size.height;
-    })));
+      _listService = ShoppingListService(widget.job.key, _onListChanged);
+    }
   }
 
   @override
@@ -202,15 +201,12 @@ class BottomState extends State<BottomCard> {
     bool _isDriverApp = await GlobalService.isDriverApp();
     await Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => ChatScreen(widget.job.key, widget.chatName, _isDriverApp))
+        MaterialPageRoute(builder: (context) => ChatScreen(widget.job.key, widget.chatName, _isDriverApp, listService: _listService))
     );
   }
 
-  _onNewMessage() {
-    setState(() {
-
-    });
-  }
+  _onNewMessage() => setState(() {});
+  _onListChanged() => setState(() {});
 
   Widget _getHeader() {
     return Container(

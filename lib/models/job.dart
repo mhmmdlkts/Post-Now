@@ -4,6 +4,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:postnow/enums/job_status_enum.dart';
 import 'package:postnow/enums/job_vehicle_enum.dart';
 import 'package:postnow/models/price.dart';
+import 'package:postnow/models/shopping_item.dart';
 import 'package:postnow/services/time_service.dart';
 import 'address.dart';
 
@@ -13,6 +14,7 @@ class Job {
   String mollieOrderId;
   String payMethod;
   String customTransactionId;
+  List<ShoppingItem> shoppingList;
   DateTime acceptTime;
   DateTime finishTime;
   DateTime startTime;
@@ -25,7 +27,7 @@ class Job {
   String sign;
   String key;
 
-  Job({this.name, this.userId, this.price, this.driverId, this.vehicle, this.customTransactionId, this.mollieOrderId, this.originAddress, this.destinationAddress}) {
+  Job({this.name, this.userId, this.price, this.driverId, this.vehicle, this.customTransactionId, this.shoppingList, this.mollieOrderId, this.originAddress, this.destinationAddress}) {
     status = Status.WAITING;
   }
 
@@ -36,6 +38,7 @@ class Job {
     driverId = snapshot.value["driver-id"];
     userId = snapshot.value["user-id"];
     sign = snapshot.value["sign"];
+    shoppingList = ShoppingItem.jsonToList(snapshot.value["shoppingItems"]);
     mollieOrderId = snapshot.value["mollieOrderId"];
     customTransactionId = snapshot.value["customTransactionId"];
     price = Price.fromJson(snapshot.value["price"]);
@@ -144,6 +147,7 @@ class Job {
     'payMethod': payMethod,
     'user-id': userId,
     'sign': sign,
+    'shoppingItems': ShoppingItem.listToString(shoppingList),
     'customTransactionId': customTransactionId,
     'mollieOrderId': mollieOrderId,
     'price': price.toMap(),
@@ -163,6 +167,7 @@ class Job {
     driverId = json["driver-id"];
     userId = json["user-id"];
     sign = json["sign"];
+    shoppingList = ShoppingItem.jsonToList(json["shoppingItems"]);
     payMethod = json["payMethod"];
     customTransactionId = json["customTransactionId"];
     mollieOrderId = json["mollieOrderId"];
@@ -175,6 +180,8 @@ class Job {
     acceptTime = stringToDateTime(json["accept-time"]);
     finishTime = stringToDateTime(json["finish-time"]);
   }
+
+  bool hasShoppingList() => shoppingList != null && shoppingList.isNotEmpty;
 
   bool isJobAccepted() {
     return this.acceptTime != null;

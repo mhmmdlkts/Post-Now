@@ -125,7 +125,7 @@ class _ContactWidgetState extends State<ContactWidget> {
                     phone: _phoneFieldController.text,
                     subject: _subjectFieldController.text,
                     content: _contentFieldController.text,
-                    jobId: widget.job.key
+                    jobId: widget.job?.key??null
                 ).then((value) => {
                   Navigator.of(context).pop()
                 });

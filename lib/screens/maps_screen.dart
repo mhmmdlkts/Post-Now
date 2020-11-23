@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:audioplayers/audio_cache.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
@@ -8,20 +10,24 @@ import 'package:postnow/dialogs/address_manager_dialog.dart';
 import 'package:postnow/dialogs/custom_alert_dialog.dart';
 import 'package:postnow/dialogs/order_details_dialog.dart';
 import 'package:postnow/dialogs/settings_dialog.dart';
+import 'package:postnow/dialogs/topic_chooser_dialog.dart';
 import 'package:postnow/enums/payment_methods_enum.dart';
 import 'package:postnow/enums/permission_typ_enum.dart';
 import 'package:postnow/models/credit_card.dart';
 import 'package:postnow/models/address.dart';
 import 'package:postnow/models/draft_order.dart';
 import 'package:postnow/models/settings_item.dart';
+import 'package:postnow/models/shopping_item.dart';
 import 'package:postnow/screens/contact_form_screen.dart';
 import 'package:postnow/screens/overview_screen.dart';
 import 'package:postnow/screens/settings_screen.dart';
+import 'package:postnow/screens/shopping_list_maker_screen.dart';
 import 'package:postnow/screens/voucher_screen.dart';
 import 'package:postnow/services/global_service.dart';
 import 'package:postnow/services/legal_service.dart';
 import 'package:postnow/services/overview_service.dart';
 import 'package:postnow/services/permission_service.dart';
+import 'package:postnow/services/places_service.dart';
 import 'package:postnow/services/vibration_service.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -49,7 +55,6 @@ import '../widgets/bottom_card.dart';
 import 'dart:io' show Platform;
 import 'chat_screen.dart';
 import 'dart:async';
-import 'dart:math';
 
 
 class MapsScreen extends StatefulWidget {
@@ -71,14 +76,16 @@ class _MapsScreenState extends State<MapsScreen> {
   final GlobalKey _addressBarKey = GlobalKey();
   final GlobalKey _drawerKey = GlobalKey();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
+  final Set<Marker> _marketMarkers = Set();
   final User _user;
   OverviewService _overviewService;
+  PlacesService _placesService;
   bool _isInitialized = false;
   bool _isInitDone = false;
   int _initCount = 0;
   int _initDone = 0;
   Set<Polyline> _polyLines = Set();
-  BitmapDescriptor _packageLocationIcon, _driverLocationIcon, _homeLocationIcon;
+  BitmapDescriptor _packageLocationIcon, _driverLocationIcon, _homeLocationIcon, _shopLocationIcon;
   TextEditingController _originTextController, _destinationTextController;
   Marker _packageMarker, _destinationMarker;
   GoogleMapController _mapController;
@@ -104,9 +111,11 @@ class _MapsScreenState extends State<MapsScreen> {
   bool _visibleSenderField = true;
   Duration _mapsCloseOpenDur = Duration(milliseconds: 800);
   String _addressSearchField = "";
+  String _placesTopic;
   List<Prediction> _predictions = List();
   List<Address> _oldAddresses = List();
   bool isDrawerOpen = false;
+  List<ShoppingItem> _shopItems;
 
   _MapsScreenState(this._user) {
     _mapsService = MapsService(_user.uid);
@@ -131,7 +140,7 @@ class _MapsScreenState extends State<MapsScreen> {
     _polyLines.clear();
     _mapsService.setNewCameraPosition(
         _mapController, _getOrigin(), _getDestination(), false);
-    _draft = await _mapsService.createDraft(_originAddress, _destinationAddress, RouteMode.driving);
+    _draft = await _mapsService.createDraft(_originAddress, _destinationAddress, _shopItems, RouteMode.driving);
     _mapsService.draftRef.child(_draft.key).child("pay_status").onValue.listen((event) {
       final String result = event.snapshot.value;
       if (_menuTyp != MenuTyp.PAYMENT_WAITING)
@@ -179,6 +188,12 @@ class _MapsScreenState extends State<MapsScreen> {
     _mapsService.getBytesFromAsset('assets/driver_map_marker.png', (markerSize*1.15).round()).then((value) => { setState((){
       _driverLocationIcon = BitmapDescriptor.fromBytes(value);
       _nextInitializeDone('2');
+    })});
+
+    _initCount++;
+    _mapsService.getBytesFromAsset('assets/shop_map_marker.png', (markerSize*1.15).round()).then((value) => { setState((){
+      _shopLocationIcon = BitmapDescriptor.fromBytes(value);
+      _nextInitializeDone('2.1');
     })});
 
     _initCount++;
@@ -339,37 +354,25 @@ class _MapsScreenState extends State<MapsScreen> {
     });
   }
 
-  Widget _getNewSearchWidget(bool isDestination) {
+  Widget _getNewSearchWidget(bool isDestination, {double leftPadding = 20, double rightPadding = 20}) {
     _getTextFieldController() => isDestination ? _destinationTextController : _originTextController;
     _clearField() {
       setState(() {
+        _polyLines.clear();
         if (isDestination) {
           _destinationAddress = null;
           _setPlaceForDestination();
         } else {
           _originAddress = null;
+          _shopItems = null;
           _setPlaceForOrigin();
         }
         _isDestinationButtonChosen = isDestination;
       });
     }
-    double horizontalPadding = 20;
-    return AnimatedContainer(
-      width: MediaQuery.of(context).size.width - horizontalPadding*2,
-      duration: Duration(milliseconds: 2000),
-      margin: EdgeInsets.symmetric(horizontal: horizontalPadding),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(100)),
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            spreadRadius: 5,
-            blurRadius: 7,
-            offset: Offset(0, 3), // changes position of shadow
-          ),
-        ],
-      ),
+    return _topButtonDesign(
+      leftPadding: leftPadding,
+      rightPadding: rightPadding,
       child: Stack(
         alignment: Alignment.centerRight,
         children: <Widget>[
@@ -396,11 +399,11 @@ class _MapsScreenState extends State<MapsScreen> {
             child: Material(
               color: Colors.transparent,
               child: _getTextFieldController().text.isEmpty && !_visibleAllList()? IconButton(
-                icon: Icon(Icons.my_location, color: Colors.black38,),
+                icon: Icon(Icons.my_location, color: Colors.green,),
                 onPressed: () {
                   _receiverFieldFocusNode.unfocus();
                   _senderFieldFocusNode.unfocus();
-                  _setMarker(LatLng(_myPosition.latitude, _myPosition.longitude));
+                  _setMarker(LatLng(_myPosition.latitude, _myPosition.longitude), name: _user.displayName);
                 },
               ) : IconButton(
                   icon: Icon(Icons.cancel, color: Colors.black38,),
@@ -414,6 +417,27 @@ class _MapsScreenState extends State<MapsScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _topButtonDesign ({Widget child, double leftPadding = 20, double rightPadding = 20}) {
+    return AnimatedContainer(
+        width: MediaQuery.of(context).size.width - (rightPadding + leftPadding),
+        duration: Duration(milliseconds: 2000),
+        margin: EdgeInsets.only(left: leftPadding, right: rightPadding),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(100)),
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.2),
+              spreadRadius: 5,
+              blurRadius: 7,
+              offset: Offset(0, 3), // changes position of shadow
+            ),
+          ],
+        ),
+        child: child
     );
   }
 
@@ -587,9 +611,81 @@ class _MapsScreenState extends State<MapsScreen> {
       Positioned(
         key: _addressBarKey,
         top: MediaQuery.of(context).padding.top + _toolbarHeight + 20,
+        width: MediaQuery.of(context).size.width,
         child: Visibility(
           visible: _visibleReceiverField,
-          child: _getNewSearchWidget(false),
+          child: Row(
+            children: [
+              Expanded(
+                flex: 700,
+                child: _placesTopic==null?_getNewSearchWidget(false, leftPadding: 25, rightPadding: 5): _topButtonDesign(
+                  leftPadding: 25,
+                  rightPadding: 5,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.all(Radius.circular(100)),
+                    child: Material(
+                      color: Colors.white,
+                      child: InkWell(
+                        onTap: () {
+                          _showTopicChooserDialog();
+                        },
+                        child: Center(
+                            child: Container(
+                                alignment: Alignment.center,
+                                child: Center(
+                                  child: Stack(
+                                    alignment: Alignment.center,
+                                    children: [
+                                      Opacity(opacity: 0, child: IconButton(icon: Icon(Icons.add)),),
+                                      Text(_placesTopic, style: TextStyle( color: Colors.black.withAlpha(170), fontSize:22),textAlign: TextAlign.center,),
+                                    ],
+                                  ),
+                                )
+                            )
+                        ),
+                      )
+                    )
+                  )
+                )
+              ),
+              Expanded(
+                flex: _visibleSenderField?250:35,
+                child: _topButtonDesign(
+                  leftPadding: 5,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.all(Radius.circular(100)),
+                    child: Material(
+                      color: _placesTopic!=null?Colors.red:primaryBlue,
+                      child: InkWell(
+                        onTap: () async {
+                          _marketMarkers.clear();
+                          if (_placesTopic != null) {
+                            setState(() {
+                              _placesTopic = null;
+                            });
+                            return;
+                          }
+                          if (_shopItems != null) {
+                            final result = await Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => ShoppingListMakerScreen(items: _shopItems, freeItemCount: _mapsService.getFreeItemCount(), itemCost: _mapsService.getShoppingItemCost(), sameItemCost: _mapsService.getShoppingSameItemCost()))
+                            );
+                            if (result != null)
+                              _shopItems = result;
+                            return;
+                          }
+                          _showTopicChooserDialog();
+                        },
+                        child: IconButton(
+                          icon: Icon(_placesTopic == null?(_shopItems==null?Icons.shopping_cart:Icons.format_list_numbered):Icons.clear, color: Colors.white,),
+                        ),
+                      )
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
       AnimatedPositioned(
@@ -673,6 +769,9 @@ class _MapsScreenState extends State<MapsScreen> {
       markers.add(_packageMarker);
     if (_destinationMarker != null)
       markers.add(_destinationMarker);
+    _marketMarkers.forEach((element) {
+      markers.add(element);
+    });
     return markers;
   }
 
@@ -683,6 +782,7 @@ class _MapsScreenState extends State<MapsScreen> {
     child: ClipRRect(
       borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
       child: GoogleMap(
+        compassEnabled: false,
         mapType: MapType.normal,
         initialCameraPosition: CameraPosition(
             target: LatLng(47.0, 13.0),
@@ -698,7 +798,7 @@ class _MapsScreenState extends State<MapsScreen> {
     ),
   );
 
-  _setMarker(pos, {Address address, String houseNumber}) async {
+  _setMarker(pos, {Address address, String houseNumber, PlacesSearchResult market, String name}) async {
     if (_menuTyp != MenuTyp.FROM_OR_TO && _menuTyp != null)
       return;
     if (pos is Position)
@@ -706,13 +806,13 @@ class _MapsScreenState extends State<MapsScreen> {
     setState(() {
       _polyLines.clear();
       LatLng chosen = pos;
-      _addAddressMarker(chosen, _isDestinationButtonChosen); // here
+      _addAddressMarker(chosen, _isDestinationButtonChosen);
       if (_isDestinationButtonChosen) {
         _destinationAddress = Address.fromLatLng(chosen);
-        _setPlaceForDestination(address: address, houseNumber: houseNumber);
+        _setPlaceForDestination(address: address, houseNumber: houseNumber, market: market, name: name);
       } else {
         _originAddress = Address.fromLatLng(chosen);
-        _setPlaceForOrigin(address: address, houseNumber: houseNumber);
+        _setPlaceForOrigin(address: address, houseNumber: houseNumber, market: market, name: name);
       }
       if (_isDestinationButtonChosen? _originAddress == null : _destinationAddress == null)
         _isDestinationButtonChosen = !_isDestinationButtonChosen;
@@ -752,6 +852,7 @@ class _MapsScreenState extends State<MapsScreen> {
 
     drawPolyline(Color firstColor, List<Color> colors) async {
       int colorIndex = 0;
+      initPolyline(firstColor);
       while(isDrawableRoute()) {
         _polyLines.clear();
         initPolyline(firstColor);
@@ -764,14 +865,15 @@ class _MapsScreenState extends State<MapsScreen> {
       });
     }
 
-    bool isDrawableRoute() => _menuTyp != MenuTyp.PACKAGE_PICKED && _menuTyp != MenuTyp.ACCEPTED && _menuTyp != MenuTyp.COMPLETED;
+    bool isDrawableRoute() => _menuTyp != MenuTyp.PACKAGE_PICKED && _menuTyp != MenuTyp.ACCEPTED && _menuTyp != MenuTyp.COMPLETED && _polyLines.isNotEmpty;
 
     drawPolylineHelper(int id, Color firstColor, Color color, List<LatLng> routeCoords) async {
-
       for (int i=0; i < routeCoords.length-1 && isDrawableRoute(); i++) {
         // await addLineToPolyline(routeCoords[i], routeCoords[i+1], color, PolylineId("Route_" + id.toString() + "_" + i.toString()), i%2==0);
         await drawOneLine(routeCoords[i], routeCoords[i+1], color, PolylineId("Route_" + id.toString() + "_" + i.toString()), 20);
       }
+      if (!isDrawableRoute())
+        return;
       setState(() {
         _polyLines.add(Polyline(
             polylineId: PolylineId("LastPiece_" + id.toString()),
@@ -903,6 +1005,7 @@ class _MapsScreenState extends State<MapsScreen> {
     }
 
     void _setMyPosition(Position pos) {
+      _placesService = PlacesService(pos);
       _myPosition = pos;
     }
 
@@ -1156,10 +1259,7 @@ class _MapsScreenState extends State<MapsScreen> {
               ),
               (isDestination == _isDestinationButtonChosen && _myPosition != null) ?
               Container(
-                    width: (MediaQuery
-                        .of(context)
-                        .size
-                        .width) * (0.4),
+                    width: (MediaQuery.of(context).size.width) * (0.4),
                     child: RaisedButton(
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(18.0),
@@ -1204,7 +1304,7 @@ class _MapsScreenState extends State<MapsScreen> {
       return null;
     }
 
-    void _setPlaceForOrigin({Address address, String houseNumber}) async {
+    void _setPlaceForOrigin({Address address, String houseNumber, PlacesSearchResult market, String name}) async {
       _commonPiece();
       if (_originAddress == null) {
         _clearOriginAddress();
@@ -1226,9 +1326,13 @@ class _MapsScreenState extends State<MapsScreen> {
         }
       }
       _originTextController.text = _originAddress.getAddress();
-      _originAddress = await _showAddressManagerDialog(_originAddress);
+      if (market == null)
+        _originAddress = await _showAddressManagerDialog(_originAddress, name: name);
+      else
+        _originAddress.doorName = market?.name??"";
+
       if (_originAddress != null)
-        _originTextController.text = _originAddress.getAddress();
+        setState(() { _originTextController.text = _originAddress.getAddress(); });
       else
         _clearOriginAddress();
       setState(() {
@@ -1236,7 +1340,7 @@ class _MapsScreenState extends State<MapsScreen> {
       });
     }
 
-    void _setPlaceForDestination({Address address, String houseNumber}) async {
+    void _setPlaceForDestination({Address address, String houseNumber, PlacesSearchResult market, String name}) async {
       _commonPiece();
       if (_getDestination() == null) {
         _clearDestinationAddress();
@@ -1258,9 +1362,12 @@ class _MapsScreenState extends State<MapsScreen> {
         }
       }
       _destinationTextController.text = _destinationAddress.getAddress();
-      _destinationAddress = await _showAddressManagerDialog(_destinationAddress);
+      if (market == null)
+        _destinationAddress = await _showAddressManagerDialog(_destinationAddress, name: name);
+      else
+        _destinationAddress.doorName = market?.name??"";
       if (_destinationAddress != null)
-        _destinationTextController.text = _destinationAddress.getAddress();
+        setState(() { _destinationTextController.text = _destinationAddress.getAddress(); });
       else
         _clearDestinationAddress();
       setState(() {
@@ -1541,6 +1648,7 @@ class _MapsScreenState extends State<MapsScreen> {
 
   void _clearJob() {
     setState(() {
+      _shopItems = null;
       _clearDestinationAddress();
       _clearOriginAddress();
       _polyLines.clear();
@@ -1654,14 +1762,66 @@ class _MapsScreenState extends State<MapsScreen> {
     return val;
   }
 
-  Future<Address> _showAddressManagerDialog(Address address) async {
+  Future<Address> _showAddressManagerDialog(Address address, {String name}) async {
     return await showDialog(
       context: context,
 
       builder: (BuildContext context) {
-        return AddressManager(address, _mapsService);
+        return AddressManager(address, _mapsService, name: name);
       }
     );
+  }
+
+  _showTopicChooserDialog() async {
+    _marketMarkers.clear();
+    final topics = _mapsService.getTopics();
+    String chosenToken = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return TopicChooserDialog(topics);
+      }
+    );
+    _placesTopic = "MAPS.TOPIC_SEARCHING".tr(namedArgs: {"topic": chosenToken});
+    setState(() {});
+    _placesTopic = chosenToken;
+    LatLng cheapestPoint;
+    double cheapestPrice;
+    _placesService.getPlaces(_placesTopic).then((value) => {
+      value.forEach((element) {
+        LatLng marketLatLng = LatLng(element.geometry.location.lat, element.geometry.location.lng);
+        double aroundPrice = _mapsService.calculatePrice(_myPosition, marketLatLng);
+        if (aroundPrice < (cheapestPrice!=null?cheapestPrice:double.infinity)) {
+          cheapestPrice = aroundPrice;
+          cheapestPoint = marketLatLng;
+        }
+        if (cheapestPoint == null)
+          cheapestPoint = marketLatLng;
+        _marketMarkers.add(Marker(
+          icon: _shopLocationIcon,
+          infoWindow: InfoWindow(
+              title: element.name,
+              snippet: "MAPS.MARKET.MARKER".tr(namedArgs: {"around_amount": aroundPrice.toStringAsFixed(2)}),
+              onTap: () => setState(() async {
+                final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => ShoppingListMakerScreen(freeItemCount: _mapsService.getFreeItemCount(), itemCost: _mapsService.getShoppingItemCost(), sameItemCost: _mapsService.getShoppingSameItemCost()))
+                );
+                if (result == null)
+                  return;
+                _shopItems = result;
+                _placesTopic = null;
+                _isDestinationButtonChosen = false;
+                _setMarker(marketLatLng, market: element);
+                _marketMarkers.clear();
+              })
+          ),
+          markerId: MarkerId(element.placeId),
+          position: marketLatLng,
+        ));
+      }),
+      setState((){ }),
+      _mapsService.setNewCameraPosition(_mapController, cheapestPoint, null, true)
+    });
   }
 
   Future<String> _showOrderDetailDialog(jobId) async {
