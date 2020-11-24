@@ -90,6 +90,7 @@ class _MapsScreenState extends State<MapsScreen> {
   Marker _packageMarker, _destinationMarker;
   GoogleMapController _mapController;
   MapsService _mapsService;
+  PaymentService _paymentService;
   DraftOrder _draft;
   MenuTyp _menuTyp;
   BottomCard _bottomCard;
@@ -118,6 +119,7 @@ class _MapsScreenState extends State<MapsScreen> {
   List<ShoppingItem> _shopItems;
 
   _MapsScreenState(this._user) {
+    _paymentService = PaymentService(_user);
     _mapsService = MapsService(_user.uid);
     _overviewService = OverviewService(_user.uid);
   }
@@ -446,7 +448,12 @@ class _MapsScreenState extends State<MapsScreen> {
       _changeMenuTyp(MenuTyp.PAYMENT_WAITING);
     });
 
-    final bool result = await PaymentService().pay(context, _draft.price.total, _user.uid, _draft.key, useCredits, _credit, paymentMethod, creditCard, _user);
+    final bool result = await _paymentService.pay(context, _draft.price.total, _user.uid, _draft.key, useCredits, _credit, paymentMethod, creditCard);
+    if (result)
+      return;
+    setState(() {
+      _changeMenuTyp(MenuTyp.CONFIRM);
+    });
   }
 
   @override

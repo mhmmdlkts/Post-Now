@@ -33,4 +33,6 @@ class GlobalSettings {
     "customInvoiceAddress": invoiceAddressCtrl.text,
     "customInvoiceName": invoiceNameCtrl.text,
   };
+
+  Future<bool> existAddressInfo() async => enableCustomInvoiceAddress && (invoiceAddressCtrl?.text?.isNotEmpty??false) && (invoiceNameCtrl?.text?.isNotEmpty??false);
 }

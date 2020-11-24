@@ -12,6 +12,7 @@ import 'package:postnow/environment/global_variables.dart';
 import 'package:postnow/models/credit_card.dart';
 import 'package:postnow/screens/settings_screen.dart';
 import 'package:postnow/screens/web_view_screen.dart';
+import 'package:postnow/services/settings_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -19,10 +20,14 @@ import 'global_service.dart';
 
 class PaymentService {
   SharedPreferences prefs;
+  SettingsService _settingsService;
   static const String PREFS_CUSTOMER_ID = "Braintree_CustomerId";
   static const platform = const MethodChannel('$POSTNOW_PACKAGE_NAME/payments');
+  User user;
 
-
+  PaymentService(this.user) {
+    _settingsService = SettingsService(user.uid, (){});
+  }
 
   Future<bool> _showYouNeedTypYourAddressDialog(BuildContext context, double amount) async {
     final val = await showDialog(
@@ -41,7 +46,7 @@ class PaymentService {
     return val;
   }
 
-  Future<bool> pay(BuildContext context, double amount, String uid, String draftId, bool useCredits, double credits, PaymentMethodsEnum paymentMethod, CreditCard creditCard, User user) async {
+  Future<bool> pay(BuildContext context, double amount, String uid, String draftId, bool useCredits, double credits, PaymentMethodsEnum paymentMethod, CreditCard creditCard) async {
 
     if (useCredits) {
       if (credits < amount)
@@ -50,7 +55,7 @@ class PaymentService {
         amount = 0.0;
     }
 
-    if (amount >= INVOICE_NEEDS_ADDRESS_OVER_AMOUNT_VALUE) {
+    if (amount >= INVOICE_NEEDS_ADDRESS_OVER_AMOUNT_VALUE && !(await _settingsService.existAddressInfo())) {
       final bool result = await _showYouNeedTypYourAddressDialog(context, INVOICE_NEEDS_ADDRESS_OVER_AMOUNT_VALUE);
       if (result) {
         Navigator.push(

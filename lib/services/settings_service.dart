@@ -25,4 +25,9 @@ class SettingsService {
     await userRef.child("settings").update(settings.toJson());
     saved.call();
   }
+
+  Future<bool> existAddressInfo() async {
+    final val = await userRef.child("settings").once();
+    return GlobalSettings.fromSnapshot(val).existAddressInfo();
+  }
 }
