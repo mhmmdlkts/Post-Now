@@ -446,7 +446,7 @@ class _MapsScreenState extends State<MapsScreen> {
       _changeMenuTyp(MenuTyp.PAYMENT_WAITING);
     });
 
-    final bool result = await PaymentService().pay(context, _draft.price.total, _user.uid, _draft.key, useCredits, _credit, paymentMethod, creditCard);
+    final bool result = await PaymentService().pay(context, _draft.price.total, _user.uid, _draft.key, useCredits, _credit, paymentMethod, creditCard, _user);
   }
 
   @override
@@ -550,7 +550,6 @@ class _MapsScreenState extends State<MapsScreen> {
         ListTile(
           title: Text('MAPS.SIDE_MENU.MY_ORDERS'.tr()),
           onTap: () {
-            _thisMethodFixABugButIStillAlwaysABugFixMeDude();
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => OverviewScreen(_user, _homeLocationIcon, _packageLocationIcon, overviewService: _overviewService)),
@@ -560,7 +559,6 @@ class _MapsScreenState extends State<MapsScreen> {
         ListTile(
           title: Text('MAPS.SIDE_MENU.VOUCHER'.tr()),
           onTap: () {
-            _thisMethodFixABugButIStillAlwaysABugFixMeDude();
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => VoucherScreen(_user.uid)),
@@ -570,7 +568,6 @@ class _MapsScreenState extends State<MapsScreen> {
         ListTile(
           title: Text('MAPS.SIDE_MENU.PRIVACY_POLICY'.tr()),
           onTap: () {
-            _thisMethodFixABugButIStillAlwaysABugFixMeDude();
             LegalService.openPrivacyPolicy(context);
           },
         ),
@@ -595,7 +592,6 @@ class _MapsScreenState extends State<MapsScreen> {
         ListTile(
           title: Text('MAPS.SIDE_MENU.SIGN_OUT'.tr(), style: TextStyle(color: Colors.redAccent),),
           onTap: () {
-            _thisMethodFixABugButIStillAlwaysABugFixMeDude();
             AuthService().signOut();
           },
         ),
@@ -1751,7 +1747,7 @@ class _MapsScreenState extends State<MapsScreen> {
         builder: (BuildContext context) {
           return CustomAlertDialog(
             title: "WARNING".tr(),
-            message: "DIALOGS.ARE_YOU_SURE_CANCEL.CONTENT_WITH_AMOUNT".tr(namedArgs: {'amount': amount}),
+            message: "DIALOGS.ADDRESS_MANAGER.ARE_YOU_SURE_CANCEL.CONTENT_WITH_AMOUNT".tr(namedArgs: {'amount': amount}),
             negativeButtonText: "CANCEL".tr(),
             positiveButtonText: "ACCEPT".tr(),
           );
@@ -1832,11 +1828,6 @@ class _MapsScreenState extends State<MapsScreen> {
         return OrderDetailDialog(jobId);
       },
     );
-  }
-
-  void _thisMethodFixABugButIStillAlwaysABugFixMeDude() {
-    if (_originAddress != null || _destinationAddress != null)
-      _clearJob(); // TODO
   }
 
   _getSettingsDialog() => SettingsDialog(

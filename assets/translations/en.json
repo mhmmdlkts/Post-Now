@@ -284,6 +284,11 @@
         "MESSAGE_IS_EMPTY": "Buraya bir mesaj giriniz"
       },
       "MESSAGE": "Bizden istediginiz hizmeti kisaca anlatin"
+    },
+    "NEED_TYP_ADDRESS": {
+      "TITLE": "Information",
+      "CONTENT": "Über {amount} € Müssen sie Ihren Addresse eingeben.",
+      "POSITIVE": "Eingeben"
     }
   },
   "PAYMENTMETHODSENUM": {

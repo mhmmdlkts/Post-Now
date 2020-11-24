@@ -53,7 +53,7 @@ class _FirstScreen extends State<FirstScreen> {
 
   checkUpdates() async {
     final RemoteConfig remoteConfig = await RemoteConfig.instance;
-    await remoteConfig.fetch();
+    await remoteConfig.fetch().then((value) {}).catchError((onError)=>print(onError));
     await remoteConfig.activateFetched();
     _onlineVersion = remoteConfig.getInt(FIREBASE_REMOTE_CONFIG_VERSION_KEY);
 

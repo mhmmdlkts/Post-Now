@@ -54,7 +54,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           CupertinoTextField(readOnly: true, decoration: BoxDecoration( color: Colors.black12), onTap: _showAreYouCantChangeDialog, controller: _settingsService.accountPhoneCtrl, placeholder: "SETTINGS_SCREEN.ACCOUNT.PHONE_HINT".tr()),
           CSHeader('SETTINGS_SCREEN.INVOICE.TITLE'.tr()),
           CSControl(
-            nameWidget: Text('SETTINGS_SCREEN.INVOICE.ENABLE'.tr()),
+            nameWidget: Flexible(
+              child: Text('SETTINGS_SCREEN.INVOICE.ENABLE'.tr()),
+            ),
             contentWidget: CupertinoSwitch(
               value: _settingsService.settings.enableCustomInvoiceAddress,
               onChanged: (bool value) {_settingsService.toggleCustomAddress();},
