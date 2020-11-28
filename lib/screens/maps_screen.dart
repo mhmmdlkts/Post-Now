@@ -143,6 +143,10 @@ class _MapsScreenState extends State<MapsScreen> {
     _mapsService.setNewCameraPosition(
         _mapController, _getOrigin(), _getDestination(), false);
     _draft = await _mapsService.createDraft(_originAddress, _destinationAddress, _shopItems, RouteMode.driving);
+    if (_draft == null) {
+      _changeMenuTyp(MenuTyp.TRY_AGAIN);
+      return;
+    }
     _mapsService.draftRef.child(_draft.key).child("pay_status").onValue.listen((event) {
       final String result = event.snapshot.value;
       if (_menuTyp != MenuTyp.PAYMENT_WAITING)
@@ -309,6 +313,9 @@ class _MapsScreenState extends State<MapsScreen> {
 
   _onMyJobChanged(Job j) {
     _job = j;
+
+    if (j == null)
+      return;
 
     _addAddressMarker(null, null);
     _addAddressMarker(j.destinationAddress.coordinates, true);

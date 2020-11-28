@@ -51,7 +51,10 @@ class _ShoppingListMakerScreenState extends State<ShoppingListMakerScreen> {
           title: Text("SHOPPING_LIST_MAKER.TITLE".tr(), style: TextStyle(color: Colors.white)),iconTheme:  IconThemeData( color: Colors.white),
           brightness: Brightness.dark,
           actions: [
-            IconButton(icon: Icon(Icons.add_shopping_cart), onPressed: _addItem,),
+            _isAdding?IconButton(icon: Icon(Icons.check), onPressed: () => setState((){
+              _isAdding = false;
+            }),)
+                : IconButton(icon: Icon(Icons.add_shopping_cart), onPressed: _addItem,),
           ],
         ),
         body: SafeArea(
@@ -115,6 +118,7 @@ class _ShoppingListMakerScreenState extends State<ShoppingListMakerScreen> {
                   hintStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
                   border: InputBorder.none
               ),
+              onChanged: (val) => setState((){}),
             ),
           ),
           Container(
@@ -122,12 +126,12 @@ class _ShoppingListMakerScreenState extends State<ShoppingListMakerScreen> {
             child: ClipRRect(
               borderRadius: BorderRadius.all(Radius.circular(20)),
               child: Material(
-                color: primaryBlue,
+                color: _inputController.text.length>0?primaryBlue:Colors.green,
                 child: InkWell(
-                  onTap: _onAddButtonClick,
+                  onTap: _inputController.text.length>0?_onAddButtonClick:() => setState((){ _isAdding = false;}),
                   child: Container(
                       margin: EdgeInsets.all(10),
-                      child: Icon(Icons.add, color: Colors.white,)
+                      child: _inputController.text.length>0?Icon(Icons.add, color: Colors.white,): Icon(Icons.keyboard_arrow_down_rounded, color: Colors.white)
                   ),
                 ),
               ),

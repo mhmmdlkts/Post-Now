@@ -33,5 +33,5 @@ class ShoppingListService {
 
   _notify() => onListChanged.forEach((element) async => element.call());
 
-  _countRemains () => remain = shoppingList.where((element) => !element.isChecked).length;
+  _countRemains () => remain = shoppingList?.where((element) => !element.isChecked)?.length??0;
 }
