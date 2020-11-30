@@ -1,7 +1,6 @@
 import 'package:credit_card/credit_card_model.dart';
 import 'package:credit_card_type_detector/credit_card_type_detector.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_braintree/flutter_braintree.dart';
 import 'package:postnow/presentation/my_flutter_app_icons.dart';
 
 class CreditCard {
@@ -37,12 +36,6 @@ class CreditCard {
     "expirationYear": expirationYear,
     "cvvCode": cvvCode,
   };
-
-  createBraintreeCreditCardRequest() => BraintreeCreditCardRequest(
-    cardNumber: cardNumber,
-    expirationMonth: expirationMonth,
-    expirationYear: expirationYear
-  );
 
   String getCardNumber({bool secure = true}) {
     if (!secure)
