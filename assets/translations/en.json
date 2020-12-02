@@ -201,6 +201,8 @@
   },
   "OVERVIEW": {
     "TITLE": "Past orders",
+    "ORDER_DATE": "Order Date",
+    "ORDER_TIME": "Order Time",
     "MODELS": {
       "JOB": {
         "WAITING": "In Process",
