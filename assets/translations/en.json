@@ -58,6 +58,10 @@
     "AGREE_TERMS_AND_POLICY": "By signing up, you agree to our Terms & Privacy Policy",
     "CONTINUE_BUTTON": "Sign Up"
   },
+  "CHOOSER_MENU": {
+    "PACKAGE": "Package",
+    "SHOP": "Shop"
+  },
   "LEGAL": {
     "TITLE": "Legal",
     "LegalTyp": {

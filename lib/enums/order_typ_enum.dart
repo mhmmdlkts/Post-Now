@@ -1,0 +1,4 @@
+enum OrderTypEnum {
+  SHOPPING,
+  PACKAGE
+}

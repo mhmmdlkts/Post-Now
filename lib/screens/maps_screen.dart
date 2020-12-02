@@ -11,6 +11,7 @@ import 'package:postnow/dialogs/custom_alert_dialog.dart';
 import 'package:postnow/dialogs/order_details_dialog.dart';
 import 'package:postnow/dialogs/settings_dialog.dart';
 import 'package:postnow/dialogs/topic_chooser_dialog.dart';
+import 'package:postnow/enums/order_typ_enum.dart';
 import 'package:postnow/enums/payment_methods_enum.dart';
 import 'package:postnow/enums/permission_typ_enum.dart';
 import 'package:postnow/models/credit_card.dart';
@@ -48,6 +49,7 @@ import 'package:postnow/models/job.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:oktoast/oktoast.dart';
+import 'package:postnow/widgets/chooser_widget.dart';
 import 'package:postnow/widgets/payment_methods.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:screen/screen.dart';
@@ -92,6 +94,7 @@ class _MapsScreenState extends State<MapsScreen> {
   MapsService _mapsService;
   PaymentService _paymentService;
   DraftOrder _draft;
+  OrderTypEnum _orderTyp;
   MenuTyp _menuTyp;
   BottomCard _bottomCard;
   Address _originAddress, _destinationAddress;
@@ -512,6 +515,11 @@ class _MapsScreenState extends State<MapsScreen> {
             ),
           ],
         ),
+        _orderTyp==null ? ChooserWidget((OrderTypEnum orderTyp) => setState((){
+          _orderTyp = orderTyp;
+          if (orderTyp == OrderTypEnum.SHOPPING)
+            _onTapShopping();
+        })):Container(),
         _isInitialized ? Container() : SplashScreen(),
       ],
     );
@@ -617,104 +625,106 @@ class _MapsScreenState extends State<MapsScreen> {
     if (_bottomCard != null && _menuTyp != MenuTyp.FROM_OR_TO)
       return Container();
     return Stack(
-    children: [
-      Positioned(
-        key: _addressBarKey,
-        top: MediaQuery.of(context).padding.top + _toolbarHeight + 20,
-        width: MediaQuery.of(context).size.width,
-        child: Visibility(
-          visible: _visibleReceiverField,
-          child: Row(
-            children: [
-              Expanded(
-                flex: 700,
-                child: _placesTopic==null?_getNewSearchWidget(false, leftPadding: 25, rightPadding: 5): _topButtonDesign(
-                  leftPadding: 25,
-                  rightPadding: 5,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.all(Radius.circular(100)),
-                    child: Material(
-                      color: Colors.white,
-                      child: InkWell(
-                        onTap: () {
-                          _showTopicChooserDialog();
-                        },
-                        child: Center(
-                            child: Container(
-                                alignment: Alignment.center,
-                                child: Center(
-                                  child: Stack(
-                                    alignment: Alignment.center,
-                                    children: [
-                                      Opacity(opacity: 0, child: IconButton(icon: Icon(Icons.add)),),
-                                      Text(_placesTopic, style: TextStyle( color: Colors.black.withAlpha(170), fontSize:22),textAlign: TextAlign.center,),
-                                    ],
-                                  ),
-                                )
-                            )
-                        ),
+      children: [
+        Positioned(
+          key: _addressBarKey,
+          top: MediaQuery.of(context).padding.top + _toolbarHeight + 20,
+          width: MediaQuery.of(context).size.width,
+          child: Visibility(
+            visible: _visibleReceiverField,
+            child: Row(
+              children: [
+                Expanded(
+                  flex: 700,
+                  child: _placesTopic==null?_getNewSearchWidget(false, leftPadding: 25, rightPadding: 5): _topButtonDesign(
+                    leftPadding: 25,
+                    rightPadding: 5,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.all(Radius.circular(100)),
+                      child: Material(
+                        color: Colors.white,
+                        child: InkWell(
+                          onTap: () {
+                            _showTopicChooserDialog();
+                          },
+                          child: Center(
+                              child: Container(
+                                  alignment: Alignment.center,
+                                  child: Center(
+                                    child: Stack(
+                                      alignment: Alignment.center,
+                                      children: [
+                                        Opacity(opacity: 0, child: IconButton(icon: Icon(Icons.add)),),
+                                        Text(_placesTopic, style: TextStyle( color: Colors.black.withAlpha(170), fontSize:22),textAlign: TextAlign.center,),
+                                      ],
+                                    ),
+                                  )
+                              )
+                          ),
+                        )
                       )
                     )
                   )
-                )
-              ),
-              Expanded(
-                flex: _visibleSenderField?250:35,
-                child: _topButtonDesign(
-                  leftPadding: 5,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.all(Radius.circular(100)),
-                    child: Material(
-                      color: _placesTopic!=null?Colors.red:primaryBlue,
-                      child: InkWell(
-                        onTap: () async {
-                          _marketMarkers.clear();
-                          if (_placesTopic != null) {
-                            setState(() {
-                              _placesTopic = null;
-                            });
-                            return;
-                          }
-                          if (_shopItems != null) {
-                            final result = await Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => ShoppingListMakerScreen(items: _shopItems, freeItemCount: _mapsService.getFreeItemCount(), itemCost: _mapsService.getShoppingItemCost(), sameItemCost: _mapsService.getShoppingSameItemCost()))
-                            );
-                            if (result != null)
-                              _shopItems = result;
-                            return;
-                          }
-                          _showTopicChooserDialog();
-                        },
-                        child: IconButton(
-                          icon: Icon(_placesTopic == null?(_shopItems==null?Icons.shopping_cart:Icons.format_list_numbered):Icons.clear, color: Colors.white,),
-                        ),
-                      )
+                ),
+                Expanded(
+                  flex: _visibleSenderField?_orderTyp== OrderTypEnum.SHOPPING? 250:35:35,
+                  child: _topButtonDesign(
+                    leftPadding: 5,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.all(Radius.circular(100)),
+                      child: Material(
+                        color: _placesTopic!=null?Colors.red:primaryBlue,
+                        child: InkWell(
+                          onTap: _onTapShopping,
+                          child: IconButton(
+                            icon: Icon(_placesTopic == null?(_shopItems==null?Icons.store:Icons.format_list_numbered):Icons.clear, color: Colors.white,),
+                          ),
+                        )
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
-      ),
-      AnimatedPositioned(
-        duration: _mapsCloseOpenDur,
-        curve: Curves.easeOutCirc,
-        top: MediaQuery.of(context).padding.top + _toolbarHeight + (!_visibleReceiverField?10:(_addressFieldHeight + 30)),
-        child:  Visibility(
-          visible: _visibleSenderField,
-          child: _getNewSearchWidget(true),
+        AnimatedPositioned(
+          duration: _mapsCloseOpenDur,
+          curve: Curves.easeOutCirc,
+          top: MediaQuery.of(context).padding.top + _toolbarHeight + (!_visibleReceiverField?10:(_addressFieldHeight + 30)),
+          child:  Visibility(
+            visible: _visibleSenderField,
+            child: _getNewSearchWidget(true),
+          ),
         ),
-      ),
-      AnimatedPositioned(
-        duration: _mapsCloseOpenDur,
-        curve: Curves.easeOutCirc,
-        top: _visibleAllList()?MediaQuery.of(context).padding.top + _toolbarHeight + _addressFieldHeight + 30:MediaQuery.of(context).size.height,
-        child: _addressList(),
-      ),
-    ],
-  );
+        AnimatedPositioned(
+          duration: _mapsCloseOpenDur,
+          curve: Curves.easeOutCirc,
+          top: _visibleAllList()?MediaQuery.of(context).padding.top + _toolbarHeight + _addressFieldHeight + 30:MediaQuery.of(context).size.height,
+          child: _addressList(),
+        ),
+      ],
+    );
+  }
+
+  _onTapShopping() async {
+    _marketMarkers.clear();
+    if (_placesTopic != null) {
+      setState(() {
+        _placesTopic = null;
+      });
+      return;
+    }
+    if (_shopItems != null) {
+      final result = await Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ShoppingListMakerScreen(items: _shopItems, freeItemCount: _mapsService.getFreeItemCount(), itemCost: _mapsService.getShoppingItemCost(), sameItemCost: _mapsService.getShoppingSameItemCost()))
+      );
+      if (result != null)
+        _shopItems = result;
+      return;
+    }
+    _showTopicChooserDialog();
   }
 
   Widget _content() => Stack(
@@ -755,21 +765,30 @@ class _MapsScreenState extends State<MapsScreen> {
     });
   }
 
-  Widget _toolbar() => Container(
-    width: MediaQuery.of(context).size.width,
-    key: _toolbarKey,
-    child: Container(
-      padding: EdgeInsets.symmetric(vertical: 2),
-      child: Row(
-        children: [
-          IconButton(icon: Icon(Icons.menu, color: Colors.white,), onPressed: ()=> setState((){_drawerPosition = 0;})),
-          Text("APP_NAME".tr(), style: TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold,), textAlign: TextAlign.center,),
-          Opacity(opacity: 0, child: IconButton(icon: Icon(Icons.stream)),) // placeholder
-        ],
-        mainAxisAlignment: MainAxisAlignment.spaceBetween ,
-      ),
-    )
-  );
+  Widget _toolbar() {
+    bool showCancelOrderTypButton = _orderTyp != null && _bottomCard == null;
+    return Container(
+        width: MediaQuery.of(context).size.width,
+        key: _toolbarKey,
+        child: Container(
+          padding: EdgeInsets.symmetric(vertical: 2),
+          child: Row(
+            children: [
+              IconButton(icon: Icon(Icons.menu, color: Colors.white,), onPressed: ()=> setState((){_drawerPosition = 0;})),
+              Text("APP_NAME".tr(), style: TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold,), textAlign: TextAlign.center,),
+              Opacity(
+                  opacity: showCancelOrderTypButton?1:0,
+                  child: IconButton(
+                    icon: Icon(_orderTyp==OrderTypEnum.SHOPPING?Icons.shopping_cart:Icons.local_shipping, color: Colors.white,),
+                    onPressed: showCancelOrderTypButton?() => setState((){_orderTyp = null;}):null,
+                  )
+              ) // placeholder
+            ],
+            mainAxisAlignment: MainAxisAlignment.spaceBetween ,
+          ),
+        )
+    );
+  }
 
   Set<Marker> _createMarker() {
     Set markers = Set<Marker>();
