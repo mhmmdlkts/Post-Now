@@ -12,6 +12,14 @@
 ///       - asset: fonts/MyFlutterApp.ttf
 ///
 /// 
+/// * Iconic, Copyright (C) 2012 by P.J. Onori
+///         Author:    P.J. Onori
+///         License:   SIL (http://scripts.sil.org/OFL)
+///         Homepage:  http://somerandomdude.com/work/iconic/
+/// * Typicons, (c) Stephen Hutchings 2012
+///         Author:    Stephen Hutchings
+///         License:   SIL (http://scripts.sil.org/OFL)
+///         Homepage:  http://typicons.com/
 /// * Font Awesome 4, Copyright (C) 2016 by Dave Gandy
 ///         Author:    Dave Gandy
 ///         License:   SIL ()
@@ -20,6 +28,10 @@
 ///         Author:    Daniel Bruce
 ///         License:   SIL (http://scripts.sil.org/OFL)
 ///         Homepage:  http://www.entypo.com
+/// * Octicons, Copyright (C) 2020 by GitHub Inc.
+///         Author:    GitHub
+///         License:   MIT (http://opensource.org/licenses/mit-license.php)
+///         Homepage:  https://primer.style/octicons/
 /// * Font Awesome 5, Copyright (C) 2016 by Dave Gandy
 ///         Author:    Dave Gandy
 ///         License:   SIL (https://github.com/FortAwesome/Font-Awesome/blob/master/LICENSE.txt)
@@ -33,6 +45,9 @@ class MyFlutterApp {
   static const _kFontFam = 'MyFlutterApp';
   static const _kFontPkg = null;
 
+  static const IconData article_alt = IconData(0xe800, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData menu = IconData(0xe801, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData box = IconData(0xe802, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData credit_card_with_add_button = IconData(0xe81b, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData klarna__1_ = IconData(0xe820, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData klarna__2_ = IconData(0xe821, fontFamily: _kFontFam, fontPackage: _kFontPkg);
@@ -45,8 +60,10 @@ class MyFlutterApp {
   static const IconData cc_stripe = IconData(0xf1f5, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData credit_card_alt = IconData(0xf283, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData paypal = IconData(0xf342, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData package = IconData(0xf383, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData money_bill_alt = IconData(0xf3d1, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData apple_pay = IconData(0xf415, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData cc_apple_pay = IconData(0xf416, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData coins = IconData(0xf51e, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData car_side = IconData(0xf5e4, fontFamily: _kFontFam, fontPackage: _kFontPkg);
 }

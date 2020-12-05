@@ -9,38 +9,42 @@
   "SETTINGS": "Settings",
   "SEND_MESSAGE": "Send a message",
   "SEND": "Send",
+  "TOTAL": "Total",
   "SAVE": "Save",
+  "APPLY": "Apply",
+  "FREE": "Free",
+  "SEARCH": "Search",
   "GO_BACK": "Go back",
   "CHECKOUT": "Checkout",
-  "TRY_AGAIN": "Tekrar dene",
+  "TRY_AGAIN": "Try Again",
   "INTRO": {
     "PAGE1": {
-      "TITLE": "Başlıyoruz",
-      "DESCRIPTION": "Şoförünüzün ilk hedefi olan adresi girin. Bu sizin ya da bi arkadaşınızın adresi olabileceği gibi herhangi bir marketin adresi de olabilir."
+      "TITLE": "Let get started",
+      "DESCRIPTION": "Enter the address that will be the driver's first stop. This can be your address or a friend's address, or any store's address."
     },
     "PAGE2": {
-      "TITLE": "Bir adım daha",
-      "DESCRIPTION": "Ardından hedef adresi girin. Eğer paketin size ulaşmasını istiyorsanız bu kısıma kendi adrsinizi gireceğiniz anlamına geliyor."
+      "TITLE": "One more step",
+      "DESCRIPTION": "Then enter the destination address. If you want the package to reach you, it means that you will have to enter your own address in this section."
     },
     "PAGE3": {
-      "TITLE": "Takip edin",
-      "DESCRIPTION": "Mesafeye bağlı bir şekilde hesaplanan ücreti onayladıktan sonra en uygun kuryecimiz paketi varış noktasına ulaştıracaktır. Bu süreçte siz paketinizin nerde olduğunu canlı olarak görebileceksiniz."
+      "TITLE": "Tracking",
+      "DESCRIPTION": "After confirming the fee, calculated depending on the distance, one of our available couriers will deliver the package to its destination. In this process, you will be able to see live where your package is.**"
     }
   },
   "LOGIN": {
     "TITLE": "Welcome Back",
     "SUBTITLE": "Hello there...",
-    "PHONE_FIELD_TITLE": "Mobile Number",
+    "PHONE_FIELD_TITLE": "Phone Number",
     "PHONE_FIELD_HINT": "Your phone number",
     "PHONE_FIELD_VALIDATOR_ENTER_NAME": "Please enter your phone number.",
     "SMS_CODE_FIELD_TITLE": "Verification Code",
-    "SMS_CODE_FIELD_HINT": "Sms verification code",
+    "SMS_CODE_FIELD_HINT": "SMS verification code",
     "SMS_CODE_FIELD_VALIDATOR_ENTER_NAME": "Enter your validation code.",
-    "AGREE_TERMS_AND_POLICY": "By sign in, you agree to our Terms & Privacy Policy",
+    "AGREE_TERMS_AND_POLICY": "By signing in, you agree to our Terms & Privacy Policy",
     "CONTINUE_BUTTON": "Continue",
     "COUNTRY_NAME_EXAMPLE": "Example {countryCode}",
-    "LOGIN_PROBLEMS": "Any problem?",
-    "AUTO_FILL_EMAIL_SUBJECT": "I have a problem by signing in the post now app"
+    "LOGIN_PROBLEMS": "Having trouble signing in?",
+    "AUTO_FILL_EMAIL_SUBJECT": "I'm having trouble signing in to Post Now App"
   },
   "SIGN_UP": {
     "TITLE": "Welcome Back",
@@ -49,10 +53,14 @@
     "NAME_FIELD_HINT": "Your name",
     "NAME_FIELD_VALIDATOR_ENTER_NAME": "Please enter your name.",
     "EMAIL_FIELD_TITLE": "Email",
-    "EMAIL_FIELD_HINT": "Your email",
+    "EMAIL_FIELD_HINT": "Your email adress",
     "EMAIL_FIELD_VALIDATOR_ENTER_NAME": "Please enter your email address.",
-    "AGREE_TERMS_AND_POLICY": "By sign up, you agree to our Terms & Privacy Policy",
+    "AGREE_TERMS_AND_POLICY": "By signing up, you agree to our Terms & Privacy Policy",
     "CONTINUE_BUTTON": "Sign Up"
+  },
+  "CHOOSER_MENU": {
+    "PACKAGE": "Package",
+    "SHOP": "Shop"
   },
   "LEGAL": {
     "TITLE": "Legal",
@@ -66,15 +74,15 @@
     "ACCOUNT": {
       "TITLE": "Account",
       "NAME_HINT": "Name",
-      "PHONE_HINT": "Phone",
+      "PHONE_HINT": "Phone Number",
       "EMAIL_HINT": "Email"
     },
     "INVOICE": {
-      "TITLE": "Rechnungs Addresse",
-      "ENABLE": "Faturada adresim yazsin istiyorum",
+      "TITLE": "Invoicing/billing address",
+      "ENABLE": "I want my address to be written on the invoice/bill",
       "NAME_HINT": "Faturada gözükecek isim",
       "ADDRESS_HINT": "Faturada gözükecek adres",
-      "DESCRIPTION": "Bunu aktif hale getirdiginizde faturanizda yazmasini istediginz address yazacaktir"
+      "DESCRIPTION": "If you turn this on your adress of choice will be written on the invoice/bill."
     },
     "SOFTWARE_LICENCES": "License",
     "SIGN_OUT": "Logout"
@@ -86,12 +94,12 @@
       "HINT_LABEL": "Enter your name"
     },
     "EMAIL": {
-      "LABEL": "Email",
-      "HINT_LABEL": "Enter your email"
+      "LABEL": "Email adress",
+      "HINT_LABEL": "Enter your email adress"
     },
     "PHONE": {
-      "LABEL": "Phone",
-      "HINT_LABEL": "Enter your phone"
+      "LABEL": "Phone number",
+      "HINT_LABEL": "Enter your phone number"
     },
     "SUBJECT": {
       "LABEL": "Subject",
@@ -104,7 +112,20 @@
     "SEND": "Send"
   },
   "DIRECT_JOB_OVERVIEW": {
-    "ANY_PROBLEMS": "Any problems with this job?"
+    "ANY_PROBLEMS": "Any problems with this order?"
+  },
+  "SHOPPING_LIST": {
+    "TITLE": "Shopping List"
+  },
+  "SHOPPING_LIST_MAKER": {
+    "TEXT_FIELD_HINT": "Enter the name of the product you want.",
+    "TITLE": "Shopping List",
+    "LEGAL": "The first {amount} products have no extra cost, you will be charged {price} € for each prodcut after.",
+    "DIALOGS": {
+      "BACK": {
+        "CONTENT": "This list will be sent to your carrier, is that all you want?"
+      }
+    }
   },
   "MAPS": {
     "NO_AVAILABLE_DRIVER_MESSAGE": "No available driver in your area.",
@@ -113,9 +134,13 @@
     "PACKAGE_ADDRESS": "Sender adress",
     "DESTINATION_ADDRESS": "Recipient adress",
     "TYPE_ADDRESS": "Enter the adress",
+    "TOPIC_SEARCHING": "{topic} searching",
+    "MARKET": {
+      "MARKER": "Approximate transportation costs: {around_amount} €"
+    },
     "SIDE_MENU": {
       "MY_ORDERS": "My Orders",
-      "VOUCHER": "Voucher",
+      "VOUCHER": "Coupons",
       "PRIVACY_POLICY": "Privacy Policy",
       "SOFTWARE_LICENCES": "Software Licence",
       "CONTACT": "Contact",
@@ -124,19 +149,19 @@
     "BOTTOM_MENUS": {
       "YOUR_DRIVER": "Your Carrier: {name}",
       "ACCEPTED": {
-        "MESSAGE" : "Diger auftraglar bitince soför sizin auftragi halledecek"
+        "MESSAGE" : "The carrier will take care of your order in shortly."
       },
       "FROM_OR_TO": {
-        "TITLE": "Calculate Price",
-        "MAIN_BUTTON": "Calculate"
+        "TITLE": "Order**",
+        "MAIN_BUTTON": "Let's Start**"
       },
       "ON_JOB": {
-        "STATUS": "Status: The carrier is on the way to pick up the package.",
+        "STATUS": "The carrier is on the way to pick up the package.",
         "PACKAGE_ADDRESS": "Sender adress: {address}\nAsagi gelecek\nPacket will gived by Name: {name}",
         "PACKAGE_ADDRESS_EXTRA_SERVICE": "Sender adress: {address}\nPacket will gived by Name: {name}"
       },
       "PACKAGE_PICKED": {
-        "STATUS": "Status: Your package is on it's way.",
+        "STATUS": "Your package is on it's way.",
         "CONFIRMATION_PIN": "PIN: {pin}",
         "PACKAGE_DELIVERED": "Package has been delivered.",
         "PACKAGE_ADDRESS": "Receiver adress: {address}\nAsagi gelecek\nPacket will picked by Name: {name}",
@@ -144,11 +169,11 @@
       },
       "CONFIRM": {
         "FROM_TO": "Sender Adress: {from}\nReceiver Adress: {to}",
-        "USE_CREDITS": "{money} € degerinde kredi kullan.",
-        "ADD_NEW_CARD": "Add new card"
+        "USE_CREDITS": "{money} € use credits.",
+        "ADD_NEW_CARD": "Add new Credit/Deebit Card"
       },
       "SEARCH_DRIVER": {
-        "STATUS": "Status: Waiting for carrier for your order.",
+        "STATUS": "Waiting for carrier to take your order.",
         "ORDER_ACCEPTED": "Order accepted."
       },
       "PAYMENT_WAITING": {
@@ -164,10 +189,10 @@
         "PLEASE_WAIT": "Please Wait."
       },
       "TRY_AGAIN": {
-        "MESSAGE": "Lütfen tekrar deneyiniz."
+        "MESSAGE": "Please try again."
       },
       "NO_ROUTE": {
-        "MESSAGE": "Rota hesaplanamadi."
+        "MESSAGE": "Route couldn't be calculated."
       }
     }
   },
@@ -175,17 +200,30 @@
     "TYPE_MESSAGE_HERE": "Enter your message..."
   },
   "OVERVIEW": {
-    "TITLE": "Gecmis orders"
+    "TITLE": "Past orders",
+    "ORDER_DATE": "Order Date",
+    "ORDER_TIME": "Order Time",
+    "MODELS": {
+      "JOB": {
+        "WAITING": "In Process",
+        "ON_ROAD": "In Process",
+        "PACKAGE_PICKED": "In Process",
+        "FINISHED": "Completed",
+        "CANCELLED": "Canceled",
+        "DRIVER_CANCELED": "Driver Canceled",
+        "CUSTOMER_CANCELED": "Customer Canceled"
+      }
+    }
   },
   "VOUCHER": {
-    "TITLE": "Voucher",
-    "TEXT_FIELD_MESSAGE": "Oder geben Sie den code hier ein",
-    "SUCCESS_MESSAGE": "{value} € degerinde para fiskirtildi",
+    "TITLE": "Coupon",
+    "TEXT_FIELD_MESSAGE": "Or enter you code.",
+    "SUCCESS_MESSAGE": "You have now {value} € as credits to use.",
     "ERROR": {
-      "NO_ERROR": "Hata yok",
-      "ALREADY_USED": "Bu gutschein daha önce kulanildi",
-      "NOT_EXIST": "Bu gutschein gecersiz",
-      "NOT_KNOWN": "Bilinmeyen hata"
+      "NO_ERROR": "No error.",
+      "ALREADY_USED": "This coupon has already been used.",
+      "NOT_EXIST": "This coupon is invalid.",
+      "NOT_KNOWN": "Unknown error."
     }
   },
   "MODELS": {
@@ -202,63 +240,69 @@
   "DIALOGS": {
     "PERMISSIONTYPENUM": {
       "CAMERA": {
-        "TITLE": "Kamera izni verin",
-        "MESSAGE": "Fotograf cekebilmek icin kameraniza erisebilmemiz gerek",
-        "ALLOW": "Izin ver"
+        "TITLE": "Allow Post Now to take pictures.",
+        "MESSAGE": "Post Now needs to acces your camera.",
+        "ALLOW": "Allow"
       },
       "LOCATION": {
-        "TITLE": "Konum izni verin",
-        "MESSAGE": "Uyulamayi daha iyi kullanabilmek icin konum izni verin",
-        "ALLOW": "Izin ver"
+        "TITLE": "Allow Post Now to access this device's location.",
+        "MESSAGE": "To better function give the app permission to acces the device's location.",
+        "ALLOW": "Allow"
       }
     },
     "I_AM_BACK": {
-      "TITLE": "Seni bekliyoruz",
-      "MESSAGE": "Özlendin kral nerdesin",
-      "POSITIVE": "Geldim"
+      "TITLE": "Please allow locations",
+      "MESSAGE": "Did you do it?",
+      "POSITIVE": "It's done!"
     },
     "UPDATE_AVAILABLE": {
-      "TITLE": "Yeni Güncelleme Mevcut",
-      "BODY": "Uyulamayi kullanabilmek icin en güncel sürümü kullaniyor olmaniz gerek.",
-      "BUTTON": "Güncelle"
+      "TITLE": "New update available.",
+      "BODY": "To use the app it must intsall the newest update.",
+      "BUTTON": "Update Now!"
     },
     "ADDRESS_MANAGER": {
       "TITLE": "Address details",
-      "I_WILL_COME": "Ich möchte, dass der Fahrer zu meiner Tür kommt. (muss nicht 'meiner tür' sein)",
-      "HOUSE_NUMBER": "Hausnummer",
-      "DOOR_NUMBER": "Türnummer",
-      "DOOR_NAME": "Ansprechperson",
+      "I_WILL_COME": "I want the carrier to come to my door. (doesn't have to be 'my door')",
+      "HOUSE_NUMBER": "House number",
+      "DOOR_NUMBER": "Door number",
+      "DOOR_NAME": "Contact person",
       "ERROR_MESSAGES": {
-        "HOUSE_NUMBER_IS_NEEDED": "Daire numarasi girilmesi zorunludur.",
-        "DOOR_NUMBER_IS_NEEDED": "Eger paketinizi kapiniza getirilsin istiyorsaniz kapi numarasi girmek zorundasiniz.",
-        "DOOR_NAME_IS_NEEDED": "Paketinizi teslim alacak kisinin ismini girmek zorundasiniz."
+        "HOUSE_NUMBER_IS_NEEDED": "The house number must be entered.",
+        "DOOR_NUMBER_IS_NEEDED": "If you want your package to be delivered to your door, please enter your door number.",
+        "DOOR_NAME_IS_NEEDED": "Please enter the name of the person who will receive your package."
       },
       "ARE_YOU_SURE_CANCEL": {
-        "CONTENT_WITH_AMOUNT": "Iptal etmek istedigineemin misin? Senden {amount} para kesebiliriz aglama sonra.",
-        "CONTENT": "Iptal etmek istedigineemin misin?"
+        "CONTENT_AFTER_SHOP": "Soförünüz alisverisinizi tamamladigindan iptal isleminde paranizi geri alamazsin",
+        "CONTENT_WITH_AMOUNT": "You will be charged {amount} € for canceling your order.",
+        "CONTENT": "Are you sure you want to cancel?"
       }
     },
     "JOB_SETTINGS": {
-      "CANCEL_JOB" : "Yolculugu iptal et"
+      "CANCEL_JOB" : "Cancel order."
     },
     "SETTINGS": {
       "YOU_CANT_CHANGE": {
-        "MESSAGE": "Bu alani degiistirmeye ihtiyaciniz varsa bizimle letisime gecin",
-        "CONTACT": "Iletisime gec"
+        "MESSAGE": "If you have to chnage any of these informations please contact us.",
+        "CONTACT": "Contact us"
       }
     },
     "ORDER_DETAILS": {
       "ERROR_MESSAGES": {
-        "MESSAGE_IS_EMPTY": "Buraya bir mesaj giriniz"
+        "MESSAGE_IS_EMPTY": "Enter a message here"
       },
-      "MESSAGE": "Bizden istediginiz hizmeti kisaca anlatin"
+      "MESSAGE": "Tell us shortly what you want from us."
+    },
+    "NEED_TYP_ADDRESS": {
+      "TITLE": "Information",
+      "CONTENT": "For orders taht cost more than {amount} € you have to order your adress for billing.",
+      "POSITIVE": "Enter"
     }
   },
   "PAYMENTMETHODSENUM": {
     "CREDITS": "Credits",
     "CASH": "Cash",
     "PAYPAL": "PayPal",
-    "CREDIT_CARD": "Credit Card",
+    "CREDIT_CARD": "Credit/Debit Card",
     "APPLE_PAY": "Apple Pay",
     "KLARNA": "Sofort Überweisung"
   }

@@ -98,7 +98,7 @@ class OverviewComponent extends StatelessWidget {
       children: [
         Icon(icon, color: primaryBlue,),
         Container(width: 10,),
-        Text(msg + (val == null?"":": "), style: TextStyle(color: _grey),),
+        Flexible( child: Text(msg + (val == null?"":": "), style: TextStyle(color: _grey),)),
         val!=null?Text(val, style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),):Container(),
       ],
     ),

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:postnow/decoration/my_colors.dart';
 import 'package:postnow/enums/order_typ_enum.dart';
+import 'package:postnow/presentation/my_flutter_app_icons.dart';
 
 class ChooserWidget extends StatelessWidget {
   final void Function(OrderTypEnum) callback;
@@ -21,7 +22,7 @@ class ChooserWidget extends StatelessWidget {
               _getButtonWidget(
                 context,
                 onPressed: () => callback.call(OrderTypEnum.PACKAGE),
-                icon: Icons.local_shipping,
+                icon: MyFlutterApp.car_side,
                 text: "CHOOSER_MENU.PACKAGE".tr()
               ),
               _getButtonWidget(

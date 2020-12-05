@@ -19,6 +19,7 @@ import 'package:postnow/models/address.dart';
 import 'package:postnow/models/draft_order.dart';
 import 'package:postnow/models/settings_item.dart';
 import 'package:postnow/models/shopping_item.dart';
+import 'package:postnow/presentation/my_flutter_app_icons.dart';
 import 'package:postnow/screens/contact_form_screen.dart';
 import 'package:postnow/screens/overview_screen.dart';
 import 'package:postnow/screens/settings_screen.dart';
@@ -768,25 +769,25 @@ class _MapsScreenState extends State<MapsScreen> {
   Widget _toolbar() {
     bool showCancelOrderTypButton = _orderTyp != null && _bottomCard == null;
     return Container(
-        width: MediaQuery.of(context).size.width,
-        key: _toolbarKey,
-        child: Container(
-          padding: EdgeInsets.symmetric(vertical: 2),
-          child: Row(
-            children: [
-              IconButton(icon: Icon(Icons.menu, color: Colors.white,), onPressed: ()=> setState((){_drawerPosition = 0;})),
-              Text("APP_NAME".tr(), style: TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold,), textAlign: TextAlign.center,),
-              Opacity(
-                  opacity: showCancelOrderTypButton?1:0,
-                  child: IconButton(
-                    icon: Icon(_orderTyp==OrderTypEnum.SHOPPING?Icons.shopping_cart:Icons.local_shipping, color: Colors.white,),
-                    onPressed: showCancelOrderTypButton?() => setState((){_orderTyp = null;}):null,
-                  )
-              ) // placeholder
-            ],
-            mainAxisAlignment: MainAxisAlignment.spaceBetween ,
-          ),
-        )
+      width: MediaQuery.of(context).size.width,
+      key: _toolbarKey,
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 2),
+        child: Row(
+          children: [
+            IconButton(icon: Icon(Icons.menu, color: Colors.white,), onPressed: ()=> setState((){_drawerPosition = 0;})),
+            Text("APP_NAME".tr(), style: TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold,), textAlign: TextAlign.center,),
+            Opacity(
+              opacity: showCancelOrderTypButton?1:0,
+              child: IconButton(
+                icon: Icon(_orderTyp==OrderTypEnum.SHOPPING?Icons.shopping_cart:MyFlutterApp.car_side, color: Colors.white,),
+                onPressed: showCancelOrderTypButton?() => setState((){_orderTyp = null;}):null,
+              )
+            )
+          ],
+          mainAxisAlignment: MainAxisAlignment.spaceBetween ,
+        ),
+      )
     );
   }
 
@@ -1773,22 +1774,21 @@ class _MapsScreenState extends State<MapsScreen> {
     });
   }
 
-  Future<bool> _showAreYouSureDialog() async {
-    final String amount = (await _mapsService.getCancelFeeAmount()).toString();
+  Future<bool> _showAreYouSureDialog({bool isShopCompleted = false}) async {
+    final String amount = (await _mapsService.getCancelFeeAmount()).toStringAsFixed(2);
+
     final val = await showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return CustomAlertDialog(
-            title: "WARNING".tr(),
-            message: "DIALOGS.ADDRESS_MANAGER.ARE_YOU_SURE_CANCEL.CONTENT_WITH_AMOUNT".tr(namedArgs: {'amount': amount}),
-            negativeButtonText: "CANCEL".tr(),
-            positiveButtonText: "ACCEPT".tr(),
-          );
-        }
+      context: context,
+      builder: (BuildContext context) {
+        return CustomAlertDialog(
+          title: "WARNING".tr(),
+          message: 'DIALOGS.ADDRESS_MANAGER.ARE_YOU_SURE_CANCEL.${isShopCompleted?'CONTENT_AFTER_SHOP':'CONTENT_WITH_AMOUNT'}'.tr(namedArgs: {'amount': amount}),
+          negativeButtonText: "CANCEL".tr(),
+          positiveButtonText: "ACCEPT".tr(),
+        );
+      }
     );
-    if (val == null)
-      return false;
-    return val;
+    return val??false;
   }
 
   Future<Address> _showAddressManagerDialog(Address address, {String name}) async {
@@ -1810,6 +1810,8 @@ class _MapsScreenState extends State<MapsScreen> {
         return TopicChooserDialog(topics);
       }
     );
+    if (chosenToken == null)
+      return;
     _placesTopic = "MAPS.TOPIC_SEARCHING".tr(namedArgs: {"topic": chosenToken});
     setState(() {});
     _placesTopic = chosenToken;
@@ -1863,21 +1865,20 @@ class _MapsScreenState extends State<MapsScreen> {
     );
   }
 
-  _getSettingsDialog() => SettingsDialog(
-      [
-        SettingsItem(
-            textKey: "DIALOGS.JOB_SETTINGS.CANCEL_JOB",
-            onPressed: () async {
-              if (await _showAreYouSureDialog()) {
-                _changeMenuTyp(MenuTyp.PLEASE_WAIT);
-                _mapsService.cancelJob(_job);
-              }
-            },
-            icon: Icons.cancel, color: Colors.white
-        ),
-        SettingsItem(textKey: "CLOSE", onPressed: () {}, icon: Icons.close, color: Colors.redAccent),
-      ]
-  );
+  _getSettingsDialog() => SettingsDialog([
+    SettingsItem(
+        textKey: "DIALOGS.JOB_SETTINGS.CANCEL_JOB",
+        onPressed: () async {
+          final bool isShopCompleted = _job.hasShoppingList() && _job.status == Status.PACKAGE_PICKED;
+          if (await _showAreYouSureDialog(isShopCompleted: isShopCompleted)) {
+            _changeMenuTyp(MenuTyp.PLEASE_WAIT);
+            _mapsService.cancelJob(_job);
+          }
+        },
+        icon: Icons.cancel, color: Colors.white
+    ),
+    SettingsItem(textKey: "CLOSE", onPressed: () {}, icon: Icons.close, color: Colors.redAccent),
+  ]);
 
   Timer _throttle;
   _onAddressFieldChanged(String e) async {

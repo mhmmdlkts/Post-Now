@@ -272,6 +272,7 @@
         "DOOR_NAME_IS_NEEDED": "Please enter the name of the person who will receive your package."
       },
       "ARE_YOU_SURE_CANCEL": {
+        "CONTENT_AFTER_SHOP": "Soförünüz alisverisinizi tamamladigindan iptal isleminde paranizi geri alamazsin",
         "CONTENT_WITH_AMOUNT": "You will be charged {amount} € for canceling your order.",
         "CONTENT": "Are you sure you want to cancel?"
       }
