@@ -1,308 +1,313 @@
 {
   "APP_NAME": "Post Now",
   "OK": "Ok",
-  "CANCEL": "Cancel",
-  "ACCEPT": "Accept",
-  "WARNING": "Dikkat",
-  "THANKS": "Thanks",
-  "CLOSE": "Close",
-  "SETTINGS": "Settings",
-  "SEND_MESSAGE": "Send a message",
-  "SEND": "Send",
+  "CANCEL": "Abbrechen",
+  "ACCEPT": "Akzeptieren",
+  "WARNING": "Achtung",
+  "THANKS": "Danke",
+  "CLOSE": "Schließen",
+  "SETTINGS": "Einstellungen",
+  "SEND_MESSAGE": "Nachricht senden",
+  "SEND": "Senden",
   "TOTAL": "Total",
-  "SAVE": "Save",
-  "APPLY": "Apply",
-  "FREE": "Free",
-  "SEARCH": "Search",
-  "GO_BACK": "Go back",
-  "CHECKOUT": "Checkout",
-  "TRY_AGAIN": "Try Again",
+  "SAVE": "Speichern",
+  "APPLY": "Bestellen",
+  "FREE": "Gratis",
+  "SEARCH": "Suchen",
+  "GO_BACK": "Zurück",
+  "CHECKOUT": "Zur Zahlung",
+  "TRY_AGAIN": "Versuche es erneut",
   "INTRO": {
     "PAGE1": {
-      "TITLE": "Let get started",
-      "DESCRIPTION": "Enter the address that will be the driver's first stop. This can be your address or a friend's address, or any store's address."
+      "TITLE": "Los geht's",
+      "DESCRIPTION": "Gib die Abholadresse ein."
     },
     "PAGE2": {
-      "TITLE": "One more step",
-      "DESCRIPTION": "Then enter the destination address. If you want the package to reach you, it means that you will have to enter your own address in this section."
+      "TITLE": "Noch ein Schritt",
+      "DESCRIPTION": "Gib die Zieladresse ein."
     },
     "PAGE3": {
-      "TITLE": "Tracking",
-      "DESCRIPTION": "After confirming the fee, calculated depending on the distance, one of our available couriers will deliver the package to its destination. In this process, you will be able to see live where your package is.**"
+      "TITLE": "Lieferung verfolgen",
+      "DESCRIPTION": "Nach Bezahlung übernimmt einer unserer Zusteller den Auftrag. Du siehst dann in Echtzeit, wo sich deine Lieferung befindet."
     }
   },
   "LOGIN": {
-    "TITLE": "Welcome Back",
-    "SUBTITLE": "Hello there...",
-    "PHONE_FIELD_TITLE": "Phone Number",
-    "PHONE_FIELD_HINT": "Your phone number",
-    "PHONE_FIELD_VALIDATOR_ENTER_NAME": "Please enter your phone number.",
-    "SMS_CODE_FIELD_TITLE": "Verification Code",
-    "SMS_CODE_FIELD_HINT": "SMS verification code",
-    "SMS_CODE_FIELD_VALIDATOR_ENTER_NAME": "Enter your validation code.",
-    "AGREE_TERMS_AND_POLICY": "By signing in, you agree to our Terms & Privacy Policy",
-    "CONTINUE_BUTTON": "Continue",
-    "COUNTRY_NAME_EXAMPLE": "Example {countryCode}",
-    "LOGIN_PROBLEMS": "Having trouble signing in?",
-    "AUTO_FILL_EMAIL_SUBJECT": "I'm having trouble signing in to Post Now App"
+    "TITLE": "Willkommen zurück",
+    "SUBTITLE": "Hallo...",
+    "PHONE_FIELD_TITLE": "Telefonnummer",
+    "PHONE_FIELD_HINT": "Deine Telefonnummer",
+    "PHONE_FIELD_VALIDATOR_ENTER_NAME": "Bitte gib deine Telefonnummer ein.",
+    "SMS_CODE_FIELD_TITLE": "Bestätigungscode",
+    "SMS_CODE_FIELD_HINT": "SMS-Bestätigungscode",
+    "SMS_CODE_FIELD_VALIDATOR_ENTER_NAME": "Gib deinen SMS-Bestätigungscode ein.",
+    "AGREE_TERMS_AND_POLICY": "Mit deiner Anmeldung stimmst du unseren Nutzungsbedingungen und Datenschutzbestimmungen zu",
+    "CONTINUE_BUTTON": "Weiter",
+    "COUNTRY_NAME_EXAMPLE": "zB: {countryCode}",
+    "LOGIN_PROBLEMS": "Probleme beim Anmelden?",
+    "AUTO_FILL_EMAIL_SUBJECT": "Ich habe Probleme, mich bei der Post Now App anzumelden."
   },
   "SIGN_UP": {
-    "TITLE": "Welcome Back",
-    "SUBTITLE": "Hello there, sign in to continue!",
+    "TITLE": "Willkommen zurück",
+    "SUBTITLE": "Hallo, melde dich an, um fortzufahren!",
     "NAME_FIELD_TITLE": "Name",
-    "NAME_FIELD_HINT": "Your name",
-    "NAME_FIELD_VALIDATOR_ENTER_NAME": "Please enter your name.",
+    "NAME_FIELD_HINT": "Dein Name",
+    "NAME_FIELD_VALIDATOR_ENTER_NAME": "Bitte gib deinen Namen ein.",
     "EMAIL_FIELD_TITLE": "Email",
-    "EMAIL_FIELD_HINT": "Your email adress",
-    "EMAIL_FIELD_VALIDATOR_ENTER_NAME": "Please enter your email address.",
-    "AGREE_TERMS_AND_POLICY": "By signing up, you agree to our Terms & Privacy Policy",
-    "CONTINUE_BUTTON": "Sign Up"
+    "EMAIL_FIELD_HINT": "Deine E-Mail-Adresse",
+    "EMAIL_FIELD_VALIDATOR_ENTER_NAME": "Bitte gib deine E-Mail-Adresse ein.",
+    "AGREE_TERMS_AND_POLICY": "Mit deiner Anmeldung stimmst du unseren Nutzungsbedingungen und Datenschutzbestimmungen zu",
+    "CONTINUE_BUTTON": "Anmelden**"
   },
   "CHOOSER_MENU": {
-    "PACKAGE": "Package",
-    "SHOP": "Shop"
+    "PACKAGE": "Kleinlieferung",
+    "SHOP": "Einkaufen"
   },
   "LEGAL": {
-    "TITLE": "Legal",
+    "TITLE": "Rechtliches",
     "LegalTyp": {
-      "PRIVACY_POLICY": "Privacy Policy",
-      "SOFTWARE_LICENCES": "Software Licences",
-      "CONTACT": "Contact"
+      "PRIVACY_POLICY": "Datenschutzerklärung",
+      "SOFTWARE_LICENCES": "Softwarelizenzen",
+      "CONTACT": "Kontakt"
     }
   },
   "SETTINGS_SCREEN": {
     "ACCOUNT": {
-      "TITLE": "Account",
+      "TITLE": "Nutzerkonto",
       "NAME_HINT": "Name",
-      "PHONE_HINT": "Phone Number",
-      "EMAIL_HINT": "Email"
+      "PHONE_HINT": "Telefonnummer",
+      "EMAIL_HINT": "Email Adresse"
     },
     "INVOICE": {
-      "TITLE": "Invoicing/billing address",
-      "ENABLE": "I want my address to be written on the invoice/bill",
-      "NAME_HINT": "Faturada gözükecek isim",
-      "ADDRESS_HINT": "Faturada gözükecek adres",
-      "DESCRIPTION": "If you turn this on your adress of choice will be written on the invoice/bill."
+      "TITLE": "Rechnungsadresse",
+      "ENABLE": "Schreib meine Adresse auf meine Rechnung",
+      "NAME_HINT": "Rechnungsempfänger",
+      "ADDRESS_HINT": "Rechnungsanschrift",
+      "DESCRIPTION": "Wenn du diese Option aktivierst, wird die Adresse deiner Wahl auf der Rechnung vermerkt."
     },
-    "SOFTWARE_LICENCES": "License",
-    "SIGN_OUT": "Logout"
+    "SOFTWARE_LICENCES": "Lizenzen",
+    "SIGN_OUT": "Abmelden"
   },
   "CONTACT_FORM": {
-    "TITLE": "Contact Form",
+    "TITLE": "Kontaktformular",
     "NAME": {
       "LABEL": "Name",
-      "HINT_LABEL": "Enter your name"
+      "HINT_LABEL": "Bitte gib deinen Namen ein."
     },
     "EMAIL": {
-      "LABEL": "Email adress",
-      "HINT_LABEL": "Enter your email adress"
+      "LABEL": "Email",
+      "HINT_LABEL": "Bitte gib deine E-Mail-Adresse ein."
     },
     "PHONE": {
-      "LABEL": "Phone number",
-      "HINT_LABEL": "Enter your phone number"
+      "LABEL": "Telefonnummer",
+      "HINT_LABEL": "Bitte gib deine Telefonnummer ein."
     },
     "SUBJECT": {
-      "LABEL": "Subject",
-      "HINT_LABEL": "Enter the subject"
+      "LABEL": "Betreff",
+      "HINT_LABEL": "Gib einen Betreff ein."
     },
     "CONTENT": {
-      "LABEL": "Content",
-      "HINT_LABEL": "Enter the content"
+      "LABEL": "Inhalt",
+      "HINT_LABEL": "Gib einen Inhalt ein"
     },
-    "SEND": "Send"
+    "SEND": "Senden"
   },
   "DIRECT_JOB_OVERVIEW": {
-    "ANY_PROBLEMS": "Any problems with this order?"
+    "ANY_PROBLEMS": "Probleme mit dieser Bestellung?"
   },
   "SHOPPING_LIST": {
-    "TITLE": "Shopping List"
+    "TITLE": "Einkaufsliste"
   },
   "SHOPPING_LIST_MAKER": {
-    "TEXT_FIELD_HINT": "Enter the name of the product you want.",
-    "TITLE": "Shopping List",
-    "LEGAL": "The first {amount} products have no extra cost, you will be charged {price} € for each prodcut after.",
+    "TEXT_FIELD_HINT": "Gib den Namen der gewünschten Produkte ein.",
+    "TITLE": "Einkaufsliste",
+    "LEGAL": "Ab dem {amount}. Artikel wird pro Artikel {price} € verrechnet.",
     "DIALOGS": {
       "BACK": {
-        "CONTENT": "This list will be sent to your carrier, is that all you want?"
+        "CONTENT": "Warning! The list will not be saved."
       }
+    },
+    "BAR_PAYING_INFO": {
+      "PART1": "Die bestellten Artikel sind dem Zusteller bei Lieferung in",
+      "PART2": "bar",
+      "PART3": "zu bezahlen."
     }
   },
   "MAPS": {
-    "NO_AVAILABLE_DRIVER_MESSAGE": "No available driver in your area.",
-    "CURRENT_LOCATION": "Current Location",
-    "PRICE": "Price: {price} €",
-    "PACKAGE_ADDRESS": "Sender adress",
-    "DESTINATION_ADDRESS": "Recipient adress",
-    "TYPE_ADDRESS": "Enter the adress",
-    "TOPIC_SEARCHING": "{topic} searching",
+    "NO_AVAILABLE_DRIVER_MESSAGE": "Kein verfügbarer Zusteller in Ihrer Nähe.",
+    "CURRENT_LOCATION": "Aktueller Standort",
+    "PRICE": "Preis: {price} €",
+    "PACKAGE_ADDRESS": "Absenderadresse",
+    "DESTINATION_ADDRESS": "Empfängeradresse",
+    "TYPE_ADDRESS": "Adresse eingeben",
+    "TOPIC_SEARCHING": "{topic} suchen",
     "MARKET": {
-      "MARKER": "Approximate transportation costs: {around_amount} €"
+      "MARKER": "Ungefähre Transportkosten: {around_amount} €"
     },
     "SIDE_MENU": {
-      "MY_ORDERS": "My Orders",
-      "VOUCHER": "Coupons",
-      "PRIVACY_POLICY": "Privacy Policy",
-      "SOFTWARE_LICENCES": "Software Licence",
-      "CONTACT": "Contact",
-      "SIGN_OUT": "Logout"
+      "MY_ORDERS": "Meine Bestellungen",
+      "VOUCHER": "Gutscheine",
+      "PRIVACY_POLICY": "Datenschutzerklärung",
+      "SOFTWARE_LICENCES": "Softwarelizenz",
+      "CONTACT": "Kontakt",
+      "SIGN_OUT": "Abmelden"
     },
     "BOTTOM_MENUS": {
-      "YOUR_DRIVER": "Your Carrier: {name}",
+      "YOUR_DRIVER": "Dein Zusteller: {name}",
       "ACCEPTED": {
-        "MESSAGE" : "The carrier will take care of your order in shortly."
+        "MESSAGE" : "Der Zusteller wird sich in Kürze um deine Bestellung kümmern."
       },
       "FROM_OR_TO": {
-        "TITLE": "Order**",
-        "MAIN_BUTTON": "Let's Start**"
+        "TITLE": "Transportkosten berechnen",
+        "MAIN_BUTTON": "Berechnen"
       },
       "ON_JOB": {
-        "STATUS": "The carrier is on the way to pick up the package.",
-        "PACKAGE_ADDRESS": "Sender adress: {address}\nAsagi gelecek\nPacket will gived by Name: {name}",
-        "PACKAGE_ADDRESS_EXTRA_SERVICE": "Sender adress: {address}\nPacket will gived by Name: {name}"
+        "STATUS": "Der Zusteller ist auf dem Weg.",
+        "PACKAGE_ADDRESS": "Absenderadresse: {address}\nÜbergabe vor dem Haus\nLieferung wird übergeben von: {name}",
+        "PACKAGE_ADDRESS_EXTRA_SERVICE": "Absenderadresse: {address}\nLieferung wird übergeben von: {name}"
       },
       "PACKAGE_PICKED": {
-        "STATUS": "Your package is on it's way.",
+        "STATUS": "Ihr Paket ist unterwegs.",
         "CONFIRMATION_PIN": "PIN: {pin}",
-        "PACKAGE_DELIVERED": "Package has been delivered.",
-        "PACKAGE_ADDRESS": "Receiver adress: {address}\nAsagi gelecek\nPacket will picked by Name: {name}",
-        "PACKAGE_ADDRESS_EXTRA_SERVICE": "Receiver adress: {address}\nPacket will picked by Name: {name}"
+        "PACKAGE_DELIVERED": "Paket wurde geliefert.",
+        "PACKAGE_ADDRESS": "Empfängeradresse: {address}\nÜbernahme vor dem Haus\nLieferung wird angenommen von: {name}",
+        "PACKAGE_ADDRESS_EXTRA_SERVICE": "Empfängeradresse: {address}\nLieferung wird angenommen von: {name}"
       },
       "CONFIRM": {
-        "FROM_TO": "Sender Adress: {from}\nReceiver Adress: {to}",
-        "USE_CREDITS": "{money} € use credits.",
-        "ADD_NEW_CARD": "Add new Credit/Deebit Card"
+        "FROM_TO": "Absenderadresse: {from}\nEmpfängeradresse: {to}",
+        "USE_CREDITS": "Guthaben im Wert von {money} € verwenden.",
+        "ADD_NEW_CARD": "Neue Kredit-/Debitkarte hinzufügen"
       },
       "SEARCH_DRIVER": {
-        "STATUS": "Waiting for carrier to take your order.",
-        "ORDER_ACCEPTED": "Order accepted."
+        "STATUS": "Warte kurz bis ein Zusteller den Auftrag annimmt.",
+        "ORDER_ACCEPTED": "Bestellung angenommen."
       },
       "PAYMENT_WAITING": {
-        "PAYMENT_WAITING": "Waiting for payment."
+        "PAYMENT_WAITING": "Bezahlvorgang."
       },
       "PAYMENT_DECLINED": {
-        "PAYMENT_DECLINED": "Payment unsuccessful."
+        "PAYMENT_DECLINED": "Zahlung fehlgeschlagen"
       },
       "CALCULATING_DISTANCE": {
-        "CALCULATING_DISTANCE": "Distance is being calculating."
+        "CALCULATING_DISTANCE": "Die Distanz wird berechnet."
       },
       "PLEASE_WAIT": {
-        "PLEASE_WAIT": "Please Wait."
+        "PLEASE_WAIT": "Bitte warten."
       },
       "TRY_AGAIN": {
-        "MESSAGE": "Please try again."
+        "MESSAGE": "Bitte versuche es erneut."
       },
       "NO_ROUTE": {
-        "MESSAGE": "Route couldn't be calculated."
+        "MESSAGE": "Route konnte nicht berechnet werden."
       }
     }
   },
   "CHAT": {
-    "TYPE_MESSAGE_HERE": "Enter your message..."
+    "TYPE_MESSAGE_HERE": "Gib deine Nachricht ein..."
   },
   "OVERVIEW": {
-    "TITLE": "Past orders",
-    "ORDER_DATE": "Order Date",
-    "ORDER_TIME": "Order Time",
+    "TITLE": "Bestellverlauf",
+    "ORDER_DATE": "Bestelldatum",
+    "ORDER_TIME": "Bestellzeit",
     "MODELS": {
       "JOB": {
-        "WAITING": "In Process",
-        "ON_ROAD": "In Process",
-        "PACKAGE_PICKED": "In Process",
-        "FINISHED": "Completed",
-        "CANCELLED": "Canceled",
-        "DRIVER_CANCELED": "Driver Canceled",
-        "CUSTOMER_CANCELED": "Customer Canceled"
+        "WAITING": "In Bearbeitung",
+        "ON_ROAD": "In Bearbeitung",
+        "PACKAGE_PICKED": "In Bearbeitung",
+        "FINISHED": "Abgeschlossen",
+        "CANCELLED": "Storniert",
+        "DRIVER_CANCELED": "Der Zusteller hat storniert.",
+        "CUSTOMER_CANCELED": "Kunde/Kundin hat storniert."
       }
     }
   },
   "VOUCHER": {
-    "TITLE": "Coupon",
-    "TEXT_FIELD_MESSAGE": "Or enter you code.",
-    "SUCCESS_MESSAGE": "You have now {value} € as credits to use.",
+    "TITLE": "Gutschein",
+    "TEXT_FIELD_MESSAGE": "Oder gib deinen Gutscheincode ein.",
+    "SUCCESS_MESSAGE": "Dein Gutschein in Höhe von {amount} € wurde als Guthaben verbucht.",
     "ERROR": {
-      "NO_ERROR": "No error.",
-      "ALREADY_USED": "This coupon has already been used.",
-      "NOT_EXIST": "This coupon is invalid.",
-      "NOT_KNOWN": "Unknown error."
+      "NO_ERROR": "Kein Fehler.",
+      "ALREADY_USED": "Dieser Gutschein wurde bereits verwendet.",
+      "NOT_EXIST": "Dieser Gutschein ist ungültig.",
+      "NOT_KNOWN": "Unbekannter Fehler"
     }
   },
   "MODELS": {
     "JOB": {
-      "WAITING": "Waiting for carrier.",
-      "ON_ROAD": "The carrier accepted your order.",
-      "PACKAGE_PICKED": "The carrier picked up the package.",
-      "FINISHED": "Your package has been delivered.",
-      "CANCELLED": "Order has been cancelled.",
-      "DRIVER_CANCELED": "Driver Canceled",
-      "CUSTOMER_CANCELED": "Customer Canceled"
+      "WAITING": "Warten auf Zusteller.",
+      "ON_ROAD": "Der Zusteller hat deine Bestellung angenommen.",
+      "PACKAGE_PICKED": "Der Zusteller hat die Lieferung abgeholt.",
+      "FINISHED": "Dein Auftrag wurde ausgeführt.",
+      "CANCELLED": "Die Bestellung wurde storniert.",
+      "DRIVER_CANCELED": "Der Zusteller hat storniert.",
+      "CUSTOMER_CANCELED": "Kunde/Kundin hat storniert."
     }
   },
   "DIALOGS": {
     "PERMISSIONTYPENUM": {
       "CAMERA": {
-        "TITLE": "Allow Post Now to take pictures.",
-        "MESSAGE": "Post Now needs to acces your camera.",
-        "ALLOW": "Allow"
+        "TITLE": "Zulassen, dass Post Now Bilder aufnimmt?",
+        "MESSAGE": "Post Now muss auf Ihre Kamera zugreifen.",
+        "ALLOW": "Zulassen"
       },
       "LOCATION": {
-        "TITLE": "Allow Post Now to access this device's location.",
-        "MESSAGE": "To better function give the app permission to acces the device's location.",
-        "ALLOW": "Allow"
+        "TITLE": "Zulassen, dass Post Now den Gerätestandort abruft?",
+        "MESSAGE": "Um eine bessere Funktion zu gewährleisten, gib der App die Berechtigung, auf den Gerätestandort zuzugreifen",
+        "ALLOW": "Zulassen"
       }
     },
     "I_AM_BACK": {
-      "TITLE": "Please allow locations",
-      "MESSAGE": "Did you do it?",
-      "POSITIVE": "It's done!"
+      "TITLE": "Bist du wieder da?",
+      "MESSAGE": "",
+      "POSITIVE": "Ja"
     },
     "UPDATE_AVAILABLE": {
-      "TITLE": "New update available.",
-      "BODY": "To use the app it must intsall the newest update.",
-      "BUTTON": "Update Now!"
+      "TITLE": "Neues Update verfügbar.",
+      "BODY": "Um die App nutzen zu können, muss das neueste Update installiert sein.",
+      "BUTTON": "Jetzt aktualisieren!"
     },
     "ADDRESS_MANAGER": {
-      "TITLE": "Address details",
-      "I_WILL_COME": "I want the carrier to come to my door. (doesn't have to be 'my door')",
-      "HOUSE_NUMBER": "House number",
-      "DOOR_NUMBER": "Door number",
-      "DOOR_NAME": "Contact person",
+      "TITLE": "Adressdaten",
+      "I_WILL_COME": "Ich möchte, dass der Zusteller zur Tür kommt.",
+      "HOUSE_NUMBER": "Hausnummer",
+      "DOOR_NUMBER": "Türnummer",
+      "DOOR_NAME": "Ansprechperson",
       "ERROR_MESSAGES": {
-        "HOUSE_NUMBER_IS_NEEDED": "The house number must be entered.",
-        "DOOR_NUMBER_IS_NEEDED": "If you want your package to be delivered to your door, please enter your door number.",
-        "DOOR_NAME_IS_NEEDED": "Please enter the name of the person who will receive your package."
+        "HOUSE_NUMBER_IS_NEEDED": "Die Hausnummer muss eingegeben werden.",
+        "DOOR_NUMBER_IS_NEEDED": "Wenn du möchtest, dass deine Lieferung an die Tür gebracht wird, gib die Türnummer ein.",
+        "DOOR_NAME_IS_NEEDED": "Gib den Namen der Person ein, die die Lieferung erhalten wird."
       },
       "ARE_YOU_SURE_CANCEL": {
-        "CONTENT_AFTER_PACKAGE_PICKED": "Soförünüz paketinizi aldigindan iptal isleminde paranizi geri alamazsin",
-        "CONTENT_WITH_AMOUNT": "You will be charged {amount} € for canceling your order.",
-        "CONTENT": "Are you sure you want to cancel?"
+        "CONTENT_AFTER_PACKAGE_PICKED": "Sobald der Zusteller die Bestellung übernommen hat, wird bei einer Stonierung der Betrag nicht rückerstattet",
+		"CONTENT_WITH_AMOUNT": "Für die Stornierung deiner Bestellung werden dir {amount} € berechnet.",
+        "CONTENT": "Bist du sicher, dass du stornieren möchtest?"
       }
     },
     "JOB_SETTINGS": {
-      "CANCEL_JOB" : "Cancel order."
+      "CANCEL_JOB" : "Bestellung stornieren."
     },
     "SETTINGS": {
       "YOU_CANT_CHANGE": {
-        "MESSAGE": "If you have to chnage any of these informations please contact us.",
-        "CONTACT": "Contact us"
+        "MESSAGE": "Wenn du deine Daten ändern willst, kontaktiere uns.",
+        "CONTACT": "Kontaktiere uns"
       }
     },
     "ORDER_DETAILS": {
       "ERROR_MESSAGES": {
-        "MESSAGE_IS_EMPTY": "Enter a message here"
+        "MESSAGE_IS_EMPTY": "Gib eine Nachricht ein"
       },
-      "MESSAGE": "Tell us shortly what you want from us."
-    },
-    "NEED_TYP_ADDRESS": {
-      "TITLE": "Information",
-      "CONTENT": "For orders taht cost more than {amount} € you have to order your adress for billing.",
-      "POSITIVE": "Enter"
-    }
+      "MESSAGE": "Schreib uns kurz dein Anliegen."
   },
-  "PAYMENTMETHODSENUM": {
-    "CREDITS": "Credits",
-    "CASH": "Cash",
+  "NEED_TYP_ADDRESS": {
+    "TITLE": "Information",
+    "CONTENT": "Für Bestellungen ab {amount} €, brauchen wir für eine korrekte Rechnung deinen vollen Namen und die Anschrift.",
+    "POSITIVE": "Ok"
+  }
+},
+"PAYMENTMETHODSENUM": {
+    "CREDITS": "Guthaben",
+    "CASH": "Bar",
     "PAYPAL": "PayPal",
-    "CREDIT_CARD": "Credit/Debit Card",
+    "CREDIT_CARD": "Kredit-/Debitkarte",
     "APPLE_PAY": "Apple Pay",
     "KLARNA": "Sofort Überweisung"
   }
