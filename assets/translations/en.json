@@ -246,7 +246,7 @@
     "PERMISSIONTYPENUM": {
       "CAMERA": {
         "TITLE": "Allow Post Now to take pictures.",
-        "MESSAGE": "Post Now needs to acces your camera.",
+        "MESSAGE": "Post Now needs to access your camera.",
         "ALLOW": "Allow"
       },
       "LOCATION": {
