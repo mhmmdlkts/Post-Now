@@ -61,6 +61,7 @@ class _ShoppingListMakerScreenState extends State<ShoppingListMakerScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              copyList.length == 0? _getInfoTextContent():
               Expanded(
                 child: ListView.separated(
                   shrinkWrap: true,
@@ -101,9 +102,44 @@ class _ShoppingListMakerScreenState extends State<ShoppingListMakerScreen> {
     ) ?? false;
   }
 
+  Widget _getInfoTextContent() {
+    Color darkColor = Colors.black87;
+    double fontSize = 20;
+    return Container(
+      padding: EdgeInsets.all(20),
+      child: Center(
+        child: RichText(
+          textAlign: TextAlign.center,
+          text: TextSpan(
+            text: 'SHOPPING_LIST_MAKER.BAR_PAYING_INFO.PART1'.tr() + ' ',
+            style: TextStyle(
+              color: darkColor,
+              fontSize: fontSize
+            ),
+            children: <TextSpan>[
+              TextSpan(
+                text: 'SHOPPING_LIST_MAKER.BAR_PAYING_INFO.PART2'.tr(),
+                style: TextStyle(
+                  color: primaryBlue,
+                  fontSize: fontSize,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              TextSpan(
+                text: ' ' + 'SHOPPING_LIST_MAKER.BAR_PAYING_INFO.PART3'.tr(),
+                style: TextStyle(color: darkColor, fontSize: fontSize)
+              ),
+            ]
+          ),
+        )
+      )
+    );
+  }
+
+
+
   Widget _getBottomWidget() {
-    return
-      _isAdding?Row(
+    return _isAdding ? Row(
         children: [
           Expanded(
             child: TextField(

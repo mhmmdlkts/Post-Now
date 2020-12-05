@@ -125,6 +125,11 @@
       "BACK": {
         "CONTENT": "This list will be sent to your carrier, is that all you want?"
       }
+    },
+    "BAR_PAYING_INFO": {
+      "PART1": "Die bestellten Artikel sind dem Fahrer bei Lieferung in",
+      "PART2": "bar",
+      "PART3": "zu bezahlen."
     }
   },
   "MAPS": {
@@ -272,7 +277,7 @@
         "DOOR_NAME_IS_NEEDED": "Please enter the name of the person who will receive your package."
       },
       "ARE_YOU_SURE_CANCEL": {
-        "CONTENT_AFTER_SHOP": "Soförünüz alisverisinizi tamamladigindan iptal isleminde paranizi geri alamazsin",
+        "CONTENT_AFTER_PACKAGE_PICKED": "Soförünüz paketinizi aldigindan iptal isleminde paranizi geri alamazsin",
         "CONTENT_WITH_AMOUNT": "You will be charged {amount} € for canceling your order.",
         "CONTENT": "Are you sure you want to cancel?"
       }

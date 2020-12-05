@@ -1774,7 +1774,7 @@ class _MapsScreenState extends State<MapsScreen> {
     });
   }
 
-  Future<bool> _showAreYouSureDialog({bool isShopCompleted = false}) async {
+  Future<bool> _showAreYouSureDialog({bool isPackagePicked = false}) async {
     final String amount = (await _mapsService.getCancelFeeAmount()).toStringAsFixed(2);
 
     final val = await showDialog(
@@ -1782,7 +1782,7 @@ class _MapsScreenState extends State<MapsScreen> {
       builder: (BuildContext context) {
         return CustomAlertDialog(
           title: "WARNING".tr(),
-          message: 'DIALOGS.ADDRESS_MANAGER.ARE_YOU_SURE_CANCEL.${isShopCompleted?'CONTENT_AFTER_SHOP':'CONTENT_WITH_AMOUNT'}'.tr(namedArgs: {'amount': amount}),
+          message: 'DIALOGS.ADDRESS_MANAGER.ARE_YOU_SURE_CANCEL.${isPackagePicked?'CONTENT_AFTER_PACKAGE_PICKED':'CONTENT_WITH_AMOUNT'}'.tr(namedArgs: {'amount': amount}),
           negativeButtonText: "CANCEL".tr(),
           positiveButtonText: "ACCEPT".tr(),
         );
@@ -1869,8 +1869,8 @@ class _MapsScreenState extends State<MapsScreen> {
     SettingsItem(
         textKey: "DIALOGS.JOB_SETTINGS.CANCEL_JOB",
         onPressed: () async {
-          final bool isShopCompleted = _job.hasShoppingList() && _job.status == Status.PACKAGE_PICKED;
-          if (await _showAreYouSureDialog(isShopCompleted: isShopCompleted)) {
+          final bool isPackagePicked = _job.status == Status.PACKAGE_PICKED;
+          if (await _showAreYouSureDialog(isPackagePicked: isPackagePicked)) {
             _changeMenuTyp(MenuTyp.PLEASE_WAIT);
             _mapsService.cancelJob(_job);
           }
