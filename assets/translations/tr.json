@@ -204,6 +204,8 @@
     "ORDER_DATE": "Order Date",
     "ORDER_TIME": "Order Time",
     "MODELS": {
+      "ORDER_DATE": "Order Date",
+      "ORDER_TIME": "Order Time",
       "JOB": {
         "WAITING": "In Process",
         "ON_ROAD": "In Process",

@@ -209,6 +209,8 @@
     "ORDER_DATE": "Bestelldatum",
     "ORDER_TIME": "Bestellzeit",
     "MODELS": {
+      "ORDER_DATE": "Order Date",
+      "ORDER_TIME": "Order Time",
       "JOB": {
         "WAITING": "In Bearbeitung",
         "ON_ROAD": "In Bearbeitung",
