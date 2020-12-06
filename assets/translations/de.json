@@ -42,7 +42,7 @@
     "SMS_CODE_FIELD_VALIDATOR_ENTER_NAME": "Gib deinen SMS-Bestätigungscode ein.",
     "AGREE_TERMS_AND_POLICY": "Mit deiner Anmeldung stimmst du unseren Nutzungsbedingungen und Datenschutzbestimmungen zu",
     "CONTINUE_BUTTON": "Weiter",
-    "COUNTRY_NAME_EXAMPLE": "zB: {countryCode}",
+    "COUNTRY_NAME_EXAMPLE": "z.B.: {countryCode}",
     "LOGIN_PROBLEMS": "Probleme beim Anmelden?",
     "AUTO_FILL_EMAIL_SUBJECT": "Ich habe Probleme, mich bei der Post Now App anzumelden."
   },
@@ -55,8 +55,8 @@
     "EMAIL_FIELD_TITLE": "Email",
     "EMAIL_FIELD_HINT": "Deine E-Mail-Adresse",
     "EMAIL_FIELD_VALIDATOR_ENTER_NAME": "Bitte gib deine E-Mail-Adresse ein.",
-    "AGREE_TERMS_AND_POLICY": "Mit deiner Anmeldung stimmst du unseren Nutzungsbedingungen und Datenschutzbestimmungen zu",
-    "CONTINUE_BUTTON": "Anmelden**"
+    "AGREE_TERMS_AND_POLICY": "Mit deiner Registrierung stimmst du unseren Nutzungsbedingungen und Datenschutzbestimmungen zu",
+    "CONTINUE_BUTTON": "Registrieren"
   },
   "CHOOSER_MENU": {
     "PACKAGE": "Kleinlieferung",
@@ -216,7 +216,7 @@
         "FINISHED": "Abgeschlossen",
         "CANCELLED": "Storniert",
         "DRIVER_CANCELED": "Der Zusteller hat storniert.",
-        "CUSTOMER_CANCELED": "Kunde/Kundin hat storniert."
+        "CUSTOMER_CANCELED": "Du hast storniert."
       }
     }
   },
