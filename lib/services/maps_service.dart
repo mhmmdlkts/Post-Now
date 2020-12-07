@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'dart:math' show cos, sqrt, asin;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +19,7 @@ import 'package:postnow/models/draft_order.dart';
 import 'package:postnow/models/job.dart';
 import 'package:postnow/environment/api_keys.dart';
 import 'package:postnow/models/shopping_item.dart';
+import 'package:postnow/services/remote_config_service.dart';
 
 class MapsService with WidgetsBindingObserver {
   final DatabaseReference jobsChatRef = FirebaseDatabase.instance.reference().child('jobs_chat');
@@ -28,31 +28,24 @@ class MapsService with WidgetsBindingObserver {
   final DatabaseReference draftRef = FirebaseDatabase.instance.reference().child('draft_order');
   DatabaseReference userRef;
   final String uid;
-  RemoteConfig _remoteConfig;
 
   MapsService(this.uid) {
     userRef = FirebaseDatabase.instance.reference().child('users').child(uid);
-    RemoteConfig.instance.then((value) => {
-      _remoteConfig = value,
-      _remoteConfig.fetch().then((value) => {
-        _remoteConfig.activateFetched()
-      })
-    });
   }
 
   double calculatePrice (Position position, LatLng latLng) {
     double totalDistance = coordinateDistance(LatLng(position.latitude, position.longitude), latLng);
-    double calcPrice = _remoteConfig.getDouble(FIREBASE_REMOTE_CONFIG_EURO_START_KEY);
-    calcPrice += totalDistance * _remoteConfig.getDouble(FIREBASE_REMOTE_CONFIG_EURO_PER_KM_KEY);
+    double calcPrice = RemoteConfigService.getDouble(FIREBASE_REMOTE_CONFIG_EURO_START_KEY);
+    calcPrice += totalDistance * RemoteConfigService.getDouble(FIREBASE_REMOTE_CONFIG_EURO_PER_KM_KEY);
     return num.parse(calcPrice.toStringAsFixed(2));
   }
 
-  int getFreeItemCount() => _remoteConfig.getInt(FIREBASE_REMOTE_FREE_SHOPPING_ITEMS_COUNT);
-  double getShoppingItemCost() => _remoteConfig.getDouble(FIREBASE_REMOTE_SHOPPING_ITEMS_COST);
-  double getShoppingSameItemCost() => _remoteConfig.getDouble(FIREBASE_REMOTE_SHOPPING_SAME_ITEMS_COST);
+  int getFreeItemCount() => RemoteConfigService.getInt(FIREBASE_REMOTE_FREE_SHOPPING_ITEMS_COUNT);
+  double getShoppingItemCost() => RemoteConfigService.getDouble(FIREBASE_REMOTE_SHOPPING_ITEMS_COST);
+  double getShoppingSameItemCost() => RemoteConfigService.getDouble(FIREBASE_REMOTE_SHOPPING_SAME_ITEMS_COST);
 
-   getTopics() {
-    return List<String>.from(json.decode(_remoteConfig.getValue(FIREBASE_REMOTE_CONFIG_MARKET_TOPICS).asString()));
+  List<String> getTopics() {
+    return RemoteConfigService.getStringList(FIREBASE_REMOTE_CONFIG_MARKET_TOPICS);
   }
 
   double coordinateDistance(LatLng latLng1, LatLng latLng2) {
@@ -110,15 +103,12 @@ class MapsService with WidgetsBindingObserver {
     return credit;
   }
 
-  Future<double> getCancelFeeAmount() async {
-    final RemoteConfig remoteConfig = await RemoteConfig.instance;
-    await remoteConfig.fetch();
-    await remoteConfig.activateFetched();
-    return remoteConfig.getDouble(FIREBASE_REMOTE_CANCEL_FEE_KEY);
+  double getCancelFeeAmount() {
+     return RemoteConfigService.getDouble(FIREBASE_REMOTE_CANCEL_FEE_KEY);
   }
 
   void cancelJob(Job j) async {
-    String url = "https://europe-west1-post-now-f3c53.cloudfunctions.net/cancelJob?jobId=" + j.key + "&requesterId=" + uid;
+    String url = '${FIREBASE_URL}cancelJob?jobId=${j.key}&requesterId=${uid}';
 
     try {
       print(http.get(url));
@@ -133,7 +123,7 @@ class MapsService with WidgetsBindingObserver {
 
   Future<DraftOrder> createDraft(Address origin, Address destination, List<ShoppingItem> shopItems, RouteMode mode) async {
     DraftOrder rtnVal;
-    String url = 'https://europe-west1-post-now-f3c53.cloudfunctions.net/draftOrder?origin=${json.encode(origin.toMap())}&destination=${json.encode(destination.toMap())}&mode=${mode.toString().split(".").last}&uid=${uid}&items=${ShoppingItem.listToString(shopItems)}';
+    String url = '${FIREBASE_URL}draftOrder?origin=${json.encode(origin.toMap())}&destination=${json.encode(destination.toMap())}&mode=${mode.toString().split(".").last}&uid=${uid}&items=${ShoppingItem.listToString(shopItems)}';
     url = Uri.encodeFull(url);
     try {
       http.Response response = await http.get(url);
@@ -155,7 +145,7 @@ class MapsService with WidgetsBindingObserver {
   }
 
   Future<bool> isOnlineDriverAvailable(LatLng origin, LatLng destination) async {
-    String url = 'https://europe-west1-post-now-f3c53.cloudfunctions.net/checkAvailableDriver?origin=${origin.latitude},${origin.longitude}&destination=${destination.latitude},${destination.longitude}';
+    String url = '${FIREBASE_URL}checkAvailableDriver?origin=${origin.latitude},${origin.longitude}&destination=${destination.latitude},${destination.longitude}';
     http.Response response = await http.get(url);
     if (response.statusCode != 200)
       throw('Status code: ' + response.statusCode.toString());

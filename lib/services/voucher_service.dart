@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:http/http.dart' as http;
+import 'package:postnow/environment/global_variables.dart';
 
 class VoucherService {
   String _lastTriedCode;
@@ -10,7 +11,7 @@ class VoucherService {
     if (code == _lastTriedCode)
       return null;
     _lastTriedCode = code;
-    String url = "https://europe-west1-post-now-f3c53.cloudfunctions.net/enCashVoucher?code=" + code + "&userId=" + uid;
+    String url = '${FIREBASE_URL}enCashVoucher?code=$code&userId=$uid';
 
     try {
       http.Response response = await http.get(url);

@@ -1,10 +1,10 @@
-import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:postnow/services/first_screen_service.dart';
 import 'package:postnow/environment/global_variables.dart';
 import 'package:postnow/screens/sign_up_screen.dart';
 import 'package:postnow/screens/splash_screen.dart';
 import 'package:package_info/package_info.dart';
 import 'package:flutter/material.dart';
+import 'package:postnow/services/remote_config_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'auth_screen.dart';
 import 'intro_screen.dart';
@@ -52,10 +52,8 @@ class _FirstScreen extends State<FirstScreen> {
   }
 
   checkUpdates() async {
-    final RemoteConfig remoteConfig = await RemoteConfig.instance;
-    await remoteConfig.fetch().then((value) {}).catchError((onError)=>print(onError));
-    await remoteConfig.activateFetched();
-    _onlineVersion = remoteConfig.getInt(FIREBASE_REMOTE_CONFIG_VERSION_KEY);
+    await RemoteConfigService.fetch();
+    _onlineVersion = await RemoteConfigService.getBuildVersion();
 
     final int localVersion = int.parse((await PackageInfo.fromPlatform()).buildNumber);
 

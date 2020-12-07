@@ -95,7 +95,7 @@ class PaymentService {
   }
 
   Future<bool> _callPayApiMollie(Set<String> params, BuildContext context) async{
-    String url = "https://europe-west1-post-now-f3c53.cloudfunctions.net/mollie?";
+    String url = "${FIREBASE_URL}mollie?";
     params.forEach((element) { url += "&" + element; });
     try {
       http.Response response = await http.get(url);
@@ -118,7 +118,7 @@ class PaymentService {
   }
 
   Future<bool> _callPayApi(Set<String> params) async{
-    String url = "https://europe-west1-post-now-f3c53.cloudfunctions.net/pay?";
+    String url = "${FIREBASE_URL}pay?";
     params.forEach((element) {
       url += "&" + element;
     });
@@ -142,7 +142,7 @@ class PaymentService {
 
   Future<String> _getBrainTreeToken() async {
     String customerId = await _getCustomerId();
-    var url = "https://europe-west1-post-now-f3c53.cloudfunctions.net/braintree_getToken" + (customerId == null ? "" : "?customerId=" + customerId);
+    var url = '${FIREBASE_URL}braintree_getToken' + (customerId == null ? "" : "?customerId=" + customerId);
     String token;
     try {
       http.Response response = await http.get(url);
@@ -164,7 +164,7 @@ class PaymentService {
     if (prefs == null)
       prefs = await SharedPreferences.getInstance();
     User user = FirebaseAuth.instance.currentUser;
-    var url = "https://europe-west1-post-now-f3c53.cloudfunctions.net/braintree_createCustomerId?uid=" + user.uid;
+    var url = '${FIREBASE_URL}braintree_createCustomerId?uid=${user.uid}';
     try {
       http.Response response = await http.get(url);
       String customerId = response.body;

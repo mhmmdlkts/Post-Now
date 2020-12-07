@@ -60,6 +60,7 @@ class ChooserWidget extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(icon, color: Colors.white,),
+                Container(height: 10,),
                 Text(text, style: TextStyle(color: Colors.white),)
               ],
             ),

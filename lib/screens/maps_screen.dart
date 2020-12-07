@@ -1775,7 +1775,7 @@ class _MapsScreenState extends State<MapsScreen> {
   }
 
   Future<bool> _showAreYouSureDialog({bool isPackagePicked = false}) async {
-    final String amount = (await _mapsService.getCancelFeeAmount()).toStringAsFixed(2);
+    final String amount = _mapsService.getCancelFeeAmount().toStringAsFixed(2);
 
     final val = await showDialog(
       context: context,
