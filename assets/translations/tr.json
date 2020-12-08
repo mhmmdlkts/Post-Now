@@ -28,7 +28,7 @@
     },
     "PAGE3": {
       "TITLE": "Sipariş takibi",
-      "DESCRIPTION": "Ödemenizden sonra, Teslimatçılarımızdan biri siparişinizi teslim alır. Ardından, siparişinizin nerede olduğunu eş zamanlı olarak takip edebilirsiniz."
+      "DESCRIPTION": "Ödemenizden sonra, Dağıtıcılarımızdan biri siparişinizi teslim alır. Ardından, siparişinizin nerede olduğunu eş zamanlı olarak takip edebilirsiniz."
     }
   },
   "LOGIN": {
@@ -127,13 +127,13 @@
       }
     },
     "BAR_PAYING_INFO": {
-      "PART1": "Sipariş edilen ürünler teslimat sırasında teslimatçıya",
+      "PART1": "Sipariş edilen ürünler teslimat sırasında Dağıtıcıya",
       "PART2": "nakit",
       "PART3": "olarak ödenecektir."
     }
   },
   "MAPS": {
-    "NO_AVAILABLE_DRIVER_MESSAGE": "Bölgenizde mevcut Teslimatçı yok.",
+    "NO_AVAILABLE_DRIVER_MESSAGE": "Bölgenizde mevcut Dağıtıcı yok.",
     "CURRENT_LOCATION": "Anlık Konum",
     "PRICE": "Fiyat: {price} €",
     "PACKAGE_ADDRESS": "GÖnderenin Adresi:",
@@ -152,16 +152,16 @@
       "SIGN_OUT": "Çıkış yap"
     },
     "BOTTOM_MENUS": {
-      "YOUR_DRIVER": "Teslimatçınız: {name}",
+      "YOUR_DRIVER": "Dağıtıcınız: {name}",
       "ACCEPTED": {
-        "MESSAGE" : "Teslimatçınız kısa süre içinde siparişinizle ilgilenecektir."
+        "MESSAGE" : "Dağıtıcınız kısa süre içinde siparişinizle ilgilenecektir."
       },
       "FROM_OR_TO": {
         "TITLE": "Teslimat ücretini hesaplayın.",
         "MAIN_BUTTON": "Hesapla"
       },
       "ON_JOB": {
-        "STATUS": "Teslimatçı yolda.",
+        "STATUS": "Dağıtıcı yolda.",
         "PACKAGE_ADDRESS": "Gönderenin adresi: {address}\nEvin önünde teslim edilecek\nTeslim edecek kişi: {name}",
         "PACKAGE_ADDRESS_EXTRA_SERVICE": "Gönderenin adresi: {address}\nTeslim edecek kişi: {name}"
       },
@@ -178,7 +178,7 @@
         "ADD_NEW_CARD": "Yeni Kredi/Banka Kartı Ekleyin."
       },
       "SEARCH_DRIVER": {
-        "STATUS": "Teslimatçının siparişinizi onaylayana kadar bekleyin.",
+        "STATUS": "Dağıtıcının siparişinizi onaylayana kadar bekleyin.",
         "ORDER_ACCEPTED": "Sipariş onaylandı."
       },
       "PAYMENT_WAITING": {
@@ -217,7 +217,7 @@
         "PACKAGE_PICKED": "Devam ediyo",
         "FINISHED": "Tamamlandı",
         "CANCELLED": "İptal edildi.",
-        "DRIVER_CANCELED": "Teslimatçı tarafından iptal edildi.",
+        "DRIVER_CANCELED": "Dağıtıcı tarafından iptal edildi.",
         "CUSTOMER_CANCELED": "Müşteri tarafından iptal edildi."
       }
     }
@@ -235,12 +235,12 @@
   },
   "MODELS": {
     "JOB": {
-      "WAITING": "Teslimatçı bekleniyor.",
-      "ON_ROAD": "Teslimatçı, siparişinizi kabul etti.",
-      "PACKAGE_PICKED": "Teslimatçı, siparişinizi teslim aldı.",
+      "WAITING": "Dağıtıcı bekleniyor.",
+      "ON_ROAD": "Dağıtıcı, siparişinizi kabul etti.",
+      "PACKAGE_PICKED": "Dağıtıcı, siparişinizi teslim aldı.",
       "FINISHED": "Siparişiniz teslim edildi.",
       "CANCELLED": "Sipariş iptal edildi.",
-      "DRIVER_CANCELED": "Teslimatçı tarafından iptal edildi.",
+      "DRIVER_CANCELED": "Dağıtıcı tarafından iptal edildi.",
       "CUSTOMER_CANCELED": "Müşteri tarafından iptal edildi."
     }
   },
@@ -279,7 +279,7 @@
         "DOOR_NAME_IS_NEEDED": "Teslim alacak kişinin adını girin."
       },
       "ARE_YOU_SURE_CANCEL": {
-        "CONTENT_AFTER_PACKAGE_PICKED": "Teslimatçı siparişi teslim aldıktan sonra sipariş iptal edilirse tutar iade edilmeyecektir.",
+        "CONTENT_AFTER_PACKAGE_PICKED": "Dağıtıcı siparişi teslim aldıktan sonra sipariş iptal edilirse tutar iade edilmeyecektir.",
         "CONTENT_WITH_AMOUNT": "Siparişinizin iptali için sizden {amount} € alınacaktır.",
         "CONTENT": "İptal etmek istediğinizden emin misiniz?"
       }
