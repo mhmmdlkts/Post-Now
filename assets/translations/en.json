@@ -171,6 +171,7 @@
         "PACKAGE_DELIVERED": "Package has been delivered.",
         "PACKAGE_ADDRESS": "Recipient adress: {address}\nPickup will be front of the house\nDelivery will be accepted by: {name}",
         "PACKAGE_ADDRESS_EXTRA_SERVICE": "Recipient adress: {address}\nDelivery will be accepted by: {name}"
+
       },
       "CONFIRM": {
         "FROM_TO": "Sender Adress: {from}\nRecipient Adress: {to}",

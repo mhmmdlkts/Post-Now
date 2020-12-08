@@ -170,7 +170,7 @@
         "CONFIRMATION_PIN": "PIN: {pin}",
         "PACKAGE_DELIVERED": "Siparişiniz teslim edildi.",
         "PACKAGE_ADDRESS": "Alıcının adresi: {address}\nEvin önünde teslim alacak\nTeslim alacak kişi: {name}",
-        "PACKAGE_ADDRESS_EXTRA_SERVICE": "Alıcının adresi: {address}\nTeslim alacak kişi: {name}",
+        "PACKAGE_ADDRESS_EXTRA_SERVICE": "Alıcının adresi: {address}\nTeslim alacak kişi: {name}"
       },
       "CONFIRM": {
         "FROM_TO": "Gönderenin adresi: {from}\nAlıcının adresi: {to}",
