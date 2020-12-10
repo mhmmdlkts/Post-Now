@@ -12,12 +12,14 @@ class Driver implements Comparable{
   double lat;
   double long;
   bool isOnline;
+  bool active;
   String email;
   String phone;
   String image;
+  String fleetId;
   GlobalSettings settings;
 
-  Driver({this.name, this.surname, this.email, this.phone, this.isOnline, this.lat, this.long, this.token}) {
+  Driver({this.name, this.surname, this.email, this.phone, this.isOnline, this.lat, this.long, this.image, this.fleetId, this.token}) {
     settings = GlobalSettings();
   }
 
@@ -26,12 +28,14 @@ class Driver implements Comparable{
     name = snapshot.value["name"];
     token = snapshot.value["token"];
     isOnline = snapshot.value["isOnline"];
+    active = snapshot.value["active"];
     lat = snapshot.value["lat"] + 0.0;
     long = snapshot.value["long"] + 0.0;
     surname = snapshot.value["surname"];
     email = snapshot.value["email"];
     phone = snapshot.value["phone"];
     image = snapshot.value["image"];
+    fleetId = snapshot.value["fleetId"];
     if (snapshot.value["settings"] != null)
       settings = GlobalSettings.fromJson(snapshot.value["settings"]);
   }
@@ -40,11 +44,14 @@ class Driver implements Comparable{
     'name': this.name,
     'token': this.token,
     'isOnline': this.isOnline,
+    'active': this.active,
     'lat': this.lat,
     'long': this.long,
     'surname': this.surname,
     'email': this.email,
     'phone': this.phone,
+    'fleetId': this.fleetId,
+    'image': this.image,
     'settings': this.settings.toJson()
   };
 
