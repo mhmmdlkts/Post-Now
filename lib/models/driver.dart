@@ -29,8 +29,8 @@ class Driver implements Comparable{
     token = snapshot.value["token"];
     isOnline = snapshot.value["isOnline"];
     active = snapshot.value["active"];
-    lat = snapshot.value["lat"] + 0.0;
-    long = snapshot.value["long"] + 0.0;
+    lat = snapshot.value["lat"]??0 + 0.0;
+    long = snapshot.value["long"]??0 + 0.0;
     surname = snapshot.value["surname"];
     email = snapshot.value["email"];
     phone = snapshot.value["phone"];
