@@ -1,4 +1,4 @@
-# postnow
+# Post Now
 
 A new Flutter application.
 
