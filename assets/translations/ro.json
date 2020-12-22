@@ -1,0 +1,317 @@
+{
+  "APP_NAME": "Post Now",
+  "OK": "Ok",
+  "CANCEL": "Anulare",
+  "ACCEPT": "Acceptare",
+  "WARNING": "Atenție",
+  "THANKS": "Mulțumesc",
+  "CLOSE": "Închide",
+  "SETTINGS": "Setări",
+  "SEND_MESSAGE": "Trimite un mesaj",
+  "SEND": "Trimite",
+  "TOTAL": "Total",
+  "SAVE": "Salvează",
+  "APPLY": "Aplică",
+  "FREE": "Gratuit",
+  "SEARCH": "Caută",
+  "GO_BACK": "Mergi înapoi",
+  "CHECKOUT": "Finalizare comandă",
+  "TRY_AGAIN": "Încearcă din nou",
+  "INTRO": {
+    "PAGE1": {
+      "TITLE": "Să începem",
+      "DESCRIPTION": "Introdu adresa de livrare."
+    },
+    "PAGE2": {
+      "TITLE": "Încă un pas",
+      "DESCRIPTION": "Introdu adresa de destinație."
+    },
+    "PAGE3": {
+      "TITLE": "Urmărire",
+      "DESCRIPTION": "După plată, unul dintre furnizorii noștri îți va prelua comanda. Apoi poți vedea unde este comanda ta în timp real."
+    }
+  },
+  "LOGIN": {
+    "TITLE": "Bine ai revenit",
+    "SUBTITLE": "Bună...",
+    "PHONE_FIELD_TITLE": "Număr de telefon",
+    "PHONE_FIELD_HINT": "Numărul tău de telefon",
+    "PHONE_FIELD_VALIDATOR_ENTER_NAME": "Te rugăm introdu numărul tău de telefon.",
+    "SMS_CODE_FIELD_TITLE": "Cod de verificare",
+    "SMS_CODE_FIELD_HINT": "SMS cu cod de verificare",
+    "SMS_CODE_FIELD_VALIDATOR_ENTER_NAME": "Introdu codul din SMS-ul de verificare.",
+    "AGREE_TERMS_AND_POLICY": "Prin conectare, ești de acord cu Politica noastră de confidențialitate și, Termenii și condițiile",
+    "CONTINUE_BUTTON": "Următorul",
+    "COUNTRY_NAME_EXAMPLE": "Exemplu {countryCode}",
+    "LOGIN_PROBLEMS": "Ai probleme în conectare?",
+    "AUTO_FILL_EMAIL_SUBJECT": "Am probleme la conectare la aplicația Post Now"
+  },
+  "SIGN_UP": {
+    "TITLE": "Bine ai revenit",
+    "SUBTITLE": "Bună, conectează-te pentru a continua!",
+    "NAME_FIELD_TITLE": "Nume",
+    "NAME_FIELD_HINT": "Numele tău",
+    "NAME_FIELD_VALIDATOR_ENTER_NAME": "Te rugăm introdu numele tău.",
+    "EMAIL_FIELD_TITLE": "E-mail",
+    "EMAIL_FIELD_HINT": "Adresa ta de e-mail",
+    "EMAIL_FIELD_VALIDATOR_ENTER_NAME": "Te rugăm introdu adresa ta de e-mail.",
+    "AGREE_TERMS_AND_POLICY": "Odată cu înregistrarea ta, ești de acord cu Politica noastră de confidențialitate și Termenii și condițiile",
+    "CONTINUE_BUTTON": "Înregistrează-te"
+  },
+  "CHOOSER_MENU": {
+    "PACKAGE": "O mică livrare",
+    "SHOP": "Cumpărături"
+  },
+  "LEGAL": {
+    "TITLE": "Juridic",
+    "LegalTyp": {
+      "PRIVACY_POLICY": "Politica de confidențialitate",
+      "SOFTWARE_LICENCES": "Licențe software",
+      "CONTACT": "Contact"
+    }
+  },
+  "SETTINGS_SCREEN": {
+    "ACCOUNT": {
+      "TITLE": "Cont de utilizator",
+      "NAME_HINT": "Nume",
+      "PHONE_HINT": "Număr de telefon",
+      "EMAIL_HINT": "E-mail"
+    },
+    "INVOICE": {
+      "TITLE": "Adresa de facturare",
+      "ENABLE": "Scrie adresa mea pe factură",
+      "NAME_HINT": "Beneficiar facturii",
+      "ADDRESS_HINT": "Adresă de facturare",
+      "DESCRIPTION": "Dacă activezi această opțiune, adresa pe care ai ales-o va fi scrisă pe factură."
+    },
+    "SOFTWARE_LICENCES": "Licențe",
+    "SIGN_OUT": "Deconectare"
+  },
+  "CONTACT_FORM": {
+    "TITLE": "Formular de contact",
+    "NAME": {
+      "LABEL": "Nume",
+      "HINT_LABEL": "Te rugăm introdu numele tău"
+    },
+    "EMAIL": {
+      "LABEL": "Adresa de E-mail",
+      "HINT_LABEL": "Te rugăm introdu adresa ta de e-mail"
+    },
+    "PHONE": {
+      "LABEL": "Număr de telefon",
+      "HINT_LABEL": "Te rugăm introdu numărul tău de telefon"
+    },
+    "SUBJECT": {
+      "LABEL": "Subiect",
+      "HINT_LABEL": "Te rugăm introdu un subiect."
+    },
+    "CONTENT": {
+      "LABEL": "Conținut",
+      "HINT_LABEL": "Introdu conținut"
+    },
+    "SEND": "Trimite"
+  },
+  "DIRECT_JOB_OVERVIEW": {
+    "ANY_PROBLEMS": "Ai probleme cu această comandă?"
+  },
+  "SHOPPING_LIST": {
+    "TITLE": "Listă de cumpărături"
+  },
+  "SHOPPING_LIST_MAKER": {
+    "TEXT_FIELD_HINT": "Introdu numele produselor pe care le dorești.",
+    "TITLE": "Listă de cumpărături",
+    "LEGAL": "De la al {amount}. produs, {price} € va fi taxat per articol.",
+    "DIALOGS": {
+      "BACK": {
+        "CONTENT": "Atenție! Lista nu va fi salvată."
+      }
+    },
+    "BAR_PAYING_INFO": {
+      "PART1": "Articolele comandate vor fi plătite curierului",
+      "PART2": "în numerar",
+      "PART3": "la livrare."
+    }
+  },
+  "MAPS": {
+    "NO_AVAILABLE_DRIVER_MESSAGE": "Nu există curier disponibil în zona ta.",
+    "CURRENT_LOCATION": "Locația curentă",
+    "PRICE": "Preț: {price} €",
+    "PACKAGE_ADDRESS": "Adresa expeditorului",
+    "DESTINATION_ADDRESS": "Adresa destinatarului",
+    "TYPE_ADDRESS": "Introdu adresa",
+    "TOPIC_SEARCHING": "Caută {topic}",
+    "MARKET": {
+      "MARKER": "Costurile aproximative ale transportului: {around_amount} €"
+    },
+    "SIDE_MENU": {
+      "MY_ORDERS": "Comenzile mele",
+      "VOUCHER": "Cupoane",
+      "PRIVACY_POLICY": "Politica de confidențialitate",
+      "SOFTWARE_LICENCES": "Licențe software",
+      "CONTACT": "Contact",
+      "SIGN_OUT": "Deconectare"
+    },
+    "BOTTOM_MENUS": {
+      "YOUR_DRIVER": "Curierul tău: {name}",
+      "ACCEPTED": {
+        "MESSAGE" : "Curierul se va ocupa de comanda ta în scurt timp."
+      },
+      "FROM_OR_TO": {
+        "TITLE": "Calculează costurile de transport",
+        "MAIN_BUTTON": "Calculează"
+      },
+      "ON_JOB": {
+        "STATUS": "Curierul este pe drum.",
+        "PACKAGE_ADDRESS": "Adresa expeditorului: {address}\nVa fi livrat în fața casei\nLivrarea va fi efectuată de: {name}",
+        "PACKAGE_ADDRESS_EXTRA_SERVICE": "Adresa expeditorului: {address}\nLivrarea va fi efectuată de: {name}"
+      },
+      "PACKAGE_PICKED": {
+        "STATUS": "Pachetul tău este pe drum.",
+        "CONFIRMATION_PIN": "PIN: {pin}",
+        "PACKAGE_DELIVERED": "Pachetul a fost livrat.",
+        "PACKAGE_ADDRESS": "Adresa destinatarului: {address}\nVa fi livrat în fața casei\nLivrarea va fi acceptată de: {name}",
+        "PACKAGE_ADDRESS_EXTRA_SERVICE": "Adresa destinatarului: {address}\nLivrarea va fi acceptată de: {name}"
+
+      },
+      "CONFIRM": {
+        "FROM_TO": "Adresa expeditorului: {from}\nAdresa destinatarului: {to}",
+        "USE_CREDITS": "Folosește credite în valoare de {money} €..",
+        "ADD_NEW_CARD": "Adăugă un nou card de  Credit/Debit"
+      },
+      "SEARCH_DRIVER": {
+        "STATUS": "Așteptă un moment până când un curier acceptă comanda.",
+        "ORDER_ACCEPTED": "Comandă acceptată."
+      },
+      "PAYMENT_WAITING": {
+        "PAYMENT_WAITING": "Se procesează plata.."
+      },
+      "PAYMENT_DECLINED": {
+        "PAYMENT_DECLINED": "Plata nu s-a efectuat."
+      },
+      "CALCULATING_DISTANCE": {
+        "CALCULATING_DISTANCE": "Se calculează distanța."
+      },
+      "PLEASE_WAIT": {
+        "PLEASE_WAIT": "Te rog așteaptă."
+      },
+      "TRY_AGAIN": {
+        "MESSAGE": "Te rog încearcă din nou."
+      },
+      "NO_ROUTE": {
+        "MESSAGE": "Traseul nu a putu fi calculat."
+      }
+    }
+  },
+  "CHAT": {
+    "TYPE_MESSAGE_HERE": "Introdu mesajul tău..."
+  },
+  "OVERVIEW": {
+    "TITLE": "Istoric comandă",
+    "ORDER_DATE": "Data comenzii",
+    "ORDER_TIME": "Ora comenzii",
+    "MODELS": {
+      "ORDER_DATE": "Data comenzii",
+      "ORDER_TIME": "Ora comenzii",
+      "JOB": {
+        "WAITING": "În așteptare",
+        "ON_ROAD": "Pe drum",
+        "PACKAGE_PICKED": "În curs de ridicare",
+        "FINISHED": "Finalizat",
+        "CANCELLED": "Anulat",
+        "DRIVER_CANCELED": "Curierul a anulat.",
+        "CUSTOMER_CANCELED": "Clientul a anulat."
+      }
+    }
+  },
+  "VOUCHER": {
+    "TITLE": "Cupon",
+    "TEXT_FIELD_MESSAGE": "Sau introdu codul cuponului tău.",
+    "SUCCESS_MESSAGE": "Cuponul tău de {amount} € a fost transformat în credite.",
+    "ERROR": {
+      "NO_ERROR": "Fără eroare.",
+      "ALREADY_USED": "Acest cupon a fost utilizat deja.",
+      "NOT_EXIST": "Acest cupon nu este valabil.",
+      "NOT_KNOWN": "Eroare necunoscută."
+    }
+  },
+  "MODELS": {
+    "JOB": {
+      "WAITING": "Se așteaptă curierul.",
+      "ON_ROAD": "Curierul a acceptat comanda ta.",
+      "PACKAGE_PICKED": "Curierul a preluat comanda.",
+      "FINISHED": "Comanda ta a fost livrată.",
+      "CANCELLED": "Comanda a fost anulată.",
+      "DRIVER_CANCELED": "Curierul a anulat",
+      "CUSTOMER_CANCELED": "Clientul a anulat"
+    }
+  },
+  "DIALOGS": {
+    "PERMISSIONTYPENUM": {
+      "CAMERA": {
+        "TITLE": "Permite Post Now să facă poze.",
+        "MESSAGE": "Post Now are nevoie să acceseze camera ta.",
+        "ALLOW": "Permite"
+      },
+      "LOCATION": {
+        "TITLE": "Permite ca curierul Post Now să acceseze locația acestui dispozitiv.",
+        "MESSAGE": "Pentru a garanta o funcționare mai bună, acordă aplicației autorizația de a accesa locația dispozitivului.",
+        "ALLOW": "Permite"
+      }
+    },
+    "I_AM_BACK": {
+      "TITLE": "Te-ai întors?",
+      "MESSAGE": "",
+      "POSITIVE": "Da"
+    },
+    "UPDATE_AVAILABLE": {
+      "TITLE": "Actualizare disponibilă.",
+      "BODY": "Cea mai recentă actualizare trebuie instalată pentru a utiliza aplicația.",
+      "BUTTON": "Actualizează acum!"
+    },
+    "ADDRESS_MANAGER": {
+      "TITLE": "Date adresă",
+      "I_WILL_COME": "Vreau ca curierul să vină la ușă.",
+      "HOUSE_NUMBER": "Număr casă",
+      "DOOR_NUMBER": "Număr apartament",
+      "DOOR_NAME": "Persoană de contact",
+      "ERROR_MESSAGES": {
+        "HOUSE_NUMBER_IS_NEEDED": "Trebuie introdus numărul casei.",
+        "DOOR_NUMBER_IS_NEEDED": "Dacă dorești ca livrarea să fie livrată la ușă, te rugăm să introduci numărul apartamentului.",
+        "DOOR_NAME_IS_NEEDED": "Introdu numele persoanei care va primi livrarea."
+      },
+      "ARE_YOU_SURE_CANCEL": {
+        "CONTENT_AFTER_PACKAGE_PICKED": "De îndată ce curierul a acceptat comanda, suma nu va fi rambursată dacă comanda este anulată.",
+        "CONTENT_WITH_AMOUNT": "Pentru anularea comenzii tale vei fi taxat cu {amount} €.",
+        "CONTENT": "Ești sigur ca vrei să anulezi?"
+      }
+    },
+    "JOB_SETTINGS": {
+      "CANCEL_JOB" : "Anulează comanda."
+    },
+    "SETTINGS": {
+      "YOU_CANT_CHANGE": {
+        "MESSAGE": "Dacă dorești să-ți schimbi datele de contact, contactează-ne.",
+        "CONTACT": "Contactează-ne"
+      }
+    },
+    "ORDER_DETAILS": {
+      "ERROR_MESSAGES": {
+        "MESSAGE_IS_EMPTY": "Te rugăm introdu un mesaj"
+      },
+      "MESSAGE": "Scrie-ne pe scurt cererea ta."
+    },
+    "NEED_TYP_ADDRESS": {
+      "TITLE": "Informații",
+      "CONTENT": "Pentru comenzi mai mari de {amount} €, avem nevoie de numele tău complet și adresa pentru a întocmi o factură corectă.",
+      "POSITIVE": "Ok"
+    }
+  },
+  "PAYMENTMETHODSENUM": {
+    "CREDITS": "Credite",
+    "CASH": "Numerar",
+    "PAYPAL": "PayPal",
+    "CREDIT_CARD": "Card de Credit/Debit",
+    "APPLE_PAY": "Apple Pay",
+    "KLARNA": "Sofort Überweisung"
+  }
+}
