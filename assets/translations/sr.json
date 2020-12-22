@@ -1,0 +1,317 @@
+{
+  "APP_NAME": "Post Now",
+  "OK": "Uredu",
+  "CANCEL": "Otkazati",
+  "ACCEPT": "Prihvatiti",
+  "WARNING": "Upozorenje",
+  "THANKS": "Hvala",
+  "CLOSE": "Zatvoriti",
+  "SETTINGS": "Podešavanja",
+  "SEND_MESSAGE": "Poslati poruku",
+  "SEND": "Poslati",
+  "TOTAL": "Ukupno",
+  "SAVE": "Sačuvati",
+  "APPLY": "Primeniti",
+  "FREE": "Besplatno",
+  "SEARCH": "Pretraga",
+  "GO_BACK": "Idite nazad",
+  "CHECKOUT": "Kasa",
+  "TRY_AGAIN": "Pokušajte opet",
+  "INTRO": {
+    "PAGE1": {
+      "TITLE": "Započnimo",
+      "DESCRIPTION": "Unesite adresu pouzeća."
+    },
+    "PAGE2": {
+      "TITLE": "Još jedan korak",
+      "DESCRIPTION": "Unesite adresu destinacije."
+    },
+    "PAGE3": {
+      "TITLE": "Praćenje",
+      "DESCRIPTION": "Nakon vaše uplate, jedan od naših Dostavljača preuzima narudžbu. Zatim možete videti gde je vaša narudžba u stvarnom vremenu."
+    }
+  },
+  "LOGIN": {
+    "TITLE": "Dobrodošli nazad",
+    "SUBTITLE": "Zdravo...",
+    "PHONE_FIELD_TITLE": "Broj telefona",
+    "PHONE_FIELD_HINT": "Vaš broj telefona",
+    "PHONE_FIELD_VALIDATOR_ENTER_NAME": "Molimo unesite vaš broj telefona.",
+    "SMS_CODE_FIELD_TITLE": "Kod verifikacije",
+    "SMS_CODE_FIELD_HINT": "SMS kod verifikacije",
+    "SMS_CODE_FIELD_VALIDATOR_ENTER_NAME": "Unesite vaš SMS kod verifikacije.",
+    "AGREE_TERMS_AND_POLICY": "Prijavom, prihvatate našu Politiku privatnosti i Uslove i odrebe o korišćenju",
+    "CONTINUE_BUTTON": "Sledeće",
+    "COUNTRY_NAME_EXAMPLE": "Na primer {countryCode}",
+    "LOGIN_PROBLEMS": "Imate poteškoća prilikom prijave?",
+    "AUTO_FILL_EMAIL_SUBJECT": "Imam poteškoće prilikom prijave na Post Now aplikaciju"
+  },
+  "SIGN_UP": {
+    "TITLE": "Dobrodošli nazad",
+    "SUBTITLE": "Zdravo, prijavite se da nastavite!",
+    "NAME_FIELD_TITLE": "Ime",
+    "NAME_FIELD_HINT": "Vaše ime",
+    "NAME_FIELD_VALIDATOR_ENTER_NAME": "Molimo unesite vaše ime.",
+    "EMAIL_FIELD_TITLE": "E-mail",
+    "EMAIL_FIELD_HINT": "Vaša e-mail adresa",
+    "EMAIL_FIELD_VALIDATOR_ENTER_NAME": "Molimo unesite vašu e-mail adresu.",
+    "AGREE_TERMS_AND_POLICY": "Kroz vašu registraciju, prihvatate našu Politiku privatnosti i Uslove i odredbe korišćenja",
+    "CONTINUE_BUTTON": "Registrujte se"
+  },
+  "CHOOSER_MENU": {
+    "PACKAGE": "Mala pošiljka",
+    "SHOP": "Kupovina"
+  },
+  "LEGAL": {
+    "TITLE": "Pravno",
+    "LegalTyp": {
+      "PRIVACY_POLICY": "Politika o privatnosti",
+      "SOFTWARE_LICENCES": "Licence softvera",
+      "CONTACT": "Kontakt"
+    }
+  },
+  "SETTINGS_SCREEN": {
+    "ACCOUNT": {
+      "TITLE": "Korisnički nalog",
+      "NAME_HINT": "Ime",
+      "PHONE_HINT": "Broj telefona",
+      "EMAIL_HINT": "E-mail"
+    },
+    "INVOICE": {
+      "TITLE": "Adresa za predračun/račun za naplatu",
+      "ENABLE": "Napišite moju adresu na predračunu/računu",
+      "NAME_HINT": "Primatelj predračuna",
+      "ADDRESS_HINT": "Adresa za naplatu",
+      "DESCRIPTION": "Ako aktivirate ovu opciju, adresa koju izaberete će biti prikazana na predračunu/računu."
+    },
+    "SOFTWARE_LICENCES": "Licence",
+    "SIGN_OUT": "Odjava"
+  },
+  "CONTACT_FORM": {
+    "TITLE": "Kontaktna forma",
+    "NAME": {
+      "LABEL": "Ime",
+      "HINT_LABEL": "Molimo unesite vaše ime"
+    },
+    "EMAIL": {
+      "LABEL": "Email adress",
+      "HINT_LABEL": "Molimo unesite vašu e-mail adresu"
+    },
+    "PHONE": {
+      "LABEL": "Broj telefona",
+      "HINT_LABEL": "Molimo unesite vaš broj telefona"
+    },
+    "SUBJECT": {
+      "LABEL": "Predmet",
+      "HINT_LABEL": "Molimo unesite predmet."
+    },
+    "CONTENT": {
+      "LABEL": "Sadržaj",
+      "HINT_LABEL": "Unesite sadržaj"
+    },
+    "SEND": "Poslati"
+  },
+  "DIRECT_JOB_OVERVIEW": {
+    "ANY_PROBLEMS": "Da li imate problema s ovom narudžbom?"
+  },
+  "SHOPPING_LIST": {
+    "TITLE": "Lista za kupovinu"
+  },
+  "SHOPPING_LIST_MAKER": {
+    "TEXT_FIELD_HINT": "Unesite naziv proizvoda koje želite.",
+    "TITLE": "Lista za kupovinu",
+    "LEGAL": "Od {amount}. proizvod, {price} € će biti naplaćeno po artiklu.",
+    "DIALOGS": {
+      "BACK": {
+        "CONTENT": "Pažnja! Lista neće biti sačuvana."
+      }
+    },
+    "BAR_PAYING_INFO": {
+      "PART1": "Naručeni artikli će biti plaćeni Dostavljaču",
+      "PART2": "kešom",
+      "PART3": "prilikom dostave."
+    }
+  },
+  "MAPS": {
+    "NO_AVAILABLE_DRIVER_MESSAGE": "Nema dostupnog Dostavljača u vašem području.",
+    "CURRENT_LOCATION": "Trenutna lokacija",
+    "PRICE": "Cena: {price} €",
+    "PACKAGE_ADDRESS": "Adresa pošiljatelja",
+    "DESTINATION_ADDRESS": "Adresa primatelja",
+    "TYPE_ADDRESS": "Unesite adresu",
+    "TOPIC_SEARCHING": "Tražite {topic}",
+    "MARKET": {
+      "MARKER": "Procenjeni troškovi prevozi: {around_amount} €"
+    },
+    "SIDE_MENU": {
+      "MY_ORDERS": "Moje narudžbe",
+      "VOUCHER": "Kuponi",
+      "PRIVACY_POLICY": "Politika privatnosti",
+      "SOFTWARE_LICENCES": "Licence softvera",
+      "CONTACT": "Kontakt",
+      "SIGN_OUT": "Odjava"
+    },
+    "BOTTOM_MENUS": {
+      "YOUR_DRIVER": "Vaš Dostavljač: {name}",
+      "ACCEPTED": {
+        "MESSAGE" : "Vaš dostavljać će uskoro preuzeti vašu narudžbu."
+      },
+      "FROM_OR_TO": {
+        "TITLE": "Izračunajte troškove prevoza",
+        "MAIN_BUTTON": "Izračunati"
+      },
+      "ON_JOB": {
+        "STATUS": "Dostavljač je na putu.",
+        "PACKAGE_ADDRESS": "Adresa dostavljača: {address}\nBiće vam predato pred vašim domom\nDOstavu će predati: {name}",
+        "PACKAGE_ADDRESS_EXTRA_SERVICE": "Adresa pošiljatelja: {address}\nDostavu će predati: {name}"
+      },
+      "PACKAGE_PICKED": {
+        "STATUS": "Vaš paket je na putu.",
+        "CONFIRMATION_PIN": "PIN: {pin}",
+        "PACKAGE_DELIVERED": "Paket je dostavljen.",
+        "PACKAGE_ADDRESS": "Adresa primatelja: {address}\nDostava pred kućom\nDostavu će prihvatiti: {name}",
+        "PACKAGE_ADDRESS_EXTRA_SERVICE": "Adresa primatelja: {address}\nDostavu će prihvatiti: {name}"
+
+      },
+      "CONFIRM": {
+        "FROM_TO": "Adresa pošiljatelja: {from}\nAdresa primatelja: {to}",
+        "USE_CREDITS": "Koristite kredit u vrednosti od {money} €..",
+        "ADD_NEW_CARD": "Dodajte novu kreditnu/debitnu karticu"
+      },
+      "SEARCH_DRIVER": {
+        "STATUS": "Pričekajte momenat dok Dostavljač prihvati vašu narudžbu.",
+        "ORDER_ACCEPTED": "Narudžba prihvaćena."
+      },
+      "PAYMENT_WAITING": {
+        "PAYMENT_WAITING": "Plaćanje u toku.."
+      },
+      "PAYMENT_DECLINED": {
+        "PAYMENT_DECLINED": "Plaćanje nije uspelo."
+      },
+      "CALCULATING_DISTANCE": {
+        "CALCULATING_DISTANCE": "Udaljenost se izračunava."
+      },
+      "PLEASE_WAIT": {
+        "PLEASE_WAIT": "Molimo pričekajte."
+      },
+      "TRY_AGAIN": {
+        "MESSAGE": "Molimo pokušajte ponovo."
+      },
+      "NO_ROUTE": {
+        "MESSAGE": "Ruta nije izračunata."
+      }
+    }
+  },
+  "CHAT": {
+    "TYPE_MESSAGE_HERE": "Unesite vašu poruku..."
+  },
+  "OVERVIEW": {
+    "TITLE": "Istorija narudžbe",
+    "ORDER_DATE": "Datum narudžbe",
+    "ORDER_TIME": "Vreme narudžbe",
+    "MODELS": {
+      "ORDER_DATE": "Datum narudžbe",
+      "ORDER_TIME": "Vreme narudžbe",
+      "JOB": {
+        "WAITING": "U toku",
+        "ON_ROAD": "U toku",
+        "PACKAGE_PICKED": "U toku",
+        "FINISHED": "Završeno",
+        "CANCELLED": "Otkazano",
+        "DRIVER_CANCELED": "Dostavljač je otkazao.",
+        "CUSTOMER_CANCELED": "Kupac je otkazao."
+      }
+    }
+  },
+  "VOUCHER": {
+    "TITLE": "Kupon",
+    "TEXT_FIELD_MESSAGE": "Ili unesite vaš kupon kod.",
+    "SUCCESS_MESSAGE": "Vaš kupon u iznosu od {amount} € je upisan kao kredit.",
+    "ERROR": {
+      "NO_ERROR": "Bez pogreške.",
+      "ALREADY_USED": "Ovaj kupon je već iskorišćen.",
+      "NOT_EXIST": "Ovaj kupon nije važeći.",
+      "NOT_KNOWN": "Nepoznata greška."
+    }
+  },
+  "MODELS": {
+    "JOB": {
+      "WAITING": "Čekanje na Dostavljača.",
+      "ON_ROAD": "Dostavljač je prihvatio vašu narudžbu.",
+      "PACKAGE_PICKED": "Dostavljač je preuzeo narudžbu.",
+      "FINISHED": "Vaša narudžba je dostavljena.",
+      "CANCELLED": "Narudžba je otkazana.",
+      "DRIVER_CANCELED": "Dostavljač je otkazao",
+      "CUSTOMER_CANCELED": "Kupac je otkazao"
+    }
+  },
+  "DIALOGS": {
+    "PERMISSIONTYPENUM": {
+      "CAMERA": {
+        "TITLE": "Omogućite Post Now pristup vašoj kameru.",
+        "MESSAGE": "Post Now terba pristup vašoj kameri.",
+        "ALLOW": "Omogućiti"
+      },
+      "LOCATION": {
+        "TITLE": "Omogućite Post Now pristup lokaciji ovog uređaja.",
+        "MESSAGE": "Kako bismo pružili bolju uslugu, dajte aplikaciji autorizaciju pristupa lokacije uređaja.",
+        "ALLOW": "Omogućiti"
+      }
+    },
+    "I_AM_BACK": {
+      "TITLE": "Da li ste se vratili?",
+      "MESSAGE": "",
+      "POSITIVE": "Da"
+    },
+    "UPDATE_AVAILABLE": {
+      "TITLE": "Dostupno je novo ažuriranje.",
+      "BODY": "Poslednje ažuriranje mora biti instalirano kako biste koristili aplikaciju.",
+      "BUTTON": "Ažurirajte sada!"
+    },
+    "ADDRESS_MANAGER": {
+      "TITLE": "Podaci o adresi",
+      "I_WILL_COME": "Želim da Dostavljač dođe do vrata.",
+      "HOUSE_NUMBER": "Broj kuće/stana",
+      "DOOR_NUMBER": "Broj vrata",
+      "DOOR_NAME": "Kontaktna osoba",
+      "ERROR_MESSAGES": {
+        "HOUSE_NUMBER_IS_NEEDED": "Morate unijeti broj kuće/stana.",
+        "DOOR_NUMBER_IS_NEEDED": "Ako želite da vaša pošiljka bude dostavljena do vaših vrata, molimo unesite broj vrata.",
+        "DOOR_NAME_IS_NEEDED": "Unesite ime osobe koja će preuzeti pošiljku."
+      },
+      "ARE_YOU_SURE_CANCEL": {
+        "CONTENT_AFTER_PACKAGE_PICKED": "Čim dostavljač prihvati narudžbu, iznos novca neće biti vraćen ako narudžba bude otkazana.",
+        "CONTENT_WITH_AMOUNT": "Za otkazivanje vaše narudbže, biće vam naplaćeno {amount} €.",
+        "CONTENT": "Da li ste sigurni da želite otkazati?"
+      }
+    },
+    "JOB_SETTINGS": {
+      "CANCEL_JOB" : "Otkažite narudžbu."
+    },
+    "SETTINGS": {
+      "YOU_CANT_CHANGE": {
+        "MESSAGE": "Ako želite promeniti vaše podatke, kontaktirajte nas.",
+        "CONTACT": "Kontaktirajte nas"
+      }
+    },
+    "ORDER_DETAILS": {
+      "ERROR_MESSAGES": {
+        "MESSAGE_IS_EMPTY": "Molimo unesite poruku"
+      },
+      "MESSAGE": "Kratko nam napišite svoj zahtev."
+    },
+    "NEED_TYP_ADDRESS": {
+      "TITLE": "Informacije",
+      "CONTENT": "Za narudžbe veće od {amount} €, treba nam vaše puno ime i adresa za predračun/račun.",
+      "POSITIVE": "Uredu"
+    }
+  },
+  "PAYMENTMETHODSENUM": {
+    "CREDITS": "Krediti",
+    "CASH": "Keš",
+    "PAYPAL": "PayPal",
+    "CREDIT_CARD": "Kreditna/debitna kartica",
+    "APPLE_PAY": "Apple Pay",
+    "KLARNA": "Sofort Überweisung"
+  }
+}
