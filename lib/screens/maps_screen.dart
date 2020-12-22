@@ -1143,8 +1143,10 @@ class _MapsScreenState extends State<MapsScreen> {
 
   _refreshMarkers() {
     _addAddressMarker(null, null);
-    _addAddressMarker(_originAddress.coordinates, false);
-    _addAddressMarker(_destinationAddress.coordinates, true);
+    if (_originAddress != null)
+      _addAddressMarker(_originAddress.coordinates, false);
+    if (_destinationAddress != null)
+      _addAddressMarker(_destinationAddress.coordinates, true);
   }
 
   _onTapButton(bool isDestination) async {

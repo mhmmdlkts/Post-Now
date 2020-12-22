@@ -198,6 +198,7 @@ class _ShoppingListMakerScreenState extends State<ShoppingListMakerScreen> {
                 onPressed: copyList.isNotEmpty?_apply:null,
               ),
             ),
+            Container(height: 15,),
           ],
         ),
       );

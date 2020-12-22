@@ -35,7 +35,9 @@ class MapsService with WidgetsBindingObserver {
 
   double calculatePrice (Position position, LatLng latLng) {
     double totalDistance = coordinateDistance(LatLng(position.latitude, position.longitude), latLng);
+    print('total: ' + totalDistance.toString());
     double calcPrice = RemoteConfigService.getDouble(FIREBASE_REMOTE_CONFIG_EURO_START_KEY);
+    print('calcPrice: ' + calcPrice.toString());
     calcPrice += totalDistance * RemoteConfigService.getDouble(FIREBASE_REMOTE_CONFIG_EURO_PER_KM_KEY);
     return num.parse(calcPrice.toStringAsFixed(2));
   }

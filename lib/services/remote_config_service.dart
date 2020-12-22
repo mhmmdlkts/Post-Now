@@ -19,38 +19,44 @@ class RemoteConfigService {
 
   static Future<int> getBuildVersion() async {
     if (_values == null)
-      return -1;
+      return 0;
     final String key = FIREBASE_REMOTE_CONFIG_VERSION_KEY(Platform.isIOS, await GlobalService.isDriverApp());
     return getInt(key);
   }
 
   static double getDouble(String key) {
-    if (_values == null)
-      return -1;
+    if (_values == null || _values[key] == null)
+      return 0;
     try {
       return double.parse(_values[key]);
     } catch (e) {
       print(e);
-      return 0.0;
+      return _values[key] + 0.0;
     }
   }
 
   static int getInt(String key) {
+    if (_values == null || _values[key] == null)
+      return 0;
     try {
       return int.parse(_values[key]);
     } catch (e) {
       print(e);
-      return 0;
+      return _values[key];
     }
   }
 
   static String getString(String key) {
+    if (_values == null || _values[key] == null)
+      return "";
     return _values[key].toString();
   }
 
   static List<String> getStringList(String key) {
+    if (_values == null || _values[key] == null)
+      return List();
     try {
-      return List<String>.from(json.decode(_values[key]));
+      return List<String>.from(_values[key]);
     } catch (e) {
       print(e);
       return List();
