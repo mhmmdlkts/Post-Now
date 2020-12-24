@@ -136,7 +136,7 @@
     "NO_AVAILABLE_DRIVER_MESSAGE": "Bölgenizde mevcut Dağıtıcı yok.",
     "CURRENT_LOCATION": "Anlık Konum",
     "PRICE": "Fiyat: {price} €",
-    "PACKAGE_ADDRESS": "GÖnderenin Adresi:",
+    "PACKAGE_ADDRESS": "Gönderenin Adresi:",
     "DESTINATION_ADDRESS": "Alıcının Adresi:",
     "TYPE_ADDRESS": "Adres girin",
     "TOPIC_SEARCHING": "{topic} ara",
