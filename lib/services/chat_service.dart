@@ -63,7 +63,7 @@ class ChatService {
 
   _newMessage(event) {
     chat.setChat(event.snapshot);
-    _onNewMessage.call();
+    _onNewMessage?.call();
   }
 
   int messageCount() {

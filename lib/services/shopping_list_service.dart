@@ -29,9 +29,9 @@ class ShoppingListService {
 
   subscribe(VoidCallback listener) => onListChanged.add(listener);
 
-  _sortList() => shoppingList.sort((item, _) => item.isChecked?1:0 );
+  _sortList() => shoppingList?.sort((item, _) => item.isChecked?1:0 );
 
-  _notify() => onListChanged.forEach((element) async => element.call());
+  _notify() => onListChanged?.forEach((element) async => element.call());
 
   _countRemains () => remain = shoppingList?.where((element) => !element.isChecked)?.length??0;
 }

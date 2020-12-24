@@ -48,4 +48,15 @@ class AuthService {
       FirebaseDatabase.instance.reference().child('users').child(u.uid).update(user.toJson());
     }
 
+    Future<String> getToken() async {
+      return await _firebaseMessaging.getToken();
+    }
+
+    void setMyToken(String uid) {
+    print(uid);
+      getToken().then((value) => {
+        FirebaseDatabase.instance.reference().child('users').child(uid).child("token").set(value)
+      });
+    }
+
 }

@@ -80,6 +80,7 @@ class _MapsScreenState extends State<MapsScreen> {
   final GlobalKey _drawerKey = GlobalKey();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
   final Set<Marker> _marketMarkers = Set();
+  final AuthService _firebaseService = AuthService();
   final User _user;
   OverviewService _overviewService;
   PlacesService _placesService;
@@ -174,6 +175,7 @@ class _MapsScreenState extends State<MapsScreen> {
   void initState() {
     _initCount++;
     super.initState();
+    _firebaseService.setMyToken(_user.uid);
     Screen.keepOn(true);
 
     Future.delayed(const Duration(milliseconds: 2500)).then((value) {
@@ -237,12 +239,9 @@ class _MapsScreenState extends State<MapsScreen> {
 
 
     _firebaseMessaging.configure(onMessage: (Map<String, dynamic> message) {
-      final data = message["data"];
-      if (data == null)
-        return;
-      switch (data["typ"]) {
+      switch (message["typ"]) {
         case "message":
-          _showMessageToast(data["key"], data["name"], data["message"]);
+          _showMessageToast(message["key"], message["name"], message["message"]);
           break;
       }
       return;
@@ -516,7 +515,7 @@ class _MapsScreenState extends State<MapsScreen> {
             ),
           ],
         ),
-        _orderTyp==null ? ChooserWidget((OrderTypEnum orderTyp) => setState((){
+        _orderTyp == null && _menuTyp == null ? ChooserWidget((OrderTypEnum orderTyp) => setState((){
           _orderTyp = orderTyp;
           if (orderTyp == OrderTypEnum.SHOPPING)
             _onTapShopping();
@@ -525,7 +524,6 @@ class _MapsScreenState extends State<MapsScreen> {
       ],
     );
   }
-  bool _test = true;
 
   Widget _myDrawer() => Drawer(
     key: _drawerKey,
