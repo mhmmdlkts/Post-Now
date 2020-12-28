@@ -12,6 +12,7 @@
 	<string>6.0</string>
 	<key>CFBundleLocalizations</key>
 	<array>
+		<string>sk</string>
 		<string>sr</string>
 		<string>ro</string>
 		<string>tr</string>
