@@ -5,7 +5,6 @@ import 'package:postnow/models/user.dart' as myUser;
 import 'package:postnow/screens/first_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'dart:ui' as ui;
 
 class AuthService {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();

@@ -166,7 +166,7 @@ class _IntroScreenState extends State<IntroScreen> {
 
     // Done button
     renderDoneBtn: this.renderDoneBtn(),
-    onDonePress: this.onDonePress,
+    onDonePress: () => Navigator.of(context).pop(),
     colorDoneBtn: Colors.white,
     highlightColorDoneBtn: Colors.white70,
 

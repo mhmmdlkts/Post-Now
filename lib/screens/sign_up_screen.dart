@@ -5,6 +5,7 @@ import 'package:postnow/decoration/my_colors.dart';
 import 'package:postnow/services/legal_service.dart';
 import 'package:postnow/services/sign_up_service.dart';
 
+import 'intro_screen.dart';
 import 'maps_screen.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -25,6 +26,7 @@ class _SignUpScreen extends State<SignUpScreen> {
       borderRadius: BorderRadius.circular(30)
   );
   bool _isInputValid = false;
+  bool _isRegistered = false;
   User _user;
   String _name, _email;
 
@@ -142,7 +144,7 @@ class _SignUpScreen extends State<SignUpScreen> {
                                     color: primaryBlue,
                                     shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30.0)),
                                     child: Text("SIGN_UP.CONTINUE_BUTTON".tr(), style: TextStyle(color: Colors.white),),
-                                    onPressed: !_isInputValid? null:_onNextPressed,
+                                    onPressed: _isInputValid && !_isRegistered? _onNextPressed:null,
                                   ),
                                 ),
                               ],
@@ -186,9 +188,12 @@ class _SignUpScreen extends State<SignUpScreen> {
     if (!_isInputValid) {
       return;
     }
-    await _user.updateProfile(displayName: _name);
-    _user.reload();
-    setState(() {
+    await Future.wait([
+      _user.updateProfile(displayName: _name),
+      Navigator.push(context, MaterialPageRoute(builder: (context) => IntroScreen((){})))
+    ]);
+    setState((){
+      _user.reload();
       _user = FirebaseAuth.instance.currentUser;
       _signUpService.sendUserInfo(_user, _email);
     });

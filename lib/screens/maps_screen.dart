@@ -812,6 +812,7 @@ class _MapsScreenState extends State<MapsScreen> {
     child: ClipRRect(
       borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
       child: GoogleMap(
+        mapToolbarEnabled: false,
         compassEnabled: false,
         mapType: MapType.normal,
         initialCameraPosition: CameraPosition(
