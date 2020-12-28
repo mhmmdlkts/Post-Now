@@ -50,6 +50,7 @@ android {
         targetSdkVersion 29
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+        manifestPlaceholders = [GOOGLE_API_KEY: localProperties['GOOGLE_API_KEY']]
     }
 
     signingConfigs {

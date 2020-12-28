@@ -13,7 +13,7 @@
         android:label="Post Now"
         android:icon="@mipmap/ic_launcher">
         <meta-data android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCoCixC_boDROtQ5dEWZICy8aNlmnZwesk"/>
+            android:value="${GOOGLE_API_KEY}"/>
 
         <meta-data android:name="com.google.android.gms.wallet.api.enabled" android:value="true"/>
 

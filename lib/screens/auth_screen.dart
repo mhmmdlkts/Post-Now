@@ -43,18 +43,14 @@ class _AuthScreenState extends State<AuthScreen> {
 
   Future<void> _sendSms(phoneNo) async {
     final PhoneVerificationCompleted verified = (AuthCredential authResult) async {
-      print('aa1');
       AuthService().signIn(authResult);
     };
 
     final PhoneVerificationFailed verificationFailed = (FirebaseAuthException authException) {
-      print('aa2');
       print('${authException.message}');
     };
 
     final PhoneCodeSent smsSent = (String verId, [int forceResend]) {
-      print('aa3');
-      print(verId);
       this._verificationId = verId;
       setState(() {
         this._codeSent = true;
@@ -63,11 +59,9 @@ class _AuthScreenState extends State<AuthScreen> {
     };
 
     final PhoneCodeAutoRetrievalTimeout autoTimeout = (String verId) {
-      print('aa4');
       this._verificationId = verId;
     };
 
-    print(phoneNo);
     try {
       await FirebaseAuth.instance.verifyPhoneNumber(
         phoneNumber: phoneNo,
