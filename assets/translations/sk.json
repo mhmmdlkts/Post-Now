@@ -1,0 +1,317 @@
+{
+  "APP_NAME": "Post Now",
+  "OK": "Dobre",
+  "CANCEL": "Zrušiť",
+  "ACCEPT": "Súhlasiť",
+  "WARNING": "Upozornenie",
+  "THANKS": "Vďaka",
+  "CLOSE": "Zavrieť",
+  "SETTINGS": "Nastavenia",
+  "SEND_MESSAGE": "Poslať správu",
+  "SEND": "Poslať",
+  "TOTAL": "Celkom",
+  "SAVE": "Uložiť",
+  "APPLY": "Použiť",
+  "FREE": "Zadarmo",
+  "SEARCH": "Hľadať",
+  "GO_BACK": "Ísť naspäť",
+  "CHECKOUT": "Pokladňa",
+  "TRY_AGAIN": "Skúsiť znovu",
+  "INTRO": {
+    "PAGE1": {
+      "TITLE": "Poďme začať",
+      "DESCRIPTION": "Zadajte adresu vyzdvihnutia."
+    },
+    "PAGE2": {
+      "TITLE": "Ešte jeden krok",
+      "DESCRIPTION": "Zadajte dodaciu adresu."
+    },
+    "PAGE3": {
+      "TITLE": "Sledovanie",
+      "DESCRIPTION": "Po vašej platbe, jeden z našich Doručovateľov vezme vašu objednávku. Môžete si pozrieť kde je vaša zásielka v skutočnom čase."
+    }
+  },
+  "LOGIN": {
+    "TITLE": "Vitajte Naspäť",
+    "SUBTITLE": "Ahojte tam...",
+    "PHONE_FIELD_TITLE": "Telefónne Číslo",
+    "PHONE_FIELD_HINT": "Vaše telefónne číslo",
+    "PHONE_FIELD_VALIDATOR_ENTER_NAME": "Prosím zadajte vaše telefónne číslo.",
+    "SMS_CODE_FIELD_TITLE": "Overovací Kód",
+    "SMS_CODE_FIELD_HINT": "SMS overovací kód",
+    "SMS_CODE_FIELD_VALIDATOR_ENTER_NAME": "Zadajte váš SMS overovací kód.",
+    "AGREE_TERMS_AND_POLICY": "Prihlásením sa, súhlasíte s našimi Zásadami Ochrany Osobných Údajov a Zmluvnými Podmienkami.",
+    "CONTINUE_BUTTON": "Ďalej",
+    "COUNTRY_NAME_EXAMPLE": "Príklad {countryCode}",
+    "LOGIN_PROBLEMS": "Problém s prihlásením sa?",
+    "AUTO_FILL_EMAIL_SUBJECT": "Mám problém prihlásiť sa do Post Now Aplikácie"
+  },
+  "SIGN_UP": {
+    "TITLE": "Vitajte Naspäť",
+    "SUBTITLE": "Ahojte, pre pokračovanie sa zaregistrujte!",
+    "NAME_FIELD_TITLE": "Meno",
+    "NAME_FIELD_HINT": "Vaše meno",
+    "NAME_FIELD_VALIDATOR_ENTER_NAME": "Prosím zadajte vaše meno.",
+    "EMAIL_FIELD_TITLE": "E-mail",
+    "EMAIL_FIELD_HINT": "Vaša e-mailová adresa",
+    "EMAIL_FIELD_VALIDATOR_ENTER_NAME": "Prosím zadajte vašu e-mailovú adresu.",
+    "AGREE_TERMS_AND_POLICY": "S vašou registráciou súhlasíte s našimi Zásadami Ochrany Osobných Údajov a Zmluvnými Podmienkami.",
+    "CONTINUE_BUTTON": "Registrovať"
+  },
+  "CHOOSER_MENU": {
+    "PACKAGE": "Malá dodávka",
+    "SHOP": "Nakupovanie"
+  },
+  "LEGAL": {
+    "TITLE": "Legálne",
+    "LegalTyp": {
+      "PRIVACY_POLICY": "Zásady Ochrany Osobných Údajov",
+      "SOFTWARE_LICENCES": "Softvérové licencie",
+      "CONTACT": "Kontakt"
+    }
+  },
+  "SETTINGS_SCREEN": {
+    "ACCOUNT": {
+      "TITLE": "Užívateľský účet",
+      "NAME_HINT": "Meno",
+      "PHONE_HINT": "Telefónne číslo",
+      "EMAIL_HINT": "E-mail"
+    },
+    "INVOICE": {
+      "TITLE": "Fakturačná adresa",
+      "ENABLE": "Napísať moju adresu na moju faktúru.",
+      "NAME_HINT": "Príjemca faktúry",
+      "ADDRESS_HINT": "Fakturačná adresa",
+      "DESCRIPTION": "Ak aktivujte túto možnosť, vami vybraná adresa bude uvedená na faktúre."
+    },
+    "SOFTWARE_LICENCES": "Licencie",
+    "SIGN_OUT": "Odhlásiť sa"
+  },
+  "CONTACT_FORM": {
+    "TITLE": "Kontaktný formulár",
+    "NAME": {
+      "LABEL": "Meno",
+      "HINT_LABEL": "Prosím zadajte vaše meno"
+    },
+    "EMAIL": {
+      "LABEL": "E-mailová adresa",
+      "HINT_LABEL": "Prosím zadajte vašu e-mailovú adresu"
+    },
+    "PHONE": {
+      "LABEL": "Telefónne číslo",
+      "HINT_LABEL": "Prosím zadajte vaše telefónne číslo"
+    },
+    "SUBJECT": {
+      "LABEL": "Predmet",
+      "HINT_LABEL": "Prosím zadajte predmet."
+    },
+    "CONTENT": {
+      "LABEL": "Obsah",
+      "HINT_LABEL": "Zadajte obsah"
+    },
+    "SEND": "Poslať"
+  },
+  "DIRECT_JOB_OVERVIEW": {
+    "ANY_PROBLEMS": "Nejaké problémy s touto objednávkou?"
+  },
+  "SHOPPING_LIST": {
+    "TITLE": "Nákupný zoznam"
+  },
+  "SHOPPING_LIST_MAKER": {
+    "TEXT_FIELD_HINT": "Zadajte mená výrobkov ktoré chcete.",
+    "TITLE": "Nákupný Zoznam",
+    "LEGAL": "Z {amount}. výrobku, {price} € bude účtovaná za kus.",
+    "DIALOGS": {
+      "BACK": {
+        "CONTENT": "Upozornenie! Tento zoznam nebude uložený."
+      }
+    },
+    "BAR_PAYING_INFO": {
+      "PART1": "Za objednané veci sa zaplatí",
+      "PART2": "v hotovosti",
+      "PART3": "Doručovateľovi pri dodaní."
+    }
+  },
+  "MAPS": {
+    "NO_AVAILABLE_DRIVER_MESSAGE": "Vo vašej oblasti nie je k dispozícii žiadny Doručovateľ.",
+    "CURRENT_LOCATION": "Súčasná poloha",
+    "PRICE": "Cena: {price} €",
+    "PACKAGE_ADDRESS": "Adresa odosielateľa",
+    "DESTINATION_ADDRESS": "Adresa príjemcu",
+    "TYPE_ADDRESS": "Zadať adresu",
+    "TOPIC_SEARCHING": "Hľadať {topic}",
+    "MARKET": {
+      "MARKER": "Približné náklady na prepravu: {around_amount} €"
+    },
+    "SIDE_MENU": {
+      "MY_ORDERS": "Moje objednávky",
+      "VOUCHER": "Kupóny",
+      "PRIVACY_POLICY": "Zásady Ochrany Osobných Údajov",
+      "SOFTWARE_LICENCES": "Softvérové Licencie",
+      "CONTACT": "Kontakt",
+      "SIGN_OUT": "Odhlásiť sa"
+    },
+    "BOTTOM_MENUS": {
+      "YOUR_DRIVER": "Váš Doručovateľ: {name}",
+      "ACCEPTED": {
+        "MESSAGE" : "Doručovateľ sa o chvíľu postará o vašu objednávku."
+      },
+      "FROM_OR_TO": {
+        "TITLE": "Vypočítať náklady na prepravu",
+        "MAIN_BUTTON": "Vypočítať"
+      },
+      "ON_JOB": {
+        "STATUS": "Dodávka je na ceste.",
+        "PACKAGE_ADDRESS": "Adresa odosielateľa: {address}\nBude odovzdaná pred domom\nDodávku odovzdá: {name}",
+        "PACKAGE_ADDRESS_EXTRA_SERVICE": "Adresa odosielateľa: {address}\nDodávku odovzdá: {name}"
+      },
+      "PACKAGE_PICKED": {
+        "STATUS": "Váš balík je na ceste.",
+        "CONFIRMATION_PIN": "PIN: {pin}",
+        "PACKAGE_DELIVERED": "Balík bol doručený.",
+        "PACKAGE_ADDRESS": "Adresa príjemcu: {address}\nVyzdvihnutie bude pred domom.\nDodávku príjme: {name}",
+        "PACKAGE_ADDRESS_EXTRA_SERVICE": "Adresa príjemcu: {address}\nDodávku príjme: {name}"
+
+      },
+      "CONFIRM": {
+        "FROM_TO": "Adresa odosielateľa: {from}\nAdresa príjemcu: {to}",
+        "USE_CREDITS": "Použiť kredity v hodnote {money} €..",
+        "ADD_NEW_CARD": "Pridať novú Kreditnú/Debetnú Kartu"
+      },
+      "SEARCH_DRIVER": {
+        "STATUS": "Počkajte chvíľu kým Doručovateľ príjme objednávku.",
+        "ORDER_ACCEPTED": "Objednávka prijatá."
+      },
+      "PAYMENT_WAITING": {
+        "PAYMENT_WAITING": "Prebiehajúca platba.."
+      },
+      "PAYMENT_DECLINED": {
+        "PAYMENT_DECLINED": "Platba zlyhala."
+      },
+      "CALCULATING_DISTANCE": {
+        "CALCULATING_DISTANCE": "Počíta sa vzdialenosť."
+      },
+      "PLEASE_WAIT": {
+        "PLEASE_WAIT": "Prosím Čakajte."
+      },
+      "TRY_AGAIN": {
+        "MESSAGE": "Prosím skúste znova."
+      },
+      "NO_ROUTE": {
+        "MESSAGE": "Trasa nemohla byť vypočítaná."
+      }
+    }
+  },
+  "CHAT": {
+    "TYPE_MESSAGE_HERE": "Zadajte vašu správu..."
+  },
+  "OVERVIEW": {
+    "TITLE": "História objednávok",
+    "ORDER_DATE": "Dátum objednávky",
+    "ORDER_TIME": "Čas objednávky",
+    "MODELS": {
+      "ORDER_DATE": "Dátum objednávky",
+      "ORDER_TIME": "Čas objednávky",
+      "JOB": {
+        "WAITING": "Prebieha",
+        "ON_ROAD": "Prebieha",
+        "PACKAGE_PICKED": "Prebieha",
+        "FINISHED": "Dokončené",
+        "CANCELLED": "Zrušené",
+        "DRIVER_CANCELED": "Zrušené Doručovateľom.",
+        "CUSTOMER_CANCELED": "Zrušené zákazníkom."
+      }
+    }
+  },
+  "VOUCHER": {
+    "TITLE": "Kupón",
+    "TEXT_FIELD_MESSAGE": "Alebo zadajte váš kód z kupónu.",
+    "SUCCESS_MESSAGE": "Váš kupón v hodnote {amount} € bol zapísaný ako kredity.",
+    "ERROR": {
+      "NO_ERROR": "Žiadna chyba.",
+      "ALREADY_USED": "Tento kupón už bol použitý.",
+      "NOT_EXIST": "Tento kupón je neplatný.",
+      "NOT_KNOWN": "Neznáma chyba."
+    }
+  },
+  "MODELS": {
+    "JOB": {
+      "WAITING": "Čaká sa na Doručovateľa.",
+      "ON_ROAD": "Doručovateľ prijal vašu objednávku.",
+      "PACKAGE_PICKED": "Doručovateľ vyzdvihol dodávku.",
+      "FINISHED": "Vaša objednávka bola doručená.",
+      "CANCELLED": "Objednávka bola zrušená.",
+      "DRIVER_CANCELED": "Zrušené Doručovateľom",
+      "CUSTOMER_CANCELED": "Zrušené zákazníkom"
+    }
+  },
+  "DIALOGS": {
+    "PERMISSIONTYPENUM": {
+      "CAMERA": {
+        "TITLE": "Povoliť Post Now urobiť fotografie.",
+        "MESSAGE": "Post Now potrebuje prístup k vašej kamere.",
+        "ALLOW": "Povoliť"
+      },
+      "LOCATION": {
+        "TITLE": "Povoliť Post Now prístup k polohe tohto zariadenia.",
+        "MESSAGE": "Z dôvodu zaručenia lepšie funkčnosti, udeľte aplikácii oprávnenie na prístup k polohe zariadenia.",
+        "ALLOW": "Povoliť"
+      }
+    },
+    "I_AM_BACK": {
+      "TITLE": "Ste naspäť?",
+      "MESSAGE": "",
+      "POSITIVE": "Áno"
+    },
+    "UPDATE_AVAILABLE": {
+      "TITLE": "K dispozícii je nová aktualizácia.",
+      "BODY": "Pre používanie aplikácie musí byť nainštalovaná najnovšia aktualizácia.",
+      "BUTTON": "Aktualizovať Teraz!"
+    },
+    "ADDRESS_MANAGER": {
+      "TITLE": "Údaje o adrese",
+      "I_WILL_COME": "Chcem aby Doručovateľ prišiel k dverám.",
+      "HOUSE_NUMBER": "Číslo Domu",
+      "DOOR_NUMBER": "Číslo Dverí",
+      "DOOR_NAME": "Kontaktná osoba",
+      "ERROR_MESSAGES": {
+        "HOUSE_NUMBER_IS_NEEDED": "Musí byť zadané číslo domu.",
+        "DOOR_NUMBER_IS_NEEDED": "Ak chcete aby bola vaša dodávka doručená k dverám, zadajte prosím číslo dverí.",
+        "DOOR_NAME_IS_NEEDED": "Zadajte meno osoby, ktorá príjme dodávku."
+      },
+      "ARE_YOU_SURE_CANCEL": {
+        "CONTENT_AFTER_PACKAGE_PICKED": "Akonáhle Doručovateľ príjme objednávku, suma nebude vrátená v prípade zrušenia objednávky.",
+        "CONTENT_WITH_AMOUNT": "Za zrušenie vašej objednávky budete účtovaný {amount} €.",
+        "CONTENT": "Ste si istý že chcete zrušiť?"
+      }
+    },
+    "JOB_SETTINGS": {
+      "CANCEL_JOB" : "Zrušiť objednávku."
+    },
+    "SETTINGS": {
+      "YOU_CANT_CHANGE": {
+        "MESSAGE": "Ak chcete zmeniť vaše údaje, kontaktujte nás.",
+        "CONTACT": "Kontaktujte nás"
+      }
+    },
+    "ORDER_DETAILS": {
+      "ERROR_MESSAGES": {
+        "MESSAGE_IS_EMPTY": "Prosím zadajte správu"
+      },
+      "MESSAGE": "Stručne nám napíšte vašu požiadavku."
+    },
+    "NEED_TYP_ADDRESS": {
+      "TITLE": "Informácia",
+      "CONTENT": "Pre objednávky v hodnote vyššej ako {amount} €, potrebujeme vaše celé meno a adresu kvôli správnej faktúre.",
+      "POSITIVE": "Dobre"
+    }
+  },
+  "PAYMENTMETHODSENUM": {
+    "CREDITS": "Kredity",
+    "CASH": "Hotovosť",
+    "PAYPAL": "PayPal",
+    "CREDIT_CARD": "Kreditná/Debetná Karta",
+    "APPLE_PAY": "Apple Pay",
+    "KLARNA": "Sofort Überweisung"
+  }
+}
