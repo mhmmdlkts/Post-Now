@@ -60,4 +60,4 @@ key.properties
 
 # Environment
 lib/environment/
-
+iOS/Runner/Config.swift

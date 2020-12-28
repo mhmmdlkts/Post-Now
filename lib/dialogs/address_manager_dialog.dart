@@ -19,7 +19,7 @@ class AddressManager extends StatefulWidget {
 }
 
 class _AddressManager extends State<AddressManager> {
-  final GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: GOOGLE_DIRECTIONS_API_KEY);
+  final GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: GOOGLE_API_KEY_PLACES_AND_DIRECTIONS);
   final Address _address;
   String _errorMessage = "";
   bool _extraService = true;

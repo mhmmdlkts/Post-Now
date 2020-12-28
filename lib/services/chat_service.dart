@@ -1,6 +1,7 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
+import 'package:postnow/environment/global_variables.dart';
 import 'package:postnow/models/chat.dart';
 import 'dart:io' as i;
 
@@ -8,7 +9,7 @@ import 'package:postnow/models/message.dart';
 import 'package:postnow/services/global_service.dart';
 
 class ChatService {
-  final FirebaseStorage _storage = FirebaseStorage(storageBucket: 'gs://post-now-f3c53.appspot.com');
+  final FirebaseStorage _storage = FirebaseStorage(storageBucket: 'gs://$FIREBASE_NAME.appspot.com');
   DatabaseReference _chatRef;
 
   Chat chat;

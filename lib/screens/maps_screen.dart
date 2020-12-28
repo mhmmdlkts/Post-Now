@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:google_map_polyline/google_map_polyline.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:postnow/decoration/my_colors.dart';
 import 'package:postnow/dialogs/address_manager_dialog.dart';
 import 'package:postnow/dialogs/custom_alert_dialog.dart';
@@ -69,8 +70,8 @@ class MapsScreen extends StatefulWidget {
 }
 
 class _MapsScreenState extends State<MapsScreen> {
-  final GoogleMapPolyline _googleMapPolyline = new GoogleMapPolyline(apiKey: GOOGLE_DIRECTIONS_API_KEY);
-  final GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: GOOGLE_DIRECTIONS_API_KEY);
+  final GoogleMapPolyline _googleMapPolyline = new GoogleMapPolyline(apiKey: ApiKeys.getGoogleApiKeyForThisPlatform());
+  final GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: GOOGLE_API_KEY_PLACES_AND_DIRECTIONS);
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   final AudioCache _audioPlayer = AudioCache();
   final List<CreditCard> _creditCards = List();
@@ -175,6 +176,7 @@ class _MapsScreenState extends State<MapsScreen> {
   void initState() {
     _initCount++;
     super.initState();
+    // Permission.notification.request();
     _firebaseService.setMyToken(_user.uid);
     Screen.keepOn(true);
 
@@ -1161,7 +1163,7 @@ class _MapsScreenState extends State<MapsScreen> {
         hint: "MAPS.TYPE_ADDRESS".tr(),
         // startText: isDestination ? destinationTextController.text : originTextController.text,
         context: context,
-        apiKey: GOOGLE_DIRECTIONS_API_KEY,
+        apiKey: ApiKeys.getGoogleApiKeyForThisPlatform(),
         logo: Image.asset("assets/none.png"),
         mode: Mode.overlay, // Mode.fullscreen
         language: 'de',
@@ -1249,7 +1251,7 @@ class _MapsScreenState extends State<MapsScreen> {
                         hint: "MAPS.TYPE_ADDRESS".tr(),
                         // startText: isDestination ? destinationTextController.text : originTextController.text,
                         context: context,
-                        apiKey: GOOGLE_DIRECTIONS_API_KEY,
+                        apiKey: ApiKeys.getGoogleApiKeyForThisPlatform(),
                         logo: Image.asset("assets/none.png"),
                         mode: Mode.overlay, // Mode.fullscreen
                         language: 'de',

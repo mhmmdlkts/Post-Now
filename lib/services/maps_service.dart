@@ -157,7 +157,7 @@ class MapsService with WidgetsBindingObserver {
   Future<List<Prediction>> getAutoCompleter(String autoCompleterText) async {
     const String baseUrl = "https://maps.googleapis.com/maps/api/place/autocomplete/json";
     const String SalzburgCenterLoc = "47.8262658,13.0127823";
-    final String request = '$baseUrl?input=${Uri.encodeComponent(autoCompleterText)}&location=$SalzburgCenterLoc&radius=1000&key=$GOOGLE_DIRECTIONS_API_KEY';
+    final String request = '$baseUrl?input=${Uri.encodeComponent(autoCompleterText)}&location=$SalzburgCenterLoc&radius=1000&key=$GOOGLE_API_KEY_PLACES_AND_DIRECTIONS';
     List<Prediction> predictions = List();
     try {
       http.Response response = await http.get(request);

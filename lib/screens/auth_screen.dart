@@ -1,5 +1,6 @@
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -42,14 +43,18 @@ class _AuthScreenState extends State<AuthScreen> {
 
   Future<void> _sendSms(phoneNo) async {
     final PhoneVerificationCompleted verified = (AuthCredential authResult) async {
+      print('aa1');
       AuthService().signIn(authResult);
     };
 
     final PhoneVerificationFailed verificationFailed = (FirebaseAuthException authException) {
+      print('aa2');
       print('${authException.message}');
     };
 
     final PhoneCodeSent smsSent = (String verId, [int forceResend]) {
+      print('aa3');
+      print(verId);
       this._verificationId = verId;
       setState(() {
         this._codeSent = true;
@@ -58,17 +63,23 @@ class _AuthScreenState extends State<AuthScreen> {
     };
 
     final PhoneCodeAutoRetrievalTimeout autoTimeout = (String verId) {
+      print('aa4');
       this._verificationId = verId;
     };
 
-    await FirebaseAuth.instance.verifyPhoneNumber(
+    print(phoneNo);
+    try {
+      await FirebaseAuth.instance.verifyPhoneNumber(
         phoneNumber: phoneNo,
         timeout: const Duration(seconds: 5),
         verificationCompleted: verified,
         verificationFailed: verificationFailed,
         codeSent: smsSent,
-        codeAutoRetrievalTimeout: autoTimeout
-    );
+        codeAutoRetrievalTimeout: autoTimeout,
+      );
+    } catch (e) {
+      print(e);
+    }
   }
 
   @override

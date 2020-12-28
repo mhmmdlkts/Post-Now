@@ -3,7 +3,7 @@ import 'package:google_maps_webservice/places.dart';
 import 'package:postnow/environment/api_keys.dart';
 
 class PlacesService {
-  final _places = new GoogleMapsPlaces(apiKey: GOOGLE_DIRECTIONS_API_KEY);
+  final _places = new GoogleMapsPlaces(apiKey: GOOGLE_API_KEY_PLACES_AND_DIRECTIONS);
 
   Location _myLoc;
   PlacesService(Position position) {
