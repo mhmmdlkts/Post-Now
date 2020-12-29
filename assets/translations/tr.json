@@ -4,7 +4,7 @@
   "CANCEL": "Hayır",
   "ACCEPT": "Kabul et",
   "WARNING": "Dikkat",
-  "THANKS": "Teşekkürler",
+  "THANKS": "Siparişiniz başarıyla tamamlandı.",
   "CLOSE": "Kapat",
   "SETTINGS": "Ayarlar",
   "SEND_MESSAGE": "Mesaj gönderin",
@@ -19,16 +19,16 @@
   "TRY_AGAIN": "Tekrar deneyin",
   "INTRO": {
     "PAGE1": {
-      "TITLE": "Başlayalım",
-      "DESCRIPTION": "Siparişinizin teslim alınacağı adresi girin.."
+      "TITLE": "Haydi başlayalım.",
+      "DESCRIPTION": "Bir şey göndermek istiyorsanız teslim alma adresini girin veya bir mağaza seçin ve bir alışveriş listesi oluşturun."
     },
     "PAGE2": {
-      "TITLE": "Bir adım daha",
-      "DESCRIPTION": "Siparişinizin teslim edileceğiö hedef adresini girin."
+      "TITLE": "Sonraki Adım",
+      "DESCRIPTION": "Siparişinizin teslim edilmesini istediğiniz yerin adresini girin. Ardından belirtilen tutarı ödedikten sonra siparişiniz Teslimatçımıza iletilir."
     },
     "PAGE3": {
       "TITLE": "Sipariş takibi",
-      "DESCRIPTION": "Ödemenizden sonra, Dağıtıcılarımızdan biri siparişinizi teslim alır. Ardından, siparişinizin nerede olduğunu eş zamanlı olarak takip edebilirsiniz."
+      "DESCRIPTION": "Teslimatçılarımızdan biri siparişinizi başlattıktan sonra, tamamlanana kadar siparişinizi takip edebilirsiniz."
     }
   },
   "LOGIN": {

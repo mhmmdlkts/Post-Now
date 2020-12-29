@@ -4,7 +4,7 @@
   "CANCEL": "Zrušiť",
   "ACCEPT": "Súhlasiť",
   "WARNING": "Upozornenie",
-  "THANKS": "Vďaka",
+  "THANKS": "Vaša objednávka bola dokončená.",
   "CLOSE": "Zavrieť",
   "SETTINGS": "Nastavenia",
   "SEND_MESSAGE": "Poslať správu",
@@ -19,16 +19,16 @@
   "TRY_AGAIN": "Skúsiť znovu",
   "INTRO": {
     "PAGE1": {
-      "TITLE": "Poďme začať",
-      "DESCRIPTION": "Zadajte adresu vyzdvihnutia."
+      "TITLE": "Welocme! Začnime.",
+      "DESCRIPTION": "Ak chcete niečo poslať, zadajte adresu pre vyzdvihnutie alebo vyberte obchod a vytvorte nákupný zoznam."
     },
     "PAGE2": {
-      "TITLE": "Ešte jeden krok",
-      "DESCRIPTION": "Zadajte dodaciu adresu."
+      "TITLE": "Ďalší krok!",
+      "DESCRIPTION": "Zadajte cieľovú adresu, kde chcete, aby vaša objednávka bude doručená Potom budete platiť určitej sumy a vaša objednávka bude odovzdaná nášmu doručovateľa."
     },
     "PAGE3": {
       "TITLE": "Sledovanie",
-      "DESCRIPTION": "Po vašej platbe, jeden z našich Doručovateľov vezme vašu objednávku. Môžete si pozrieť kde je vaša zásielka v skutočnom čase."
+      "DESCRIPTION": "Po spustení objednávky jedným z našich doručovateľov môžete svoju objednávku sledovať až do jej dokončenia."
     }
   },
   "LOGIN": {

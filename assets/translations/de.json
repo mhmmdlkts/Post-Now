@@ -4,7 +4,7 @@
   "CANCEL": "Abbrechen",
   "ACCEPT": "Akzeptieren",
   "WARNING": "Achtung",
-  "THANKS": "Danke",
+  "THANKS": "Ihre Bestellung wurde abgeschlossen.",
   "CLOSE": "Schließen",
   "SETTINGS": "Einstellungen",
   "SEND_MESSAGE": "Nachricht senden",
@@ -20,15 +20,15 @@
   "INTRO": {
     "PAGE1": {
       "TITLE": "Los geht's",
-      "DESCRIPTION": "Gib die Abholadresse ein."
+      "DESCRIPTION": "Wenn Sie etwas senden möchten, geben Sie die Abholadresse ein oder wählen Sie einen Shop und erstellen Sie eine Einkaufsliste."
     },
     "PAGE2": {
-      "TITLE": "Noch ein Schritt",
-      "DESCRIPTION": "Gib die Zieladresse ein."
+      "TITLE": "Nächster Schritt",
+      "DESCRIPTION": "Geben Sie die Zieladresse ein. Wohin Ihre Bestellung geliefert werden soll. Danach bezahlen sie denn angegeben betrag und ihre bestellung wird an unseren Zusteller weitergeleitet."
     },
     "PAGE3": {
       "TITLE": "Lieferung verfolgen",
-      "DESCRIPTION": "Nach Bezahlung übernimmt einer unserer Zusteller den Auftrag. Du siehst dann in Echtzeit, wo sich deine Lieferung befindet."
+      "DESCRIPTION": "Nachdem einer unserer Zusteller Ihre Bestellung gestartet hat, können Sie Ihre Bestellung verfolgen, bis sie abgeschlossen ist."
     }
   },
   "LOGIN": {

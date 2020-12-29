@@ -4,7 +4,7 @@
   "CANCEL": "Anulare",
   "ACCEPT": "Acceptare",
   "WARNING": "Atenție",
-  "THANKS": "Mulțumesc",
+  "THANKS": "Comanda dvs. a fost finalizată.",
   "CLOSE": "Închide",
   "SETTINGS": "Setări",
   "SEND_MESSAGE": "Trimite un mesaj",
@@ -19,16 +19,16 @@
   "TRY_AGAIN": "Încearcă din nou",
   "INTRO": {
     "PAGE1": {
-      "TITLE": "Să începem",
-      "DESCRIPTION": "Introdu adresa de livrare."
+      "TITLE": "Bine! Începeți.",
+      "DESCRIPTION": "Dacă doriți să trimiteți ceva, introduceți adresa de preluare sau alegeți un magazin și creați o listă de cumpărături."
     },
     "PAGE2": {
-      "TITLE": "Încă un pas",
+      "TITLE": "Introduceți adresa de destinație. Unde doriți să fie livrată comanda dvs. Apoi plătiți suma specificată, iar comanda dvs. va fi înaintată furnizorului nostru.",
       "DESCRIPTION": "Introdu adresa de destinație."
     },
     "PAGE3": {
       "TITLE": "Urmărire",
-      "DESCRIPTION": "După plată, unul dintre furnizorii noștri îți va prelua comanda. Apoi poți vedea unde este comanda ta în timp real."
+      "DESCRIPTION": "După ce unul dintre furnizorii noștri pornește comanda, puteți urmări comanda până când aceasta este finalizată."
     }
   },
   "LOGIN": {

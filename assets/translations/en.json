@@ -4,7 +4,7 @@
   "CANCEL": "Cancel",
   "ACCEPT": "Accept",
   "WARNING": "Dikkat",
-  "THANKS": "Thanks",
+  "THANKS": "Your order has been completed.",
   "CLOSE": "Close",
   "SETTINGS": "Settings",
   "SEND_MESSAGE": "Send a message",
@@ -19,16 +19,16 @@
   "TRY_AGAIN": "Try Again",
   "INTRO": {
     "PAGE1": {
-      "TITLE": "Let get started",
-      "DESCRIPTION": "Enter the pick-up address."
+      "TITLE": "Welocme! Let's get started",
+      "DESCRIPTION": "If you want to send something enter the pick-up address  or choose a store and create a shopping list."
     },
     "PAGE2": {
-      "TITLE": "One more step",
-      "DESCRIPTION": "Enter the destination address."
+      "TITLE": "Next Step!",
+      "DESCRIPTION": "Enter the destination address. Where you want your order to be delivered. Then you pay the specified amount and your order will be forwarded to our Deliverer"
     },
     "PAGE3": {
       "TITLE": "Tracking",
-      "DESCRIPTION": "After your payment, one of our Deliverers takes your order. You can then see where your delivery is in real time."
+      "DESCRIPTION": "After one of our Deliverers starts your order you can track your order until it is completed."
     }
   },
   "LOGIN": {
