@@ -13,6 +13,8 @@
 	<key>CFBundleLocalizations</key>
 	<array>
 		<string>sk</string>
+		<string>bs</string>
+		<string>hr</string>
 		<string>sr</string>
 		<string>ro</string>
 		<string>tr</string>
@@ -74,10 +76,6 @@
 	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>To scan credit cards.</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>This app needs access to location when open and in the background.</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>This app needs access to location when in the background.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>This app needs access to location in the background.</string>
 	<key>UIApplicationSceneManifest</key>
