@@ -1,3 +1,4 @@
+import 'package:package_info/package_info.dart';
 import 'package:postnow/environment/global_variables.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io' show Platform;
@@ -20,7 +21,7 @@ class RemoteConfigService {
   static Future<int> getBuildVersion() async {
     if (_values == null)
       return 0;
-    final String key = FIREBASE_REMOTE_CONFIG_VERSION_KEY(Platform.isIOS, await GlobalService.isDriverApp());
+    final String key = FIREBASE_REMOTE_CONFIG_VERSION_KEY(Platform.isIOS, (await PackageInfo.fromPlatform()).packageName.split(".").last);
     return getInt(key);
   }
 

@@ -75,9 +75,9 @@
 		<true/>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>To scan credit cards.</string>
+	<string>This app needs to acces the camera to send fotos while chatting.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>This app needs access to location in the background.</string>
+	<string>This app needs to acces location to improve user experience.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
