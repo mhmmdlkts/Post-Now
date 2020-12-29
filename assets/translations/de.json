@@ -20,15 +20,15 @@
   "INTRO": {
     "PAGE1": {
       "TITLE": "Los geht's",
-      "DESCRIPTION": "Wenn Sie etwas senden möchten, geben Sie die Abholadresse ein oder wählen Sie einen Shop und erstellen Sie eine Einkaufsliste."
+      "DESCRIPTION": "Wenn du etwas senden möchtest, gib die Abholadresse ein oder wähle ein Geschäft aus und erstelle eine Einkaufsliste."
     },
     "PAGE2": {
       "TITLE": "Nächster Schritt",
-      "DESCRIPTION": "Geben Sie die Zieladresse ein. Wohin Ihre Bestellung geliefert werden soll. Danach bezahlen sie denn angegeben betrag und ihre bestellung wird an unseren Zusteller weitergeleitet."
+      "DESCRIPTION": "Gib die Zieladresse ein. Wohin deine Bestellung geliefert werden soll. Danach bezahle denn angegeben betrag und deine Bestellung wird an unseren Zusteller weitergeleitet."
     },
     "PAGE3": {
       "TITLE": "Lieferung verfolgen",
-      "DESCRIPTION": "Nachdem einer unserer Zusteller Ihre Bestellung gestartet hat, können Sie Ihre Bestellung verfolgen, bis sie abgeschlossen ist."
+      "DESCRIPTION": "Nachdem einer unserer Zusteller deine Bestellung angennomen hat, kannst du deine Bestellung verfolgen, bis sie abgeschlossen ist."
     }
   },
   "LOGIN": {
