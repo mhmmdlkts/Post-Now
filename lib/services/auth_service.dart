@@ -24,38 +24,35 @@ class AuthService {
     return SplashScreen();
   }
 
-    signOut() {
-      FirebaseAuth.instance.signOut();
-    }
+  signOut() {
+    FirebaseAuth.instance.signOut();
+  }
 
-    Future<UserCredential> signIn(AuthCredential authCredential) async {
-      UserCredential authResult = await FirebaseAuth.instance.signInWithCredential(authCredential);
-      sendUserInfo(authResult.user);
-      return authResult;
-    }
+  Future<UserCredential> signIn(AuthCredential authCredential) async {
+    UserCredential authResult = await FirebaseAuth.instance.signInWithCredential(authCredential);
+    sendUserInfo(authResult.user);
+    return authResult;
+  }
 
-    Future<UserCredential> signInWithOTP(smsCode, verId) async {
-      AuthCredential authCredential = PhoneAuthProvider.credential(
-          verificationId: verId, smsCode: smsCode);
-      return await signIn(authCredential);
-    }
+  Future<UserCredential> signInWithOTP(smsCode, verId) async {
+    AuthCredential authCredential = PhoneAuthProvider.credential(
+        verificationId: verId, smsCode: smsCode);
+    return await signIn(authCredential);
+  }
 
+  sendUserInfo(User u) async {
+    String token = await _firebaseMessaging.getToken();
+    myUser.User user = new myUser.User(token: token, phone: u.phoneNumber);
+    FirebaseDatabase.instance.reference().child('users').child(u.uid).update(user.toJson());
+  }
 
-    sendUserInfo(User u) async {
-      String token = await _firebaseMessaging.getToken();
-      myUser.User user = new myUser.User(token: token, phone: u.phoneNumber);
-      FirebaseDatabase.instance.reference().child('users').child(u.uid).update(user.toJson());
-    }
+  Future<String> getToken() async {
+    return await _firebaseMessaging.getToken();
+  }
 
-    Future<String> getToken() async {
-      return await _firebaseMessaging.getToken();
-    }
-
-    void setMyToken(String uid) {
-    print(uid);
-      getToken().then((value) => {
-        FirebaseDatabase.instance.reference().child('users').child(uid).child("token").set(value)
-      });
-    }
-
+  void setMyToken(String uid) {
+    getToken().then((value) => {
+      FirebaseDatabase.instance.reference().child('users').child(uid).child("token").set(value)
+    });
+  }
 }

@@ -520,7 +520,7 @@ class _MapsScreenState extends State<MapsScreen> {
         _orderTyp == null && _menuTyp == null ? ChooserWidget((OrderTypEnum orderTyp) => setState((){
           _orderTyp = orderTyp;
           if (orderTyp == OrderTypEnum.SHOPPING)
-            _onTapShopping();
+            _getTopicButtons(Function);
         })):Container(),
         _isInitialized ? Container() : SplashScreen(),
       ],
@@ -674,11 +674,11 @@ class _MapsScreenState extends State<MapsScreen> {
                     child: ClipRRect(
                       borderRadius: BorderRadius.all(Radius.circular(100)),
                       child: Material(
-                        color: _placesTopic!=null?Colors.red:primaryBlue,
+                        color: _getTopicButtons(Color),
                         child: InkWell(
-                          onTap: _onTapShopping,
+                          onTap: _getTopicButtons(Function),
                           child: IconButton(
-                            icon: Icon(_placesTopic == null?(_shopItems==null?Icons.store:Icons.format_list_numbered):Icons.clear, color: Colors.white,),
+                            icon: _getTopicButtons(Icon)
                           ),
                         )
                       ),
@@ -708,24 +708,44 @@ class _MapsScreenState extends State<MapsScreen> {
     );
   }
 
-  _onTapShopping() async {
-    _marketMarkers.clear();
-    if (_placesTopic != null) {
-      setState(() {
+  _getTopicButtons(Type typ) {
+    if (_originAddress == null && _placesTopic == null) {
+      switch(typ) {
+        case Icon: return Icon(Icons.store, color: Colors.white);
+        case Color: return primaryBlue;
+        case Function: return () => setState(() {
+          _marketMarkers.clear();
+          _placesTopic = null;
+          _showTopicChooserDialog();
+        });
+      }
+    }
+    if (_placesTopic == null) {
+      switch(typ) {
+        case Icon: return Icon(Icons.format_list_numbered, color: Colors.white);
+        case Color: return primaryBlue;
+        case Function: return () => setState(() {
+          _marketMarkers.clear();
+          Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ShoppingListMakerScreen(items: _shopItems, freeItemCount: _mapsService.getFreeItemCount(), itemCost: _mapsService.getShoppingItemCost(), sameItemCost: _mapsService.getShoppingSameItemCost()))
+          ).then((value) => {
+            if (value != null)
+              _shopItems = value
+          });
+        });
+      }
+    }
+    print(typ);
+    switch(typ) {
+      case Icon: return Icon(Icons.clear, color: Colors.white);
+      case Color: return Colors.red;
+      case Function: return () => setState(() {
+        _marketMarkers.clear();
         _placesTopic = null;
+        _shopItems = null;
       });
-      return;
     }
-    if (_shopItems != null) {
-      final result = await Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => ShoppingListMakerScreen(items: _shopItems, freeItemCount: _mapsService.getFreeItemCount(), itemCost: _mapsService.getShoppingItemCost(), sameItemCost: _mapsService.getShoppingSameItemCost()))
-      );
-      if (result != null)
-        _shopItems = result;
-      return;
-    }
-    _showTopicChooserDialog();
   }
 
   Widget _content() => Stack(
@@ -1510,7 +1530,7 @@ class _MapsScreenState extends State<MapsScreen> {
           maxHeight: _mapKey.currentContext.size.height,
           floatingActionButton: _positionFloatingActionButton(),
           isLoading: true,
-          headerText: 'MAPS.BOTTOM_MENUS.PLEASE_WAIT.PLEASE_WAIT'.tr(),
+          headerText: 'PLEASE_WAIT'.tr(),
           shrinkWrap: false,
           showFooter: false,
         );
