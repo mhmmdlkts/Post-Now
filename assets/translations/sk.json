@@ -162,15 +162,15 @@
       },
       "ON_JOB": {
         "STATUS": "Dodávka je na ceste.",
-        "PACKAGE_ADDRESS": "Adresa odosielateľa: {address}\nBude odovzdaná pred domom\nDodávku odovzdá: {name}",
-        "PACKAGE_ADDRESS_EXTRA_SERVICE": "Adresa odosielateľa: {address}\nDodávku odovzdá: {name}"
+        "PACKAGE_ADDRESS": "{address}\n{name}",
+        "PACKAGE_ADDRESS_EXTRA_SERVICE": "{address}\n{name}"
       },
       "PACKAGE_PICKED": {
         "STATUS": "Váš balík je na ceste.",
         "CONFIRMATION_PIN": "PIN: {pin}",
         "PACKAGE_DELIVERED": "Balík bol doručený.",
-        "PACKAGE_ADDRESS": "Adresa príjemcu: {address}\nVyzdvihnutie bude pred domom.\nDodávku príjme: {name}",
-        "PACKAGE_ADDRESS_EXTRA_SERVICE": "Adresa príjemcu: {address}\nDodávku príjme: {name}"
+        "PACKAGE_ADDRESS": "{address}\n{name}",
+        "PACKAGE_ADDRESS_EXTRA_SERVICE": "{address}\n{name}"
 
       },
       "CONFIRM": {
