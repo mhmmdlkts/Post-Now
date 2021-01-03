@@ -162,15 +162,15 @@
       },
       "ON_JOB": {
         "STATUS": "Dostavljač je na putu.",
-        "PACKAGE_ADDRESS": "Adresa dostavljača: {address}\nBiće vam predato pred vašim domom\nDOstavu će predati: {name}",
-        "PACKAGE_ADDRESS_EXTRA_SERVICE": "Adresa pošiljatelja: {address}\nDostavu će predati: {name}"
+        "PACKAGE_ADDRESS": "{address}\n{name}",
+        "PACKAGE_ADDRESS_EXTRA_SERVICE": "{address}\n{name}"
       },
       "PACKAGE_PICKED": {
         "STATUS": "Vaš paket je na putu.",
         "CONFIRMATION_PIN": "PIN: {pin}",
         "PACKAGE_DELIVERED": "Paket je dostavljen.",
-        "PACKAGE_ADDRESS": "Adresa primatelja: {address}\nDostava pred kućom\nDostavu će prihvatiti: {name}",
-        "PACKAGE_ADDRESS_EXTRA_SERVICE": "Adresa primatelja: {address}\nDostavu će prihvatiti: {name}"
+        "PACKAGE_ADDRESS": "{address}\n{name}",
+        "PACKAGE_ADDRESS_EXTRA_SERVICE": "{address}\n{name}"
 
       },
       "CONFIRM": {

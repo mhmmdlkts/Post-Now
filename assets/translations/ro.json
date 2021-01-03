@@ -162,15 +162,15 @@
       },
       "ON_JOB": {
         "STATUS": "Curierul este pe drum.",
-        "PACKAGE_ADDRESS": "Adresa expeditorului: {address}\nVa fi livrat în fața casei\nLivrarea va fi efectuată de: {name}",
-        "PACKAGE_ADDRESS_EXTRA_SERVICE": "Adresa expeditorului: {address}\nLivrarea va fi efectuată de: {name}"
+        "PACKAGE_ADDRESS": "{address}\n{name}",
+        "PACKAGE_ADDRESS_EXTRA_SERVICE": "{address}\n{name}"
       },
       "PACKAGE_PICKED": {
         "STATUS": "Pachetul tău este pe drum.",
         "CONFIRMATION_PIN": "PIN: {pin}",
         "PACKAGE_DELIVERED": "Pachetul a fost livrat.",
-        "PACKAGE_ADDRESS": "Adresa destinatarului: {address}\nVa fi livrat în fața casei\nLivrarea va fi acceptată de: {name}",
-        "PACKAGE_ADDRESS_EXTRA_SERVICE": "Adresa destinatarului: {address}\nLivrarea va fi acceptată de: {name}"
+        "PACKAGE_ADDRESS": "{address}\n{name}",
+        "PACKAGE_ADDRESS_EXTRA_SERVICE": "{address}\n{name}"
 
       },
       "CONFIRM": {

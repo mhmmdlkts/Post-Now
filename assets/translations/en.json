@@ -162,15 +162,15 @@
       },
       "ON_JOB": {
         "STATUS": "The deliverer is on the way.",
-        "PACKAGE_ADDRESS": "Sender adress: {address}\nWill be handed over in front of the house\nDelivery will be handed over by: {name}",
-        "PACKAGE_ADDRESS_EXTRA_SERVICE": "Sender adress: {address}\nDelivery will be handed over by: {name}"
+        "PACKAGE_ADDRESS": "{address}\n{name}",
+        "PACKAGE_ADDRESS_EXTRA_SERVICE": "{address}\n{name}"
       },
       "PACKAGE_PICKED": {
         "STATUS": "Your package is on the way.",
         "CONFIRMATION_PIN": "PIN: {pin}",
         "PACKAGE_DELIVERED": "Package has been delivered.",
-        "PACKAGE_ADDRESS": "Recipient adress: {address}\nPickup will be front of the house\nDelivery will be accepted by: {name}",
-        "PACKAGE_ADDRESS_EXTRA_SERVICE": "Recipient adress: {address}\nDelivery will be accepted by: {name}"
+        "PACKAGE_ADDRESS": "{address}\n{name}",
+        "PACKAGE_ADDRESS_EXTRA_SERVICE": "{address}\n{name}"
 
       },
       "CONFIRM": {

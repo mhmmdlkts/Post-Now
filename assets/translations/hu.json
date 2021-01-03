@@ -1,0 +1,317 @@
+{
+  "APP_NAME": "Post Now",
+  "OK": "Ok",
+  "CANCEL": "Töröl",
+  "ACCEPT": "Elfogad",
+  "WARNING": "Dikkat",
+  "THANKS": "A rendelés megtörtént.",
+  "CLOSE": "Bezár",
+  "SETTINGS": "Beállítások",
+  "SEND_MESSAGE": "Üzenet küldése",
+  "SEND": "Küldés",
+  "TOTAL": "Összesen",
+  "SAVE": "Mentés",
+  "APPLY": "Alkalmaz",
+  "FREE": "Ingyen",
+  "SEARCH": "Keresés",
+  "GO_BACK": "Vissza",
+  "CHECKOUT": "Kijelentkezés",
+  "TRY_AGAIN": "Próbálja Újra",
+  "INTRO": {
+    "PAGE1": {
+      "TITLE": "Üdvözöljük! Kezdjük",
+      "DESCRIPTION": "Ha szeretne küldeni valamit, írja be az átvételi címet vagy válasszon boltot, és hozzon létre bevásárló listát."
+    },
+    "PAGE2": {
+      "TITLE": "Következő lépés!",
+      "DESCRIPTION": "Adja meg a kézbesítés címét, ahová a rendelését kiszállítják. Utána fizesse ki a megjelölt összeget és a rendelése a Szállítóhoz kerül."
+    },
+    "PAGE3": {
+      "TITLE": "Nyomonkövetés",
+      "DESCRIPTION": "Amikor a rendelése a Szállítóhóz kerül, ön nyomonkövetheti a kézbesítés időpontjáig."
+    }
+  },
+  "LOGIN": {
+    "TITLE": "Üdvözöljük Vissza",
+    "SUBTITLE": "Szia...",
+    "PHONE_FIELD_TITLE": "Telefonszám",
+    "PHONE_FIELD_HINT": "Az ön telefonszáma",
+    "PHONE_FIELD_VALIDATOR_ENTER_NAME": "Adja meg telefonszámát.",
+    "SMS_CODE_FIELD_TITLE": "Ellenőrző kód",
+    "SMS_CODE_FIELD_HINT": "SMS ellenőrző kód",
+    "SMS_CODE_FIELD_VALIDATOR_ENTER_NAME": "Adja meg SMS ellenőrző kódját.",
+    "AGREE_TERMS_AND_POLICY": "Bejelentkezéssel elfogadja az Adatvédelmi Irányelveinket és az Általános Szerződési Feltételeinket",
+    "CONTINUE_BUTTON": "Következő",
+    "COUNTRY_NAME_EXAMPLE": "Példa {countryCode}",
+    "LOGIN_PROBLEMS": "Gondja van a bejelentkezéssel?",
+    "AUTO_FILL_EMAIL_SUBJECT": "Problémám támadt a Post Now App alkalmazással történő bejelentkezéssel."
+  },
+  "SIGN_UP": {
+    "TITLE": "Üdvözöljük Vissza",
+    "SUBTITLE": "Szia, jelentkezzen be a folytatáshoz!",
+    "NAME_FIELD_TITLE": "Név",
+    "NAME_FIELD_HINT": "Az ön neve",
+    "NAME_FIELD_VALIDATOR_ENTER_NAME": "Kérjük, adja meg a nevét.",
+    "EMAIL_FIELD_TITLE": "E-mail címe",
+    "EMAIL_FIELD_HINT": "Az email címed",
+	"EMAIL_FIELD_VALIDATOR_ENTER_NAME": "Kérjük, adja meg e-mail címét.",
+    "AGREE_TERMS_AND_POLICY": "Regisztrációval elfogadja az Adatvédelmi Irányelveinket és az Általános Szerződési Feltételeinket",
+    "CONTINUE_BUTTON": "Regisztráció"
+  },
+  "CHOOSER_MENU": {
+    "PACKAGE": "Kis csomag szállítás",
+    "SHOP": "Vásárlás"
+  },
+  "LEGAL": {
+    "TITLE": "Jogi",
+    "LegalTyp": {
+      "PRIVACY_POLICY": "Adatvédelmi Irányelvek",
+      "SOFTWARE_LICENCES": "Szoftverlicencek",
+      "CONTACT": "Kapcsolat"
+    }
+  },
+  "SETTINGS_SCREEN": {
+    "ACCOUNT": {
+      "TITLE": "Felhasználói fiók",
+      "NAME_HINT": "Név",
+      "PHONE_HINT": "Telefonszám",
+      "EMAIL_HINT": "E-mail"
+    },
+    "INVOICE": {
+      "TITLE": "Számlázási cím",
+      "ENABLE": "Írja be a címemet a számlámra",
+      "NAME_HINT": "Számla címzettje",
+      "ADDRESS_HINT": "Számlázási cím",
+      "DESCRIPTION": "Az opció aktiválásával a kívánt cím fog szerepelni a számlán."
+    },
+    "SOFTWARE_LICENCES": "Engedélyek",
+    "SIGN_OUT": "Kijelentkezés"
+  },
+  "CONTACT_FORM": {
+    "TITLE": "Kapcsolatfelvételi űrlap",
+    "NAME": {
+      "LABEL": "Név",
+      "HINT_LABEL": "Kérjük, adja meg a nevét"
+    },
+    "EMAIL": {
+      "LABEL": "E-mail cím",
+      "HINT_LABEL": "Kérjük, adja meg e-mail címét"
+    },
+    "PHONE": {
+      "LABEL": "Telefonszám",
+      "HINT_LABEL": "Kérjük, adja meg telefonszámát"
+    },
+    "SUBJECT": {
+      "LABEL": "Tárgy",
+      "HINT_LABEL": "Kérjük, adjon meg tárgyat."
+    },
+    "CONTENT": {
+      "LABEL": "Tartalom",
+      "HINT_LABEL": "Adjon meg tartalmat"
+    },
+    "SEND": "Küldés"
+  },
+  "DIRECT_JOB_OVERVIEW": {
+    "ANY_PROBLEMS": "Gond van ezzel a megrendeléssel?"
+  },
+  "SHOPPING_LIST": {
+    "TITLE": "Bevásárló Lista"
+  },
+  "SHOPPING_LIST_MAKER": {
+    "TEXT_FIELD_HINT": "Adja meg a kívánt termékek nevét.",
+    "TITLE": "Bevásárló Lista",
+    "LEGAL": "{amount} összegtől a termék, cikkenként {price} €-val kerül felszámolásra.",
+    "DIALOGS": {
+      "BACK": {
+        "CONTENT": "Figyelem! A lista nem kerül mentésre."
+      }
+    },
+    "BAR_PAYING_INFO": {
+      "PART1": "A megrendelt tételeket a kézbesítéskor"
+      "PART2": "készpénzben",
+      "PART3": "kell kifizetni."
+    }
+  },
+  "MAPS": {
+    "NO_AVAILABLE_DRIVER_MESSAGE": "A környékén nincs elérhető Szállító.",
+    "CURRENT_LOCATION": "Jelenlegi tartózkodási hely",
+    "PRICE": "Ár: {price} €",
+    "PACKAGE_ADDRESS": "Küldő címe",
+    "DESTINATION_ADDRESS": "Fogadó címe",
+    "TYPE_ADDRESS": "Adja meg a címet",
+    "TOPIC_SEARCHING": "{topic} szerinti keresés",
+    "MARKET": {
+      "MARKER": "Hozzávetőleges szállítási költségek: {around_amount} €"
+    },
+    "SIDE_MENU": {
+      "MY_ORDERS": "Megrendeléseim",
+      "VOUCHER": "Kuponok",
+      "PRIVACY_POLICY": "Adatvédelmi Irányelvek",
+      "SOFTWARE_LICENCES": "Szoftverlicencek",
+      "CONTACT": "Kapcsolat",
+      "SIGN_OUT": "Kijelentkezés"
+    },
+    "BOTTOM_MENUS": {
+      "YOUR_DRIVER": "Az ön Szállítója: {name}",
+      "ACCEPTED": {
+        "MESSAGE" : "A Szállító rövidesen gondoskodik az ön megrendeléséről."
+      },
+      "FROM_OR_TO": {
+        "TITLE": "Szállítási költségek kiszámolása",
+        "MAIN_BUTTON": "Számolás"
+      },
+      "ON_JOB": {
+        "STATUS": "A szállító úton van.",
+        "PACKAGE_ADDRESS": "{address}\n{name}",
+        "PACKAGE_ADDRESS_EXTRA_SERVICE": "{address}\n{name}"
+      },
+      "PACKAGE_PICKED": {
+        "STATUS": "Csomagja úton van.",
+        "CONFIRMATION_PIN": "PIN: {pin}",
+        "PACKAGE_DELIVERED": "A csomagot kézbesítettük.",
+        "PACKAGE_ADDRESS": "{address}\n{name}",
+        "PACKAGE_ADDRESS_EXTRA_SERVICE": "{address}\n{name}"
+
+      },
+      "CONFIRM": {
+        "FROM_TO": "Küldő címe: {from}\nFogadó címe: {to}",
+        "USE_CREDITS": "Használjon {money} € értékű kreditet..",
+        "ADD_NEW_CARD": "Új hitel-/betéti kártya hozzáadása"
+      },
+      "SEARCH_DRIVER": {
+        "STATUS": "Várjon egy kicsit, amíg egy Szállító elfogadja a megrendelést.",
+        "ORDER_ACCEPTED": "Megrendelés elfogadva."
+      },
+      "PAYMENT_WAITING": {
+        "PAYMENT_WAITING": "Fizetés folyamatban.."
+      },
+      "PAYMENT_DECLINED": {
+        "PAYMENT_DECLINED": "Fizetés sikertelen."
+      },
+      "CALCULATING_DISTANCE": {
+        "CALCULATING_DISTANCE": "A távolság kiszámítása folyamatban van."
+      },
+      "PLEASE_WAIT": {
+        "PLEASE_WAIT": "Kérjük, várjon."
+      },
+      "TRY_AGAIN": {
+        "MESSAGE": "Kérjük, próbálja újra."
+      },
+      "NO_ROUTE": {
+        "MESSAGE": "A távolság kiszámítása folyamatban van."
+      }
+    }
+  },
+  "CHAT": {
+    "TYPE_MESSAGE_HERE": "Írja be az üzenetét..."
+  },
+  "OVERVIEW": {
+    "TITLE": "Rendelési előzmények",
+    "ORDER_DATE": "Rendelés dátuma",
+    "ORDER_TIME": "Rendelés ideje",
+    "MODELS": {
+      "ORDER_DATE": "Rendelés dátuma",
+      "ORDER_TIME": "Rendelés ideje",
+      "JOB": {
+        "WAITING": "Folyamatban",
+        "ON_ROAD": "Folyamatban",
+        "PACKAGE_PICKED": "Folyamatban",
+        "FINISHED": "Teljesítve",
+        "CANCELLED": "Törölve",
+        "DRIVER_CANCELED": "A Szállító törölte.",
+        "CUSTOMER_CANCELED": "A vásárló törölte."
+      }
+    }
+  },
+  "VOUCHER": {
+    "TITLE": "Kupon",
+    "TEXT_FIELD_MESSAGE": "Vagy írje be a kupon kódját.",
+    "SUCCESS_MESSAGE": "A(z) {amount} € értékű kupon jóváírásra került.",
+    "ERROR": {
+      "NO_ERROR": "Nincs hiba.",
+      "ALREADY_USED": "Ezt a kupont már felhasználták.",
+      "NOT_EXIST": "Ez a kupon érvénytelen.",
+      "NOT_KNOWN": "Ismeretlen hiba."
+    }
+  },
+  "MODELS": {
+    "JOB": {
+      "WAITING": "Várakozás a Szállítóra.",
+      "ON_ROAD": "A Szállító elfogadta megrendelését.",
+      "PACKAGE_PICKED": "A Szállító átvette a csomagot.",
+      "FINISHED": "Megrendelését kézbesítettük.",
+      "CANCELLED": "A megrendelést törölték.",
+      "DRIVER_CANCELED": "A Szállító törölte",
+      "CUSTOMER_CANCELED": "A vásárló törölte"
+    }
+  },
+  "DIALOGS": {
+    "PERMISSIONTYPENUM": {
+      "CAMERA": {
+        "TITLE": "Engedje meg, hogy a Post Now készítsen képeket.",
+        "MESSAGE": "A Post Now-nak hozzá kell férnie a kamerájához.",
+        "ALLOW": "Engedélyez"
+      },
+      "LOCATION": {
+        "TITLE": "Engedje meg, hogy a Post Now hozzáférjen a tartózkodási helyéhez.",
+        "MESSAGE": "A jobb szolgáltatás garantálása érdekében engedélyezze az alkalmazás számára, hogy hozzáférjen az eszköz helyéhez.",
+        "ALLOW": "Engedélyez"
+      }
+    },
+    "I_AM_BACK": {
+      "TITLE": "Visszajött?",
+      "MESSAGE": "",
+      "POSITIVE": "Igen"
+    },
+    "UPDATE_AVAILABLE": {
+      "TITLE": "Új frissítések.",
+      "BODY": "Az alkalmazás használatához telepíteni kell a legújabb frissítést.",
+      "BUTTON": "Frissítés most!"
+    },
+    "ADDRESS_MANAGER": {
+      "TITLE": "Címadatok",
+      "I_WILL_COME": "Szeretném, hogy a Szállító házhoz jöjjön.",
+      "HOUSE_NUMBER": "Házszám",
+      "DOOR_NUMBER": "Ajtó szám",
+      "DOOR_NAME": "Kapcsolattartó",
+      "ERROR_MESSAGES": {
+        "HOUSE_NUMBER_IS_NEEDED": "Adja meg a házszámot.",
+        "DOOR_NUMBER_IS_NEEDED": "Ha házhoz szállítást szeretne,akkor adja meg az ajtó számot.",
+        "DOOR_NAME_IS_NEEDED": "Adja meg a személy nevét, aki átveszi a csomagot."
+      },
+      "ARE_YOU_SURE_CANCEL": {
+        "CONTENT_AFTER_PACKAGE_PICKED": "Amint a szállító elfogadta a megrendelést, az összeget nem térítjük vissza, ha a megrendelés törlődik.",
+        "CONTENT_WITH_AMOUNT": "A megrendelés lemondásáért {amount} € -t kell fizetnie.",
+        "CONTENT": "Biztosan lemondja?"
+      }
+    },
+    "JOB_SETTINGS": {
+      "CANCEL_JOB" : "Megrendelés törlése."
+    },
+    "SETTINGS": {
+      "YOU_CANT_CHANGE": {
+        "MESSAGE": "Ha módosítani szeretné adatait, vegye fel velünk a kapcsolatot.",
+        "CONTACT": "Lépjen kapcsolatba"
+      }
+    },
+    "ORDER_DETAILS": {
+      "ERROR_MESSAGES": {
+        "MESSAGE_IS_EMPTY": "Írja le az üzenetét"
+      },
+      "MESSAGE": "Írja meg röviden a kérését."
+    },
+    "NEED_TYP_ADDRESS": {
+      "TITLE": "Információ",
+      "CONTENT": "A(z) {amount} eurót meghaladó megrendelések esetén a számlázáshoz szükségünk van a pontos névre és címre.",
+      "POSITIVE": "Ok"
+    }
+  },
+  "PAYMENTMETHODSENUM": {
+    "CREDITS": "Kreditek",
+    "CASH": "Készpénz",
+    "PAYPAL": "PayPal",
+    "CREDIT_CARD": "Hitel-/betéti kártya",
+    "APPLE_PAY": "Apple Pay",
+    "KLARNA": "Sofort Überweisung"
+  }
+}

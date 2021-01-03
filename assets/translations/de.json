@@ -162,15 +162,15 @@
       },
       "ON_JOB": {
         "STATUS": "Der Zusteller ist auf dem Weg.",
-        "PACKAGE_ADDRESS": "Absenderadresse: {address}\nÜbergabe vor dem Haus\nLieferung wird übergeben von: {name}",
-        "PACKAGE_ADDRESS_EXTRA_SERVICE": "Absenderadresse: {address}\nLieferung wird übergeben von: {name}"
+        "PACKAGE_ADDRESS": "{address}\n{name}",
+        "PACKAGE_ADDRESS_EXTRA_SERVICE": "{address}\n{name}"
       },
       "PACKAGE_PICKED": {
         "STATUS": "Ihr Paket ist unterwegs.",
         "CONFIRMATION_PIN": "PIN: {pin}",
         "PACKAGE_DELIVERED": "Paket wurde geliefert.",
-        "PACKAGE_ADDRESS": "Empfängeradresse: {address}\nÜbernahme vor dem Haus\nLieferung wird angenommen von: {name}",
-        "PACKAGE_ADDRESS_EXTRA_SERVICE": "Empfängeradresse: {address}\nLieferung wird angenommen von: {name}"
+        "PACKAGE_ADDRESS": "{address}\n{name}",
+        "PACKAGE_ADDRESS_EXTRA_SERVICE": "{address}\n{name}"
       },
       "CONFIRM": {
         "FROM_TO": "Absenderadresse: {from}\nEmpfängeradresse: {to}",
