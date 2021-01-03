@@ -21,6 +21,13 @@ class PermissionService {
         if (permissionStatus.isGranted)
           return false;
         permissionStatus = await Permission.camera.request();
+        break;
+
+      case PermissionTypEnum.NOTIFICATION:
+        permissionStatus = await Permission.notification.status;
+        if (permissionStatus.isGranted)
+          return false;
+        permissionStatus = await Permission.notification.request();
     }
     if (permissionStatus == null)
       return true;

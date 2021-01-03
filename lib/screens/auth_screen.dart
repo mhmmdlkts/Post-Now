@@ -269,6 +269,8 @@ class _AuthScreenState extends State<AuthScreen> {
   _buttonClickAble() => _isInitialized && _isInputValid;
 
   _onContinuePressed() async {
+    // signInAnonymously(); This is for emulator tests
+    // return;
     FocusScope.of(context).unfocus();
     if (_formKey.currentState.validate()) {
       if(_codeSent) {
@@ -280,5 +282,13 @@ class _AuthScreenState extends State<AuthScreen> {
         });
       }
     }
+  }
+
+  void signInAnonymously() {
+    FirebaseAuth.instance.signInAnonymously().then((result) {
+      setState(() {
+        final User user = result.user;
+      });
+    });
   }
 }

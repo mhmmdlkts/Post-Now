@@ -185,6 +185,8 @@ class _MapsScreenState extends State<MapsScreen> {
         print("Force init");
     });
 
+    PermissionService.positionIsNotGranted(context, PermissionTypEnum.NOTIFICATION);
+
     final markerSize = Platform.isIOS?130:80;
 
     _initCount++;
@@ -474,11 +476,16 @@ class _MapsScreenState extends State<MapsScreen> {
       children: [
         Stack(
           children: [
-            Scaffold(
-              backgroundColor: primaryBlue,
-              appBar: AppBar(
-                brightness: Brightness.dark,
+            WillPopScope(
+              child: Scaffold(
+                backgroundColor: primaryBlue,
+                appBar: AppBar(
+                  brightness: Brightness.dark,
+                ),
               ),
+              onWillPop: () async {
+                return false;
+              },
             ),
             Material(
               color: primaryBlue,
@@ -669,21 +676,24 @@ class _MapsScreenState extends State<MapsScreen> {
                 ),
                 Expanded(
                   flex: _visibleSenderField?_orderTyp== OrderTypEnum.SHOPPING? 250:35:35,
-                  child: _topButtonDesign(
-                    leftPadding: 5,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.all(Radius.circular(100)),
-                      child: Material(
-                        color: _getTopicButtons(Color),
-                        child: InkWell(
-                          onTap: _getTopicButtons(Function),
-                          child: IconButton(
-                            icon: _getTopicButtons(Icon)
-                          ),
-                        )
+                  child: Opacity(
+                    opacity: _visibleSenderField?_orderTyp== OrderTypEnum.SHOPPING? 1:0:0.0,
+                    child: _topButtonDesign(
+                      leftPadding: 5,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.all(Radius.circular(100)),
+                        child: Material(
+                            color: _getTopicButtons(Color),
+                            child: InkWell(
+                              onTap: _getTopicButtons(Function),
+                              child: IconButton(
+                                  icon: _getTopicButtons(Icon)
+                              ),
+                            )
+                        ),
                       ),
                     ),
-                  ),
+                  )
                 ),
               ],
             ),
