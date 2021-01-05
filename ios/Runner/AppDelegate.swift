@@ -21,6 +21,7 @@ import PassKit
      if FirebaseApp.app() == nil {
          FirebaseApp.configure()
      }
+    registerForPushNotifications()
      return super.application(application, didFinishLaunchingWithOptions: launchOptions)
    }
 
