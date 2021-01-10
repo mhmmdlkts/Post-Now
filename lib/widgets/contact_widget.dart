@@ -137,15 +137,14 @@ class _ContactWidgetState extends State<ContactWidget> {
     );
   }
 
-
   void _validator(val) {
     setState(() {
       _sendable =
           _nameFieldController.text.length != 0 &&
-              _emailFieldController.text.length != 0 &&
-              _phoneFieldController.text.length != 0 &&
-              _subjectFieldController.text.length != 0 &&
-              _contentFieldController.text.length != 0;
+          _emailFieldController.text.length != 0 &&
+          _phoneFieldController.text.length != 0 &&
+          _subjectFieldController.text.length != 0 &&
+          _contentFieldController.text.length != 0;
     });
   }
 

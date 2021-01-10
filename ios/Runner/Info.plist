@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>com.postnow.customer</string>
+	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleExecutable</key>
@@ -38,7 +42,7 @@
 			<key>CFBundleURLIconFile</key>
 			<string></string>
 			<key>CFBundleURLName</key>
-			<string>com.postnow.app</string>
+			<string>com.postnow.customer</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>mollie-app</string>
@@ -51,10 +55,10 @@
 			<key>CFBundleURLIconFile</key>
 			<string></string>
 			<key>CFBundleURLName</key>
-			<string>com.postnow.app</string>
+			<string>com.postnow.customer</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.googleusercontent.apps.326661005975-mndu4glonr98s203r7a7vtstu9loatbi</string>
+				<string>com.googleusercontent.apps.326661005975-cdadju9raan1ciq9ketsgfk6dctfi37v</string>
 			</array>
 		</dict>
 		<dict/>
@@ -75,10 +79,26 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>This app needs access to Media Library to provide the best possible user experience</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>This app needs access to calender to provide the best possible user experience</string>
 	<key>NSCameraUsageDescription</key>
 	<string>This app needs to acces the camera to send fotos while chatting.</string>
+	<key>NSContactsUsageDescription</key>
+	<string>This app needs access to contact to provide the best possible user experience</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>This app needs access to location when open and in the background.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>This app needs to acces location to improve user experience.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>This app needs to acces location to improve user experience.</string>
+	<key>NSMotionUsageDescription</key>
+	<string>This app needs access to Motion to provide the best possible user experience</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app needs access to Photo Library to provide the best possible user experience</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>This app needs access to Speech Recognite to provide the best possible user experience</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

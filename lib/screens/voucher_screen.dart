@@ -108,7 +108,9 @@ class _VoucherScreen extends State<VoucherScreen> {
   }
 
   void _tryCode(scanData) {
-    _voucherService.enCashVoucher(scanData, widget.uid).then((value) => {
+    if (scanData.runtimeType is Barcode)
+      scanData = scanData.code;
+    _voucherService.enCashVoucher(scanData.code, widget.uid).then((value) => {
       setState((){
         if (value['errorCode'] != 0) {
           _qrText = _voucherService.getErrorMessage(value['errorCode']);

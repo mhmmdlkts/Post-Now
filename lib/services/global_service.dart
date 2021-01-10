@@ -1,7 +1,7 @@
 import 'package:package_info/package_info.dart';
 import 'package:postnow/enums/app_type_enum.dart';
 
-const String POSTNOW_PACKAGE_NAME = "com.postnow.app";
+const String POSTNOW_PACKAGE_NAME = "com.postnow.customer";
 const String POSTNOW_DRIVER_PACKAGE_NAME = "com.postnow.delivery";
 const String POSTNOW_FLEET_PACKAGE_NAME = "com.postnow.fleet";
 

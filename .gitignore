@@ -55,7 +55,7 @@ GoogleService-Info.plist
 # Android Sign
 key.properties
 *.apk
-*.abb
+*.aab
 **/android/app/debug
 
 # Environment

@@ -47,7 +47,7 @@ dependencies:
   swipebuttonflutter: ^0.1.2
   qr_code_scanner: ^0.2.1
   flutter_polyline_points: ^0.2.4
-  audioplayers: ^0.17.0
+  audioplayers: ^0.16.2
   vibration: ^1.7.1
   credit_card_type_detector: ^1.1.0
   credit_card: ^0.1.8
