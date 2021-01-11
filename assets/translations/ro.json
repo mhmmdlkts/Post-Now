@@ -255,7 +255,7 @@
       },
       "LOCATION": {
         "TITLE": "Permite ca curierul Post Now să acceseze locația acestui dispozitiv.",
-        "MESSAGE": "Pentru a garanta o funcționare mai bună, acordă aplicației autorizația de a accesa locația dispozitivului.",
+        "MESSAGE": "Pentru a putea afișa diferitele magazine din zona dvs., avem nevoie de permisiunea de a accesa locația dvs. curentă.",
         "ALLOW": "Permite"
       }
     },
