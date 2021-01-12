@@ -185,7 +185,7 @@ class _MapsScreenState extends State<MapsScreen> {
         print("Force init");
     });
 
-    PermissionService.positionIsNotGranted(context, PermissionTypEnum.NOTIFICATION);
+    PermissionService.positionIsNotGranted(PermissionTypEnum.NOTIFICATION, context: context);
 
     final markerSize = Platform.isIOS?130:80;
 
@@ -1046,9 +1046,9 @@ class _MapsScreenState extends State<MapsScreen> {
       });
     }
 
-    Future<void> _initMyPosition() async {
-      if (await PermissionService.positionIsNotGranted(context, PermissionTypEnum.LOCATION))
-        return null;
+    Future<bool> _initMyPosition() async {
+      if (await PermissionService.positionIsNotGranted(PermissionTypEnum.LOCATION, context: context))
+        return false;
 
       const locationOptions = LocationOptions(accuracy: LocationAccuracy.high, distanceFilter: 10);
 
@@ -1063,6 +1063,7 @@ class _MapsScreenState extends State<MapsScreen> {
       await _mapController.moveCamera(CameraUpdate.newCameraPosition(
           CameraPosition(target: LatLng(_myPosition.latitude, _myPosition.longitude), zoom: 13)
       ));
+      return true;
     }
 
     void _setMyPosition(Position pos) {

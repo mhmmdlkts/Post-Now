@@ -389,7 +389,7 @@
 				CODE_SIGN_ENTITLEMENTS = Runner/RunnerProfile.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = 33ZTKVABMB;
 				ENABLE_BITCODE = NO;
 				FLUTTER_ROOT = /Users/mali/Flutter/flutter;
@@ -533,7 +533,7 @@
 				CODE_SIGN_ENTITLEMENTS = Runner/RunnerDebug.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = 33ZTKVABMB;
 				ENABLE_BITCODE = NO;
 				FLUTTER_ROOT = /Users/mali/Flutter/flutter;
@@ -571,7 +571,7 @@
 				CODE_SIGN_ENTITLEMENTS = Runner/RunnerRelease.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = 33ZTKVABMB;
 				ENABLE_BITCODE = NO;
 				FLUTTER_ROOT = /Users/mali/Flutter/flutter;

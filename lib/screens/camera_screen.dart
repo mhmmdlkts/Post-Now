@@ -24,7 +24,7 @@ class _CameraScreenState extends State<CameraScreen> {
   void initState() {
     super.initState();
 
-    PermissionService.positionIsNotGranted(context, PermissionTypEnum.CAMERA).then((value) => {
+    PermissionService.positionIsNotGranted(PermissionTypEnum.CAMERA, context: context).then((value) => {
       if (value)
         Navigator.pop(context, null)
       else

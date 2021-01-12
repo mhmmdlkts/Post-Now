@@ -6,7 +6,7 @@ import 'package:postnow/enums/permission_typ_enum.dart';
 
 class PermissionService {
 
-  static Future<bool> positionIsNotGranted(BuildContext context, PermissionTypEnum permissionTyp) async {
+  static Future<bool> positionIsNotGranted(PermissionTypEnum permissionTyp, {BuildContext context}) async {
     PermissionStatus permissionStatus;
     switch (permissionTyp) {
       case PermissionTypEnum.LOCATION:
@@ -21,23 +21,17 @@ class PermissionService {
         if (permissionStatus.isGranted)
           return false;
         permissionStatus = await Permission.camera.request();
-        break;
-
-      case PermissionTypEnum.NOTIFICATION:
-        permissionStatus = await Permission.notification.status;
-        if (permissionStatus.isGranted)
-          return false;
-        permissionStatus = await Permission.notification.request();
     }
     if (permissionStatus == null)
       return true;
 
-    if (permissionStatus == PermissionStatus.permanentlyDenied || permissionStatus == PermissionStatus.denied) {
+    if (context != null && (permissionStatus == PermissionStatus.permanentlyDenied || permissionStatus == PermissionStatus.denied)) {
       bool val = await _allowDialog(context, permissionTyp);
       if (val) {
         await openAppSettings();
         await _iAmBackDialog(context);
       }
+      return await positionIsNotGranted(permissionTyp);
     }
     return !permissionStatus.isGranted;
   }

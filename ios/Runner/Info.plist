@@ -84,21 +84,21 @@
 	<key>NSCalendarsUsageDescription</key>
 	<string>This app needs access to calender to provide the best possible user experience</string>
 	<key>NSCameraUsageDescription</key>
-	<string>This app needs to acces the camera to send fotos while chatting.</string>
+	<string>This app needs to access the camera to send photos while chatting.</string>
 	<key>NSContactsUsageDescription</key>
 	<string>This app needs access to contact to provide the best possible user experience</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>This app needs access to location when open and in the background.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>This app needs to acces location to improve user experience.</string>
+	<string>This app needs to access location to improve user experience.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>This app needs to acces location to improve user experience.</string>
+	<string>This app needs to access location to improve user experience.</string>
 	<key>NSMotionUsageDescription</key>
 	<string>This app needs access to Motion to provide the best possible user experience</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>This app needs access to Photo Library to provide the best possible user experience</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
-	<string>This app needs access to Speech Recognite to provide the best possible user experience</string>
+	<string>This app needs access to Speech Recognize to provide the best possible user experience</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
@@ -106,8 +106,6 @@
 	</dict>
 	<key>UIBackgroundModes</key>
 	<array>
-		<string>fetch</string>
-		<string>processing</string>
 		<string>remote-notification</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
