@@ -255,7 +255,7 @@
       },
       "LOCATION": {
         "TITLE": "Povoliť Post Now prístup k polohe tohto zariadenia.",
-        "MESSAGE": "Z dôvodu zaručenia lepšie funkčnosti, udeľte aplikácii oprávnenie na prístup k polohe zariadenia.",
+        "MESSAGE": "Aby sme mohli zobraziť rôzne obchody vo vašej oblasti, potrebujeme povolenie na prístup k vašej aktuálnej polohe.",
         "ALLOW": "Povoliť"
       }
     },

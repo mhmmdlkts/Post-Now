@@ -254,7 +254,7 @@
       },
       "LOCATION": {
         "TITLE": "Post Now'ın bu cihazın konumuna erişmesine izin verin.",
-        "MESSAGE": "Uygulamanın daha iyi çalışabilmesi için, uygulamaya cihazın konumuna erişme yetkisi verin.",
+        "MESSAGE": "Çevrenizdeki çeşitli dükkanları görebilmeniz için, mevcut konumunuza erişim iznine ihtiyacımız var.",
         "ALLOW": "İzin ver"
       }
     },

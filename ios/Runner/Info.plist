@@ -88,11 +88,11 @@
 	<key>NSContactsUsageDescription</key>
 	<string>This app needs access to contact to provide the best possible user experience</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>This app needs access to location when open and in the background.</string>
+	<string>In order to be able to show the various stores in your area, we need permission to access your current location.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>This app needs to access location to improve user experience.</string>
+	<string>In order to be able to show the various stores in your area, we need permission to access your current location.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>This app needs to access location to improve user experience.</string>
+	<string>In order to be able to show the various stores in your area, we need permission to access your current location.</string>
 	<key>NSMotionUsageDescription</key>
 	<string>This app needs access to Motion to provide the best possible user experience</string>
 	<key>NSPhotoLibraryUsageDescription</key>

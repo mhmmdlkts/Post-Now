@@ -255,7 +255,7 @@
       },
       "LOCATION": {
         "TITLE": "Omogućite Post Now pristup lokaciji ovog uređaja.",
-        "MESSAGE": "Kako bismo pružili bolju uslugu, dajte aplikaciji autorizaciju pristupa lokacije uređaja.",
+        "MESSAGE": "Da bismo mogli da prikažemo razne prodavnice u vašem području, treba nam dozvola za pristup vašoj trenutnoj lokaciji.",
         "ALLOW": "Omogućiti"
       }
     },

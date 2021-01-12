@@ -255,7 +255,7 @@
       },
       "LOCATION": {
         "TITLE": "Allow Post Now to access this device's location.",
-        "MESSAGE": "In order to guarantee a better function, give the app the authorization to access the device's location.",
+        "MESSAGE": "In order to be able to show the various stores in your area, we need permission to access your current location.",
         "ALLOW": "Allow"
       }
     },

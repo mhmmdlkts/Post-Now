@@ -255,7 +255,7 @@
       },
       "LOCATION": {
         "TITLE": "Engedje meg, hogy a Post Now hozzáférjen a tartózkodási helyéhez.",
-        "MESSAGE": "A jobb szolgáltatás garantálása érdekében engedélyezze az alkalmazás számára, hogy hozzáférjen az eszköz helyéhez.",
+        "MESSAGE": "Ahhoz, hogy az Ön környékén található különféle üzleteket megjeleníthessük, engedélyre van szükségünk az Ön jelenlegi tartózkodási helyének eléréséhez.",
         "ALLOW": "Engedélyez"
       }
     },
