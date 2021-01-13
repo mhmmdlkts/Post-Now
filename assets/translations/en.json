@@ -257,6 +257,11 @@
         "TITLE": "Allow Post Now to access this device's location.",
         "MESSAGE": "In order to be able to show the various stores in your area, we need permission to access your current location.",
         "ALLOW": "Allow"
+      },
+      "NOTIFICATION": {
+        "TITLE": "This app would like to send you notifications",
+        "MESSAGE": "Notifications may include alerts sounds and icon badges.",
+        "ALLOW": "Allow"
       }
     },
     "I_AM_BACK": {

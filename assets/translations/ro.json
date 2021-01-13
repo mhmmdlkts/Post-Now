@@ -257,6 +257,11 @@
         "TITLE": "Permite ca curierul Post Now să acceseze locația acestui dispozitiv.",
         "MESSAGE": "Pentru a putea afișa diferitele magazine din zona dvs., avem nevoie de permisiunea de a accesa locația dvs. curentă.",
         "ALLOW": "Permite"
+      },
+      "NOTIFICATION": {
+        "TITLE": "Această aplicație ar dori să vă trimită notificări",
+        "MESSAGE": "Notificările pot include sunete de alertă și ecusoane de pictograme.",
+        "ALLOW": "Permite"
       }
     },
     "I_AM_BACK": {

@@ -257,6 +257,11 @@
         "TITLE": "Omogućite Post Now pristup lokaciji ovog uređaja.",
         "MESSAGE": "Da bismo mogli da prikažemo razne prodavnice u vašem području, treba nam dozvola za pristup vašoj trenutnoj lokaciji.",
         "ALLOW": "Omogućiti"
+      },
+      "NOTIFICATION": {
+        "TITLE": "Ova aplikacija želi vam slati obavještenja",
+        "MESSAGE": "Obavijesti mogu sadržavati zvukove upozorenja i značke ikona.",
+        "ALLOW": "Omogućiti"
       }
     },
     "I_AM_BACK": {

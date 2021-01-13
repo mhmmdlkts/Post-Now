@@ -257,6 +257,11 @@
         "TITLE": "Engedje meg, hogy a Post Now hozzáférjen a tartózkodási helyéhez.",
         "MESSAGE": "Ahhoz, hogy az Ön környékén található különféle üzleteket megjeleníthessük, engedélyre van szükségünk az Ön jelenlegi tartózkodási helyének eléréséhez.",
         "ALLOW": "Engedélyez"
+      },
+      "NOTIFICATION": {
+        "TITLE": "Ez az alkalmazás értesítéseket szeretne küldeni Önnek",
+        "MESSAGE": "Az értesítések riasztási hangokat és ikonjelvényeket tartalmazhatnak.",
+        "ALLOW": "Engedélyez"
       }
     },
     "I_AM_BACK": {

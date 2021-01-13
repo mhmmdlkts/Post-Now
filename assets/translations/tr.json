@@ -256,6 +256,16 @@
         "TITLE": "Post Now'ın bu cihazın konumuna erişmesine izin verin.",
         "MESSAGE": "Çevrenizdeki çeşitli dükkanları görebilmeniz için, mevcut konumunuza erişim iznine ihtiyacımız var.",
         "ALLOW": "İzin ver"
+      },
+      "NOTIFICATION": {
+        "TITLE": "Bu uygulama size bildirim göndermek istiyor",
+        "MESSAGE": "Bildirimler, uyarı sesleri ve görseller içerebilir.",
+        "ALLOW": "İzin ver"
+      },
+      "NOTIFICATION": {
+        "TITLE": "Bu uygulama size bildirim göndermek istiyor",
+        "MESSAGE": "Bildirimler, uyarı sesleri ve görseller içerebilir.",
+        "ALLOW": "İzin ver"
       }
     },
     "I_AM_BACK": {

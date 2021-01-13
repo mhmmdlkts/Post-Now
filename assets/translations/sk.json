@@ -257,6 +257,11 @@
         "TITLE": "Povoliť Post Now prístup k polohe tohto zariadenia.",
         "MESSAGE": "Aby sme mohli zobraziť rôzne obchody vo vašej oblasti, potrebujeme povolenie na prístup k vašej aktuálnej polohe.",
         "ALLOW": "Povoliť"
+      },
+      "NOTIFICATION": {
+        "TITLE": "Táto aplikácia by vám chcela posielať upozornenia",
+        "MESSAGE": "Oznámenia môžu obsahovať zvuky výstrah a odznaky ikon.",
+        "ALLOW": "Povoliť"
       }
     },
     "I_AM_BACK": {
