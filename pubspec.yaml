@@ -1,9 +1,9 @@
 name: postnow
-description: A new Flutter application.
+description: Post Now
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 1.0.1+3
+version: 1.0.0+1
 
 environment:
   sdk: ">=2.7.0 <3.0.0"

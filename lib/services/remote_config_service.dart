@@ -31,7 +31,6 @@ class RemoteConfigService {
     try {
       return double.parse(_values[key]);
     } catch (e) {
-      print(e);
       return _values[key] + 0.0;
     }
   }
@@ -42,7 +41,6 @@ class RemoteConfigService {
     try {
       return int.parse(_values[key]);
     } catch (e) {
-      print(e);
       return _values[key];
     }
   }
@@ -59,7 +57,6 @@ class RemoteConfigService {
     try {
       return List<String>.from(_values[key]);
     } catch (e) {
-      print(e);
       return List();
     }
   }

@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:firebase_database/firebase_database.dart';
-import 'dart:math' show cos, sqrt, asin;
+import 'dart:math' show asin, cos, max, sqrt;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -35,11 +35,10 @@ class MapsService with WidgetsBindingObserver {
 
   double calculatePrice (Position position, LatLng latLng) {
     double totalDistance = coordinateDistance(LatLng(position.latitude, position.longitude), latLng);
-    print('total: ' + totalDistance.toString());
+    double minCost = RemoteConfigService.getDouble(FIREBASE_REMOTE_CONFIG_MIN_ORDER_COST);
     double calcPrice = RemoteConfigService.getDouble(FIREBASE_REMOTE_CONFIG_EURO_START_KEY);
-    print('calcPrice: ' + calcPrice.toString());
     calcPrice += totalDistance * RemoteConfigService.getDouble(FIREBASE_REMOTE_CONFIG_EURO_PER_KM_KEY);
-    return num.parse(calcPrice.toStringAsFixed(2));
+    return num.parse(max(calcPrice, minCost).toStringAsFixed(2));
   }
 
   int getFreeItemCount() => RemoteConfigService.getInt(FIREBASE_REMOTE_FREE_SHOPPING_ITEMS_COUNT);
@@ -134,13 +133,14 @@ class MapsService with WidgetsBindingObserver {
       dynamic obj = json.decode(response.body);
       if (obj["error"] != null && obj["key"] == null)
         return null;
+      print(obj["key"]);
       await draftRef.child(obj["key"]).once().then((DataSnapshot snapshot){
         rtnVal = DraftOrder.fromSnapshot(snapshot);
       }).catchError((onError) => {
         print(onError)
       });
     } catch (e) {
-      print('Error 47: ' + e.message);
+      print('Error 47: ' + e.toString());
       return null;
     }
     return rtnVal;

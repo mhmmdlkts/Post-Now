@@ -269,7 +269,8 @@ class _AuthScreenState extends State<AuthScreen> {
   _buttonClickAble() => _isInitialized && _isInputValid;
 
   _onContinuePressed() async {
-    // return signInAnonymously(); // This is for emulator tests
+    if (_phoneNo == "00000000")
+      return signInAnonymously(); // This is for emulator tests
     FocusScope.of(context).unfocus();
     if (_formKey.currentState.validate()) {
       if(_codeSent) {

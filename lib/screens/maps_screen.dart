@@ -15,6 +15,7 @@ import 'package:postnow/dialogs/topic_chooser_dialog.dart';
 import 'package:postnow/enums/order_typ_enum.dart';
 import 'package:postnow/enums/payment_methods_enum.dart';
 import 'package:postnow/enums/permission_typ_enum.dart';
+import 'package:postnow/environment/global_variables.dart';
 import 'package:postnow/models/credit_card.dart';
 import 'package:postnow/models/address.dart';
 import 'package:postnow/models/draft_order.dart';
@@ -31,6 +32,7 @@ import 'package:postnow/services/legal_service.dart';
 import 'package:postnow/services/overview_service.dart';
 import 'package:postnow/services/permission_service.dart';
 import 'package:postnow/services/places_service.dart';
+import 'package:postnow/services/remote_config_service.dart';
 import 'package:postnow/services/vibration_service.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -1865,14 +1867,18 @@ class _MapsScreenState extends State<MapsScreen> {
           cheapestPrice = aroundPrice;
           cheapestPoint = marketLatLng;
         }
+        List<String> whiteList =  RemoteConfigService.getStringList(FIREBASE_REMOTE_CONFIG_MARKET_TOPICS_WHITE_LIST);
+        final bool isOpen = (element?.openingHours?.openNow??false) || whiteList.contains(element.placeId);
+
         if (cheapestPoint == null)
           cheapestPoint = marketLatLng;
         _marketMarkers.add(Marker(
-          icon: (element?.openingHours?.openNow??false)?_shopLocationIcon:_shopLocationIconGray,
+          icon: isOpen?_shopLocationIcon:_shopLocationIconGray,
           infoWindow: InfoWindow(
-              title: element.name + ((element?.openingHours?.openNow??false)?'':' (${"MAPS.MARKET.CLOSED".tr()})'),
+              title: element.name + (isOpen?'':' (${"MAPS.MARKET.CLOSED".tr()})'),
               snippet: "MAPS.MARKET.MARKER".tr(namedArgs: {"around_amount": aroundPrice.toStringAsFixed(2)}),
               onTap: () => setState(() async {
+                print(element.placeId);
                 final result = await Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => ShoppingListMakerScreen(freeItemCount: _mapsService.getFreeItemCount(), itemCost: _mapsService.getShoppingItemCost(), sameItemCost: _mapsService.getShoppingSameItemCost()))
