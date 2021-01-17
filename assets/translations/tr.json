@@ -142,7 +142,8 @@
     "TYPE_ADDRESS": "Adres girin",
     "TOPIC_SEARCHING": "{topic} ara",
     "MARKET": {
-      "MARKER": "Takribi teslimat ücreti: {around_amount} €"
+      "MARKER": "Takribi teslimat ücreti: {around_amount} €",
+      "CLOSED": "Kapalı"
     },
     "SIDE_MENU": {
       "MY_ORDERS": "Siparişlserim",

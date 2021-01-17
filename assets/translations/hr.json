@@ -142,7 +142,8 @@
     "TYPE_ADDRESS": "Unesite adresu",
     "TOPIC_SEARCHING": "Tražite {topic}",
     "MARKET": {
-      "MARKER": "Procenjeni troškovi prevozi: {around_amount} €"
+      "MARKER": "Procenjeni troškovi prevozi: {around_amount} €",
+      "CLOSED": "Zatvoreno"
     },
     "SIDE_MENU": {
       "MY_ORDERS": "Moje narudžbe",

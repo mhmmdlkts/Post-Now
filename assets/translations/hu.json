@@ -142,7 +142,8 @@
     "TYPE_ADDRESS": "Adja meg a címet",
     "TOPIC_SEARCHING": "{topic} szerinti keresés",
     "MARKET": {
-      "MARKER": "Hozzávetőleges szállítási költségek: {around_amount} €"
+      "MARKER": "Hozzávetőleges szállítási költségek: {around_amount} €",
+      "CLOSED": "Zárva"
     },
     "SIDE_MENU": {
       "MY_ORDERS": "Megrendeléseim",

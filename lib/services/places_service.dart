@@ -11,7 +11,7 @@ class PlacesService {
   }
 
   Future<List<PlacesSearchResult>> getPlaces(String keyword) async {
-    PlacesSearchResponse response = await _places.searchNearbyWithRadius(_myLoc, 10000, keyword: keyword);
-    return response.results.where((e) => e?.openingHours?.openNow??false).toList(growable: false);
+    PlacesSearchResponse response = await _places.searchNearbyWithRadius(_myLoc, 2500, keyword: keyword);
+    return response.results;
   }
 }

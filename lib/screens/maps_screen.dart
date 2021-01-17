@@ -90,7 +90,7 @@ class _MapsScreenState extends State<MapsScreen> {
   int _initCount = 0;
   int _initDone = 0;
   Set<Polyline> _polyLines = Set();
-  BitmapDescriptor _packageLocationIcon, _driverLocationIcon, _homeLocationIcon, _shopLocationIcon;
+  BitmapDescriptor _packageLocationIcon, _driverLocationIcon, _homeLocationIcon, _shopLocationIcon, _shopLocationIconGray;
   TextEditingController _originTextController, _destinationTextController;
   Marker _packageMarker, _destinationMarker;
   GoogleMapController _mapController;
@@ -210,6 +210,12 @@ class _MapsScreenState extends State<MapsScreen> {
     _mapsService.getBytesFromAsset('assets/shop_map_marker.png', (markerSize*1.15).round()).then((value) => { setState((){
       _shopLocationIcon = BitmapDescriptor.fromBytes(value);
       _nextInitializeDone('2.1');
+    })});
+
+    _initCount++;
+    _mapsService.getBytesFromAsset('assets/shop_map_marker_gray.png', (markerSize*1.15).round()).then((value) => { setState((){
+      _shopLocationIconGray = BitmapDescriptor.fromBytes(value);
+      _nextInitializeDone('2.2');
     })});
 
     _initCount++;
@@ -1862,9 +1868,9 @@ class _MapsScreenState extends State<MapsScreen> {
         if (cheapestPoint == null)
           cheapestPoint = marketLatLng;
         _marketMarkers.add(Marker(
-          icon: _shopLocationIcon,
+          icon: (element?.openingHours?.openNow??false)?_shopLocationIcon:_shopLocationIconGray,
           infoWindow: InfoWindow(
-              title: element.name,
+              title: element.name + ((element?.openingHours?.openNow??false)?'':' (${"MAPS.MARKET.CLOSED".tr()})'),
               snippet: "MAPS.MARKET.MARKER".tr(namedArgs: {"around_amount": aroundPrice.toStringAsFixed(2)}),
               onTap: () => setState(() async {
                 final result = await Navigator.push(

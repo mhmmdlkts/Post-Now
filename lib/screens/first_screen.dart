@@ -50,9 +50,6 @@ class _FirstScreen extends State<FirstScreen> {
       _needsUpdate = localVersion < _onlineVersion;
     });
 
-    print('Local Version: ' + localVersion.toString());
-    print('Online Version: ' + _onlineVersion.toString());
-
     if (_needsUpdate)
       _firstScreenService.showUpdateAvailableDialog(context);
   }

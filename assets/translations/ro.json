@@ -142,7 +142,8 @@
     "TYPE_ADDRESS": "Introdu adresa",
     "TOPIC_SEARCHING": "Caută {topic}",
     "MARKET": {
-      "MARKER": "Costurile aproximative ale transportului: {around_amount} €"
+      "MARKER": "Costurile aproximative ale transportului: {around_amount} €",
+      "CLOSED": "Închis"
     },
     "SIDE_MENU": {
       "MY_ORDERS": "Comenzile mele",

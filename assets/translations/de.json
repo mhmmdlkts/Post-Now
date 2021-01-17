@@ -142,7 +142,8 @@
     "TYPE_ADDRESS": "Adresse eingeben",
     "TOPIC_SEARCHING": "{topic} suchen",
     "MARKET": {
-      "MARKER": "Ungefähre Transportkosten: {around_amount} €"
+      "MARKER": "Ungefähre Transportkosten: {around_amount} €",
+      "CLOSED": "Geschlossen"
     },
     "SIDE_MENU": {
       "MY_ORDERS": "Meine Bestellungen",

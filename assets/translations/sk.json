@@ -142,7 +142,8 @@
     "TYPE_ADDRESS": "Zadať adresu",
     "TOPIC_SEARCHING": "Hľadať {topic}",
     "MARKET": {
-      "MARKER": "Približné náklady na prepravu: {around_amount} €"
+      "MARKER": "Približné náklady na prepravu: {around_amount} €",
+      "CLOSED": "Zatvorené"
     },
     "SIDE_MENU": {
       "MY_ORDERS": "Moje objednávky",

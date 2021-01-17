@@ -142,7 +142,8 @@
     "TYPE_ADDRESS": "Enter adress",
     "TOPIC_SEARCHING": "Search for {topic}",
     "MARKET": {
-      "MARKER": "Approximate transportation costs: {around_amount} €"
+      "MARKER": "Approximate transportation costs: {around_amount} €",
+      "CLOSED": "Closed"
     },
     "SIDE_MENU": {
       "MY_ORDERS": "My Orders",
