@@ -6,6 +6,7 @@
   "WARNING": "Dikkat",
   "THANKS": "A rendelés megtörtént.",
   "CLOSE": "Bezár",
+  "CONTINUE": "Következő",
   "SETTINGS": "Beállítások",
   "SEND_MESSAGE": "Üzenet küldése",
   "SEND": "Küldés",
@@ -201,6 +202,9 @@
       },
       "NO_ROUTE": {
         "MESSAGE": "A távolság kiszámítása folyamatban van."
+      },
+      "MARKET_MARKER": {
+        "BUTTON": "Hozzon létre egy bevásárló listát"
       }
     }
   },
@@ -311,6 +315,10 @@
       "TITLE": "Információ",
       "CONTENT": "A(z) {amount} eurót meghaladó megrendelések esetén a számlázáshoz szükségünk van a pontos névre és címre.",
       "POSITIVE": "Ok"
+    },
+    "MARKET_IS_CLOSED": {
+      "TITLE": "{market_name}",
+      "MESSAGE": ""
     }
   },
   "PAYMENTMETHODSENUM": {

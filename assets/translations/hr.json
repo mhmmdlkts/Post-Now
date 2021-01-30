@@ -6,6 +6,7 @@
   "WARNING": "Upozorenje",
   "THANKS": "Vaša narudžba je završena.",
   "CLOSE": "Zatvoriti",
+  "CONTINUE": "Sledeće",
   "SETTINGS": "Podešavanja",
   "SEND_MESSAGE": "Poslati poruku",
   "SEND": "Poslati",
@@ -201,6 +202,9 @@
       },
       "NO_ROUTE": {
         "MESSAGE": "Ruta nije izračunata."
+      },
+      "MARKET_MARKER": {
+        "BUTTON": "Stvorite popis za kupnju"
       }
     }
   },
@@ -311,6 +315,10 @@
       "TITLE": "Informacije",
       "CONTENT": "Za narudžbe veće od {amount} €, treba nam vaše puno ime i adresa za predračun/račun.",
       "POSITIVE": "Uredu"
+    },
+    "MARKET_IS_CLOSED": {
+      "TITLE": "{market_name}",
+      "MESSAGE": ""
     }
   },
   "PAYMENTMETHODSENUM": {

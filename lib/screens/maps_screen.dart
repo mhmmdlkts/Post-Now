@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:google_map_polyline/google_map_polyline.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:html/parser.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:postnow/decoration/my_colors.dart';
 import 'package:postnow/dialogs/address_manager_dialog.dart';
@@ -754,7 +755,6 @@ class _MapsScreenState extends State<MapsScreen> {
         });
       }
     }
-    print(typ);
     switch(typ) {
       case Icon: return Icon(Icons.clear, color: Colors.white);
       case Color: return Colors.red;
@@ -1458,7 +1458,7 @@ class _MapsScreenState extends State<MapsScreen> {
   Widget _getFloatingButton() {
       if (_visibleAllList())
         return Container();
-      if (_menuTyp == null)
+      if (_menuTyp == null && _bottomCard == null)
         return _positionFloatingActionButton();
       switch (_menuTyp) {
       }
@@ -1833,6 +1833,21 @@ class _MapsScreenState extends State<MapsScreen> {
     return val??false;
   }
 
+  Future<bool> _maybeItsClosedAreYouSure(String marketName) async {
+    final val = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return CustomAlertDialog(
+          title: "DIALOGS.MARKET_IS_CLOSED.TITLE".tr(namedArgs: {'market_name': marketName}),
+          message: 'DIALOGS.MARKET_IS_CLOSED.MESSAGE'.tr(),
+          negativeButtonText: "CANCEL".tr(),
+          positiveButtonText: "CONTINUE".tr(),
+        );
+      }
+    );
+    return val??false;
+  }
+
   Future<Address> _showAddressManagerDialog(Address address, {String name}) async {
     return await showDialog(
       context: context,
@@ -1873,24 +1888,12 @@ class _MapsScreenState extends State<MapsScreen> {
         if (cheapestPoint == null)
           cheapestPoint = marketLatLng;
         _marketMarkers.add(Marker(
+          onTap: () => _onTapTopicMarker(element, marketLatLng, isOpen),
           icon: isOpen?_shopLocationIcon:_shopLocationIconGray,
           infoWindow: InfoWindow(
               title: element.name,
               snippet: isOpen?null:'${"MAPS.MARKET.CLOSED".tr()}',
-              onTap: () => setState(() async {
-                print(element.placeId);
-                final result = await Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => ShoppingListMakerScreen(freeItemCount: _mapsService.getFreeItemCount(), itemCost: _mapsService.getShoppingItemCost(), sameItemCost: _mapsService.getShoppingSameItemCost()))
-                );
-                if (result == null)
-                  return;
-                _shopItems = result;
-                _placesTopic = null;
-                _isDestinationButtonChosen = false;
-                _setMarker(marketLatLng, market: element);
-                _marketMarkers.clear();
-              })
+              onTap: () => _onTapTopicMarker(element, marketLatLng, isOpen)
           ),
           markerId: MarkerId(element.placeId),
           position: marketLatLng,
@@ -1899,6 +1902,44 @@ class _MapsScreenState extends State<MapsScreen> {
       setState((){ }),
       _mapsService.setNewCameraPosition(_mapController, cheapestPoint, null, true)
     });
+  }
+
+  _onTapTopicMarker(PlacesSearchResult element, LatLng marketLatLng, bool isOpen) async {
+    _bottomCard = new BottomCard(
+      key: GlobalKey(),
+      maxHeight: _mapKey.currentContext.size.height,
+      floatingActionButton: _positionFloatingActionButton(),
+      headerText: element.name,
+      subTitleText: element.vicinity,
+      mainButtonText: 'MAPS.BOTTOM_MENUS.MARKET_MARKER.BUTTON'.tr(),
+      isCircleImage: false,
+      imageUrl: element.icon,
+      onCancelButtonPressed: () {
+        setState(() {
+          _bottomCard = null;
+        });
+      },
+
+      onMainButtonPressed: () async {
+        // if (!isOpen && !(await _maybeItsClosedAreYouSure(element.name))) return; // TODO add dialog messages
+
+        final result = await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ShoppingListMakerScreen(freeItemCount: _mapsService.getFreeItemCount(), itemCost: _mapsService.getShoppingItemCost(), sameItemCost: _mapsService.getShoppingSameItemCost()))
+        );
+        if (result == null)
+          return;
+        _shopItems = result;
+        _placesTopic = null;
+        _isDestinationButtonChosen = false;
+        _setMarker(marketLatLng, market: element);
+        _marketMarkers.clear();
+        _bottomCard = null;
+        setState(() {});
+      },
+      shrinkWrap: false,
+    );
+    setState(() {});
   }
 
   Future<String> _showOrderDetailDialog(jobId) async {

@@ -6,6 +6,7 @@
   "WARNING": "Dikkat",
   "THANKS": "Siparişiniz başarıyla tamamlandı.",
   "CLOSE": "Kapat",
+  "CONTINUE": "Devam",
   "SETTINGS": "Ayarlar",
   "SEND_MESSAGE": "Mesaj gönderin",
   "SEND": "Gönder",
@@ -200,6 +201,9 @@
       },
       "NO_ROUTE": {
         "MESSAGE": "Rota hesaplanamadı."
+      },
+      "MARKET_MARKER": {
+        "BUTTON": "Alışveriş listesi oluşturun"
       }
     }
   },
@@ -315,6 +319,10 @@
       "TITLE": "Bilgilendirme",
       "CONTENT": "{amount} € üzerindeki siparişlerinizde, faturanız için tam adınıza ve adresinize ihtiyacımız var.",
       "POSITIVE": "Tamam"
+    },
+    "MARKET_IS_CLOSED": {
+      "TITLE": "{market_name}",
+      "MESSAGE": ""
     }
   },
   "PAYMENTMETHODSENUM": {

@@ -6,6 +6,7 @@
   "WARNING": "Atenție",
   "THANKS": "Comanda dvs. a fost finalizată.",
   "CLOSE": "Închide",
+  "CONTINUE": "Următorul",
   "SETTINGS": "Setări",
   "SEND_MESSAGE": "Trimite un mesaj",
   "SEND": "Trimite",
@@ -201,6 +202,9 @@
       },
       "NO_ROUTE": {
         "MESSAGE": "Traseul nu a putu fi calculat."
+      },
+      "MARKET_MARKER": {
+        "BUTTON": "Creați o listă de cumpărături"
       }
     }
   },
@@ -311,6 +315,10 @@
       "TITLE": "Informații",
       "CONTENT": "Pentru comenzi mai mari de {amount} €, avem nevoie de numele tău complet și adresa pentru a întocmi o factură corectă.",
       "POSITIVE": "Ok"
+    },
+    "MARKET_IS_CLOSED": {
+      "TITLE": "{market_name}",
+      "MESSAGE": ""
     }
   },
   "PAYMENTMETHODSENUM": {

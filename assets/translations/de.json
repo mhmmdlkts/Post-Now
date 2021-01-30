@@ -6,6 +6,7 @@
   "WARNING": "Achtung",
   "THANKS": "Ihre Bestellung wurde abgeschlossen.",
   "CLOSE": "Schließen",
+  "CONTINUE": "Weiter",
   "SETTINGS": "Einstellungen",
   "SEND_MESSAGE": "Nachricht senden",
   "SEND": "Senden",
@@ -200,6 +201,9 @@
       },
       "NO_ROUTE": {
         "MESSAGE": "Route konnte nicht berechnet werden."
+      },
+      "MARKET_MARKER": {
+        "BUTTON": "Einkaufsliste erstellen"
       }
     }
   },
@@ -310,6 +314,10 @@
     "TITLE": "Information",
     "CONTENT": "Für Bestellungen ab {amount} €, brauchen wir für eine korrekte Rechnung deinen vollen Namen und die Anschrift.",
     "POSITIVE": "Ok"
+  },
+  "MARKET_IS_CLOSED": {
+    "TITLE": "{market_name}",
+    "MESSAGE": ""
   }
 },
 "PAYMENTMETHODSENUM": {

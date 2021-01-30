@@ -6,6 +6,7 @@
   "WARNING": "Upozornenie",
   "THANKS": "Vaša objednávka bola dokončená.",
   "CLOSE": "Zavrieť",
+  "CONTINUE": "Ďalej",
   "SETTINGS": "Nastavenia",
   "SEND_MESSAGE": "Poslať správu",
   "SEND": "Poslať",
@@ -201,6 +202,9 @@
       },
       "NO_ROUTE": {
         "MESSAGE": "Trasa nemohla byť vypočítaná."
+      },
+      "MARKET_MARKER": {
+        "BUTTON": "Vytvorte nákupný zoznam"
       }
     }
   },
@@ -311,6 +315,10 @@
       "TITLE": "Informácia",
       "CONTENT": "Pre objednávky v hodnote vyššej ako {amount} €, potrebujeme vaše celé meno a adresu kvôli správnej faktúre.",
       "POSITIVE": "Dobre"
+    },
+    "MARKET_IS_CLOSED": {
+      "TITLE": "{market_name}",
+      "MESSAGE": ""
     }
   },
   "PAYMENTMETHODSENUM": {

@@ -23,11 +23,13 @@ class BottomCard extends StatefulWidget {
   final bool shrinkWrap;
   final bool showFooter;
   final bool showCash;
+  final bool isCircleImage;
   final SettingsDialog settingsDialog;
   final String chatName;
   final String headerText;
   final String phone;
   final String mainButtonText;
+  final String subTitleText;
   final String imageUrl;
   final bool isSwipeButton;
   final bool isLoading;
@@ -48,6 +50,7 @@ class BottomCard extends StatefulWidget {
     this.showDestinationAddress = false,
     this.phone,
     this.chatName,
+    this.subTitleText,
     this.mainButtonText,
     this.isSwipeButton = false,
     this.defaultOpen = false,
@@ -55,6 +58,7 @@ class BottomCard extends StatefulWidget {
     this.onCancelButtonPressed,
     this.showFooter = true,
     this.showCash = false,
+    this.isCircleImage = true,
     this.settingsDialog,
     this.isLoading = false
   }) : super(key: key);
@@ -68,6 +72,7 @@ class BottomState extends State<BottomCard> {
   final GlobalKey _containerKey = GlobalKey();
   final GlobalKey _contentKey = GlobalKey();
   final GlobalKey _headerKey = GlobalKey();
+  final GlobalKey _subTitleKey = GlobalKey();
   ChatService _chatService;
   ShoppingListService _listService;
 
@@ -109,6 +114,7 @@ class BottomState extends State<BottomCard> {
                 children: [
                   _getHeader(),
                   _getSubHeader(),
+                  _getCustomSubHeader(),
                   _addressWidget(false),
                   widget.showOriginAddress ? Container(height: 10) : Container(),
                   _addressWidget(true),
@@ -249,7 +255,19 @@ class BottomState extends State<BottomCard> {
     );
   }
 
-  bool _anyFab() => widget.chatName != null || widget.phone != null || widget.onCancelButtonPressed != null;
+  Widget _getCustomSubHeader() {
+    return widget.subTitleText == null ?Container():Container(
+        margin: EdgeInsets.only(bottom: 12),
+        key: _subTitleKey,
+        child: Text(
+          widget.subTitleText,
+          style: TextStyle(fontSize: 16,),
+          textAlign: TextAlign.center,
+        ),
+    );
+  }
+
+  bool _anyFab() => widget.imageUrl != null || widget.chatName != null || widget.phone != null || widget.onCancelButtonPressed != null;
 
   Widget _getTargetName() {
     if (widget.job == null)
@@ -398,13 +416,14 @@ class BottomState extends State<BottomCard> {
   }
 
   Widget _circularImage(String imgUrl) {
+    const radius = 30.0;
     return Container(
       margin: EdgeInsets.only(right: 14),
-      child: CircleAvatar(
-        radius: 30.0,
+      child: widget.isCircleImage?CircleAvatar(
+        radius: radius,
         backgroundImage: NetworkImage(imgUrl),
         backgroundColor: Colors.transparent,
-      ),
+      ):Image.network(imgUrl, height: radius*2),
     );
   }
 }

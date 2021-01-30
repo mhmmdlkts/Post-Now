@@ -6,6 +6,7 @@
   "WARNING": "Dikkat",
   "THANKS": "Your order has been completed.",
   "CLOSE": "Close",
+  "CONTINUE": "Continue",
   "SETTINGS": "Settings",
   "SEND_MESSAGE": "Send a message",
   "SEND": "Send",
@@ -201,6 +202,9 @@
       },
       "NO_ROUTE": {
         "MESSAGE": "Route could not be calculated."
+      },
+      "MARKET_MARKER": {
+        "BUTTON": "Create shopping list"
       }
     }
   },
@@ -311,6 +315,10 @@
       "TITLE": "Information",
       "CONTENT": "For orders of more than {amount} €, we need your full name and address for a correct invoice/bill.",
       "POSITIVE": "Ok"
+    },
+    "MARKET_IS_CLOSED": {
+      "TITLE": "{market_name}",
+      "MESSAGE": ""
     }
   },
   "PAYMENTMETHODSENUM": {
