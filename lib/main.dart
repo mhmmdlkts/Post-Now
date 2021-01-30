@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:postnow/services/auth_service.dart';
+import 'package:postnow/services/languages_service.dart';
 import 'package:postnow/widgets/stateful_wrapper.dart';
 
 import 'dart:ui' as ui;
@@ -11,9 +12,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(
       EasyLocalization(
-          supportedLocales: [Locale('en', ''), Locale('de', ''), Locale('tr', ''), Locale('sr', ''), Locale('ro', ''), Locale('sk', ''), Locale('bs', ''), Locale('hr', ''), Locale('hu', '')],
+          supportedLocales: LanguageService.supportedLanguages.map((lang) => Locale(lang, '')).toList(),
           path: 'assets/translations',
-          fallbackLocale: Locale('en', ''),
+          fallbackLocale: Locale(LanguageService.defaultLanguage, ''),
           saveLocale: true,
           useOnlyLangCode: true,
           child: MyApp()
@@ -25,7 +26,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StatefulWrapper(
-      onInit: () { context.locale = Locale(ui.window.locale.languageCode, ''); },
+      onInit: () { context.locale = Locale(LanguageService.getLang(ui.window.locale.languageCode), ''); },
       child: FutureBuilder(
         future: Firebase.initializeApp(),
         builder: (context, snapshot) {

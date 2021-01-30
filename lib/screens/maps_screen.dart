@@ -1875,8 +1875,8 @@ class _MapsScreenState extends State<MapsScreen> {
         _marketMarkers.add(Marker(
           icon: isOpen?_shopLocationIcon:_shopLocationIconGray,
           infoWindow: InfoWindow(
-              title: element.name + (isOpen?'':' (${"MAPS.MARKET.CLOSED".tr()})'),
-              snippet: "MAPS.MARKET.MARKER".tr(namedArgs: {"around_amount": aroundPrice.toStringAsFixed(2)}),
+              title: element.name,
+              snippet: isOpen?null:'${"MAPS.MARKET.CLOSED".tr()}',
               onTap: () => setState(() async {
                 print(element.placeId);
                 final result = await Navigator.push(

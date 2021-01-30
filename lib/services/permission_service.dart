@@ -1,19 +1,42 @@
+import 'dart:io';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:postnow/dialogs/custom_alert_dialog.dart';
 import 'package:postnow/enums/permission_typ_enum.dart';
 
 class PermissionService {
+  static const platform = const MethodChannel('postnow/permission');
 
   static Future<bool> positionIsNotGranted(PermissionTypEnum permissionTyp, {BuildContext context}) async {
     PermissionStatus permissionStatus;
+
     switch (permissionTyp) {
       case PermissionTypEnum.LOCATION:
-        permissionStatus = await Permission.location.status;
+        permissionStatus = await Permission.locationWhenInUse.status;
         if (permissionStatus.isGranted)
           return false;
-        permissionStatus = await Permission.location.request();
+        permissionStatus = await Permission.locationWhenInUse.request();
+        break;
+
+      case PermissionTypEnum.LOCATION_ALWAYS:
+        permissionStatus = await Permission.locationAlways.status;
+        if (permissionStatus.isGranted)
+          return false;
+        if (Platform.isIOS) {
+          await platform.invokeMethod('alwaysLocation');
+          permissionStatus = await Permission.locationWhenInUse.status; // Keep it locationWhenInUse!
+        } else
+          permissionStatus = await Permission.locationAlways.request();
+        break;
+
+      case PermissionTypEnum.NOTIFICATION:
+        permissionStatus = await Permission.notification.status;
+        if (permissionStatus.isGranted)
+          return false;
+        permissionStatus = await Permission.notification.request();
         break;
 
       case PermissionTypEnum.CAMERA:

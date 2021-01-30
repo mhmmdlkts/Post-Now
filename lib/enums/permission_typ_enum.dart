@@ -1,5 +1,6 @@
 enum PermissionTypEnum {
   NOTIFICATION,
+  LOCATION_ALWAYS,
   LOCATION,
   CAMERA
 }
