@@ -10,6 +10,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:postnow/decoration/my_colors.dart';
 import 'package:postnow/dialogs/address_manager_dialog.dart';
 import 'package:postnow/dialogs/custom_alert_dialog.dart';
+import 'package:postnow/dialogs/custom_notification_dialog.dart';
 import 'package:postnow/dialogs/order_details_dialog.dart';
 import 'package:postnow/dialogs/settings_dialog.dart';
 import 'package:postnow/dialogs/topic_chooser_dialog.dart';
@@ -19,6 +20,7 @@ import 'package:postnow/enums/permission_typ_enum.dart';
 import 'package:postnow/environment/global_variables.dart';
 import 'package:postnow/models/credit_card.dart';
 import 'package:postnow/models/address.dart';
+import 'package:postnow/models/custom_notification.dart';
 import 'package:postnow/models/draft_order.dart';
 import 'package:postnow/models/settings_item.dart';
 import 'package:postnow/models/shopping_item.dart';
@@ -30,6 +32,7 @@ import 'package:postnow/screens/shopping_list_maker_screen.dart';
 import 'package:postnow/screens/voucher_screen.dart';
 import 'package:postnow/services/global_service.dart';
 import 'package:postnow/services/legal_service.dart';
+import 'package:postnow/services/notification_service.dart';
 import 'package:postnow/services/overview_service.dart';
 import 'package:postnow/services/permission_service.dart';
 import 'package:postnow/services/places_service.dart';
@@ -235,6 +238,13 @@ class _MapsScreenState extends State<MapsScreen> {
         });
         setState(() {});
       }
+    });
+
+    NotificationService.fetch(_user.uid).then((value) => {
+      NotificationService.notifications.forEach((element) async {
+        await _showCustomNotificationDialog(element);
+        await Future.delayed(Duration(milliseconds: 300));
+      })
     });
 
     _originTextController = new TextEditingController(text: '');
@@ -1782,6 +1792,15 @@ class _MapsScreenState extends State<MapsScreen> {
                 ]
             )
         )
+    );
+  }
+
+  _showCustomNotificationDialog(CustomNotification customNotification) async {
+    await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return CustomNotificationDialog(customNotification);
+        }
     );
   }
 
