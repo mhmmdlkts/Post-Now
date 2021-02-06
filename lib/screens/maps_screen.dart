@@ -503,6 +503,19 @@ class _MapsScreenState extends State<MapsScreen> {
                 ),
               ),
               onWillPop: () async {
+                if (_destinationAddress == null && _originAddress == null)
+                  return true;
+                setState(() {
+                  _receiverFieldFocusNode.unfocus();
+                  _senderFieldFocusNode.unfocus();
+
+                  _destinationAddress = null;
+                  _originAddress = null;
+                  _setPlaceForDestination();
+                  _setPlaceForOrigin();
+                  _polyLines.clear();
+                  _isDestinationButtonChosen = false;
+                });
                 return false;
               },
             ),
