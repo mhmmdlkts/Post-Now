@@ -26,15 +26,15 @@
     },
     "PAGE2": {
       "TITLE": "Nächster Schritt",
-      "DESCRIPTION": "Gib die Zieladresse ein. Wohin deine Bestellung geliefert werden soll. Danach bezahle denn angegeben betrag und deine Bestellung wird an unseren Zusteller weitergeleitet."
+      "DESCRIPTION": "Gib die Zieladresse ein, wohin deine Bestellung geliefert werden soll. Danach bezahle denn angegebenen Betrag und deine Bestellung wird an unseren Zusteller weitergeleitet."
     },
     "PAGE3": {
       "TITLE": "Lieferung verfolgen",
-      "DESCRIPTION": "Nachdem einer unserer Zusteller deine Bestellung angennomen hat, kannst du deine Bestellung verfolgen, bis sie abgeschlossen ist."
+      "DESCRIPTION": "Nachdem einer unserer Zusteller deine Bestellung angenommen hat, kannst du deine Bestellung verfolgen, bis sie abgeschlossen ist."
     }
   },
   "LOGIN": {
-    "TITLE": "Willkommen zurück",
+    "TITLE": "Willkommen",
     "SUBTITLE": "Hallo...",
     "PHONE_FIELD_TITLE": "Telefonnummer",
     "PHONE_FIELD_HINT": "Deine Telefonnummer",
