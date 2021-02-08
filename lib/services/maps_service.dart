@@ -33,6 +33,16 @@ class MapsService with WidgetsBindingObserver {
     userRef = FirebaseDatabase.instance.reference().child('users').child(uid);
   }
 
+  bool sendMyLocToDB(myPosition) {
+    if (myPosition == null)
+      return false;
+    var data = new Map<String, dynamic>();
+    data['lat'] = myPosition.latitude;
+    data['long'] = myPosition.longitude;
+    userRef.update(data);
+    return true;
+  }
+
   double calculatePrice (Position position, LatLng latLng) {
     double totalDistance = coordinateDistance(LatLng(position.latitude, position.longitude), latLng);
     double minCost = RemoteConfigService.getDouble(FIREBASE_REMOTE_CONFIG_MIN_ORDER_COST);

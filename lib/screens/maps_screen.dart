@@ -240,13 +240,6 @@ class _MapsScreenState extends State<MapsScreen> {
       }
     });
 
-    NotificationService.fetch(_user.uid).then((value) => {
-      NotificationService.notifications.forEach((element) async {
-        await _showCustomNotificationDialog(element);
-        await Future.delayed(Duration(milliseconds: 300));
-      })
-    });
-
     _originTextController = new TextEditingController(text: '');
     _destinationTextController = new TextEditingController(text: '');
 
@@ -1089,6 +1082,13 @@ class _MapsScreenState extends State<MapsScreen> {
 
       Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high).then((value) => {
         _myPosition = value,
+        _mapsService.sendMyLocToDB(_myPosition),
+        NotificationService.fetch(_user.uid, _myPosition).then((value) => {
+          NotificationService.notifications.forEach((element) async {
+            await _showCustomNotificationDialog(element);
+            await Future.delayed(Duration(milliseconds: 300));
+          })
+        })
       });
 
       await _mapController.moveCamera(CameraUpdate.newCameraPosition(

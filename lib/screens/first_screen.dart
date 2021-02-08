@@ -46,9 +46,6 @@ class _FirstScreen extends State<FirstScreen> {
 
     final int localVersion = int.parse((await PackageInfo.fromPlatform()).buildNumber);
 
-    print("local: " + localVersion.toString());
-    print("online: " + _onlineVersion.toString());
-
     setState(() {
       _needsUpdate = localVersion < _onlineVersion;
     });
